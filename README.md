@@ -32,6 +32,17 @@ After waydroid has finished booting open terminal and switch to directory where 
 
     sudo python3 waydroid_extras.py -i
 Copy the returned numeric ID open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1) enter the id and register it, you may need to wait upto 10-20 minutes for device to get registered, then clear Google Play Service's cache and try logging in !
+
+## Install Magisk
+
+Open terminal and switch to directory where "waydroid_extras.py" is located then run:
+
+    sudo python3 waydroid_extras.py -m
+Then restart waydroid service with command below :
+
+    sudo systemctl start waydroid-container.service
+Magisk will be installed on next boot !
+
 ## Install libndk arm translation 
 
 This may or may not work properly and is only for testing:
