@@ -42,6 +42,7 @@ Then restart waydroid service with command below :
 
     sudo systemctl start waydroid-container.service
 Magisk will be installed on next boot !
+Note That this is bootless installation and modules don't work as of now !
 
 ## Install libndk arm translation 
 
