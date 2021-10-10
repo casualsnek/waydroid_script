@@ -14,7 +14,7 @@ Then run:
 	
     git clone https://github.com/casualsnek/waydroid_script
     cd waydroid_script
-    python3 -m pip -r requirements.txt
+    sudo python3 -m pip install -r requirements.txt
     sudo python3 waydroid_extras.py [-i/-g/-n/-h]
 
 ## Install OpenGapps
