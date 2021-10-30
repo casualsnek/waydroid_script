@@ -191,7 +191,7 @@ def install_ndk():
     sys_image_mount = "/tmp/waydroidimage"
     ndk_zip_url = "https://github.com/newbit1/libndk_translation_Module/archive/c6077f3398172c64f55aad7aab0e55fad9110cf3.zip"
     dl_file_name = "libndktranslation.zip"
-    extract_to = "/tmp/libndkunpack"
+    extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
     act_md5 = "5e8e0cbde0e672fdc2b47f20a87472fd"
     loc_md5 = ""
     apply_props = {
@@ -243,6 +243,11 @@ on property:ro.enable.native.bridge.exec=1
     with zipfile.ZipFile("/tmp/"+dl_file_name) as z:
             z.extractall(extract_to)
 
+    #Mark ndk files as executable
+    print("==> Chmodding...")
+    try: os.system("chmod +x "+extract_to+" -R")
+    except: print("Couldn't mark files as executable!")
+    
     # Copy library file
     print("==> Copying library files ...")
     shutil.copytree(os.path.join(extract_to, "libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3", "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
