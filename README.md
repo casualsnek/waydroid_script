@@ -6,7 +6,7 @@ Script to add gapps and other stuff to waydroid !
 "lzip" is required for this script to work, install it using your distribution's package manager:
 Arch linux:
 
-    sudo pacman -S lizp
+    sudo pacman -S lzip
 Ubuntu/Ubuntu based:
 
     sudo apt install lzip
