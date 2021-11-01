@@ -209,10 +209,10 @@ on early-init
     mount binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
 
 on property:ro.enable.native.bridge.exec=1
-    cat /system/etc/binfmt_misc/arm_exe > /proc/sys/fs/binfmt_misc/register
-    cat /system/etc/binfmt_misc/arm_dyn >> /proc/sys/fs/binfmt_misc/register
-    cat /system/etc/binfmt_misc/arm64_exe >> /proc/sys/fs/binfmt_misc/register
-    cat /system/etc/binfmt_misc/arm64_dyn >> /proc/sys/fs/binfmt_misc/register
+    exec -- /system/bin/sh -c "cat /system/etc/binfmt_misc/arm_exe > /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "cat /system/etc/binfmt_misc/arm_dyn >> /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "cat /system/etc/binfmt_misc/arm64_exe >> /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "cat /system/etc/binfmt_misc/arm64_dyn >> /proc/sys/fs/binfmt_misc/register"
     """
     if os.path.isfile("/tmp/"+dl_file_name):
         with open("/tmp/"+dl_file_name,"rb") as f:
