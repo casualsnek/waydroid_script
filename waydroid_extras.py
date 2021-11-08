@@ -296,6 +296,11 @@ def install_magisk():
     loc_md5 = ""
     busybox_loc_md5 = ""
     magisk_init = """#!/system/bin/sh
+mount -o remount,rw /
+rm /sbin/magisk /sbin/magiskpolicy /sbin/magiskinit
+cp /magiskinit /sbin/magiskinit
+ln -s /sbin/magiskinit /sbin/magisk
+ln -s /sbin/magiskinit /sbin/magiskpolicy
 mkdir -p /data/adb/magisk
 cp /busybox /data/adb/magisk/busybox
 cp /util_functions.sh /data/adb/magisk/util_functions.sh
@@ -308,6 +313,7 @@ magisk --post-fs-data
 sleep 1
 magisk --service
 magisk --boot-complete
+mount -o remount,ro /
     """
     init_rc_component = """on property:dev.bootcomplete=1
     start magisk
@@ -365,11 +371,13 @@ service magisk /system/bin/init-magisk.sh
     with open(os.path.join(sys_image_mount, "system", "bin", "init-magisk.sh"), "w") as imf:
         imf.write(magisk_init)
     os.system("chmod 755 {}".format(os.path.join(sys_image_mount, "system", "bin", "init-magisk.sh")))
-    arch_dir = "x86" if platform.machine() == "x86" or "x86_64" else "arm"
-    arch = "" if platform.machine() == "x86" or "arm" else "64"
+    arch_dir = "x86" if "x86" in platform.machine() else "arm"
+    arch = "64" if "64" in platform.machine() else ""
     shutil.copyfile(os.path.join(extract_to, arch_dir, "magiskinit{arch}".format(arch=arch)),
                     os.path.join(sys_image_mount, "sbin", "magiskinit"))
-    os.system("chmod 755 {}".format(os.path.join(sys_image_mount, "sbin", "magiskinit")))
+    shutil.copyfile(os.path.join(extract_to, arch_dir, "magiskinit{arch}".format(arch=arch)),
+                    os.path.join(sys_image_mount, "magiskinit"))
+    os.system("chmod 755 {} & chmod 755 {}".format(os.path.join(sys_image_mount, "sbin", "magiskinit"), os.path.join(sys_image_mount, "magiskinit")))
 
     # Copy busybox
     print("==> Installing BusyBox")
@@ -384,9 +392,10 @@ service magisk /system/bin/init-magisk.sh
 
     # Create symlinks
     print("==> Creating symlinks")
-    os.system("cd {root}/sbin && ln -s magiskinit magisk >> /dev/null 2>&1".format(root=sys_image_mount))
+    os.system("cd {root}/sbin && ln -sf magiskinit magiskinit >> /dev/null 2>&1".format(root=sys_image_mount))
+    os.system("cd {root}/sbin && ln -sf magiskinit magisk >> /dev/null 2>&1".format(root=sys_image_mount))
     print("==>     magiskinit  ->  magisk")
-    os.system("cd {root}/sbin && ln -s magiskinit magiskpolicy >> /dev/null 2>&1".format(root=sys_image_mount))
+    os.system("cd {root}/sbin && ln -sf /magiskinit magiskpolicy >> /dev/null 2>&1".format(root=sys_image_mount))
     print("==>     magiskinit  ->  magiskpolicy")
 
     # Add entry to init.rc
