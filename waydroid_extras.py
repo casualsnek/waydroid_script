@@ -206,7 +206,7 @@ def install_ndk():
         }
     init_rc_component = """
 on early-init
-    mount binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+    mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
 
 on property:ro.enable.native.bridge.exec=1
     exec -- /system/bin/sh -c "cat /system/etc/binfmt_misc/arm_exe > /proc/sys/fs/binfmt_misc/register"
@@ -305,13 +305,13 @@ def install_houdini():
         }
     init_rc_component = """
 on early-init
-    mount binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+    mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
 
 on property:ro.enable.native.bridge.exec=1
-    exec -- /system/bin/sh -c "echo ':arm_exe:M::\\x7f\\x45\\x4c\\x46\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x02\\x00\\x28::/system/bin/houdini:P' > /proc/sys/fs/binfmt_misc/register"
-    exec -- /system/bin/sh -c "echo ':arm_dyn:M::\\x7f\\x45\\x4c\\x46\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x03\\x00\\x28::/system/bin/houdini:P' >> /proc/sys/fs/binfmt_misc/register"
-    exec -- /system/bin/sh -c "echo ':arm64_exe:M::\\x7f\\x45\\x4c\\x46\\x02\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x02\\x00\\xb7::/system/bin/houdini64:P' >> /proc/sys/fs/binfmt_misc/register"
-    exec -- /system/bin/sh -c "echo ':arm64_dyn:M::\\x7f\\x45\\x4c\\x46\\x02\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x03\\x00\\xb7::/system/bin/houdini64:P' >> /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "echo ':arm_exe:M::\\\\x7f\\\\x45\\\\x4c\\\\x46\\\\x01\\\\x01\\\\x01\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x02\\\\x00\\\\x28::/system/bin/houdini:P' > /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "echo ':arm_dyn:M::\\\\x7f\\\\x45\\\\x4c\\\\x46\\\\x01\\\\x01\\\\x01\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x03\\\\x00\\\\x28::/system/bin/houdini:P' >> /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "echo ':arm64_exe:M::\\\\x7f\\\\x45\\\\x4c\\\\x46\\\\x02\\\\x01\\\\x01\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x02\\\\x00\\\\xb7::/system/bin/houdini64:P' >> /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "echo ':arm64_dyn:M::\\\\x7f\\\\x45\\\\x4c\\\\x46\\\\x02\\\\x01\\\\x01\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x03\\\\x00\\\\xb7::/system/bin/houdini64:P' >> /proc/sys/fs/binfmt_misc/register"
     """
 
     if os.path.isfile("/tmp/"+dl_file_name):
@@ -367,7 +367,8 @@ on property:ro.enable.native.bridge.exec=1
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc") if os.environ.get("ANDROID_VERSION", "10") == "11" else os.path.join(sys_image_mount, "init.rc")
+    print("==> Set android version: {}".format(os.environ.get("ANDROID_VERSION", "11")))
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc") if os.environ.get("ANDROID_VERSION", "11") == "11" else os.path.join(sys_image_mount, "init.rc")
     with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
