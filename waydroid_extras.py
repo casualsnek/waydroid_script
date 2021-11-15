@@ -246,7 +246,7 @@ on property:ro.enable.native.bridge.exec=1
     #Mark ndk files as executable
     print("==> Chmodding...")
     try: os.system("chmod +x "+extract_to+" -R")
-    except: print("Couldn't mark files as executable!")
+    except: print("==> Couldn't mark files as executable!")
     
     # Copy library file
     print("==> Copying library files ...")
@@ -268,11 +268,12 @@ on property:ro.enable.native.bridge.exec=1
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
-    with open(os.path.join(sys_image_mount, "init.rc"), "r") as initfile:
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc") if os.environ.get("ANDROID_VERSION", "10") == "11" else os.path.join(sys_image_mount, "init.rc")
+    with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
             initcontent=initcontent+init_rc_component
-    with open(os.path.join(sys_image_mount, "init.rc"), "w") as initfile:
+    with open(init_path, "w") as initfile:
         initfile.write(initcontent)
 
     # Unmount and exit
@@ -283,6 +284,106 @@ on property:ro.enable.native.bridge.exec=1
         print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
 
     print("==> libndk translation installed ! Restart waydroid service to apply changes !")
+
+
+def install_houdini():
+    sys_image_mount = "/tmp/waydroidimage"
+    houdini_zip_url = "https://raw.githubusercontent.com/casualsnek/miscpackages/main/libhoudini_a11.zip"
+    dl_file_name = "libhoudini.zip"
+    extract_to = "/tmp/houdiniunpack" #All catalog files will be marked as executable!
+    act_md5 = "c9a80831641de8fd44ccf93a0ad8b585"
+    loc_md5 = ""
+
+    apply_props = {
+        "ro.product.cpu.abilist": "x86_64,x86,arm64-v8a,armeabi-v7a,armeabi",
+        "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
+        "ro.product.cpu.abilist64": "x86_64,arm64-v8a",
+        "ro.dalvik.vm.native.bridge": "libhoudini.so",
+        "ro.enable.native.bridge.exec": "1",
+        "ro.dalvik.vm.isa.arm": "x86",
+        "ro.dalvik.vm.isa.arm64": "x86_64"
+        }
+    init_rc_component = """
+on early-init
+    mount binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+
+on property:ro.enable.native.bridge.exec=1
+    exec -- /system/bin/sh -c "echo ':arm_exe:M::\\x7f\\x45\\x4c\\x46\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x02\\x00\\x28::/system/bin/houdini:P' > /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "echo ':arm_dyn:M::\\x7f\\x45\\x4c\\x46\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x03\\x00\\x28::/system/bin/houdini:P' >> /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "echo ':arm64_exe:M::\\x7f\\x45\\x4c\\x46\\x02\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x02\\x00\\xb7::/system/bin/houdini64:P' >> /proc/sys/fs/binfmt_misc/register"
+    exec -- /system/bin/sh -c "echo ':arm64_dyn:M::\\x7f\\x45\\x4c\\x46\\x02\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x03\\x00\\xb7::/system/bin/houdini64:P' >> /proc/sys/fs/binfmt_misc/register"
+    """
+
+    if os.path.isfile("/tmp/"+dl_file_name):
+        with open("/tmp/"+dl_file_name,"rb") as f:
+            bytes = f.read()
+            loc_md5 = hashlib.md5(bytes).hexdigest()
+
+    system_img = os.path.join(get_image_dir(), "system.img")
+    if not os.path.isfile(system_img):
+        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
+        sys.exit(1)
+    print("==> Found system image: "+system_img)
+
+    # Resize rootfs
+    resize_img(system_img, "6G")
+
+    # Mount the system image
+    mount_image(system_img, sys_image_mount)
+
+    # Download the file if hash mismatches or if file does not exist
+    while not os.path.isfile("/tmp/"+dl_file_name) or loc_md5 != act_md5:
+        if os.path.isfile("/tmp/"+dl_file_name):
+            os.remove("/tmp/"+dl_file_name)
+        print("==> libhoudini zip not downloaded or hash mismatches, downloading now .....")
+        loc_md5 = download_file(houdini_zip_url, '/tmp/'+dl_file_name)
+
+    # Extract ndk files
+    print("==> Extracting archive...")
+    with zipfile.ZipFile("/tmp/"+dl_file_name) as z:
+            z.extractall(extract_to)
+
+    # Mark libhoudini files as executable
+    print("==> Chmodding...")
+    try: os.system("chmod +x "+extract_to+" -R")
+    except: print("==> Couldn't mark files as executable!")
+
+    # Copy library file
+    print("==> Copying library files ...")
+    shutil.copytree(os.path.join(extract_to, "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
+
+    # Add entries to build.prop
+    print("==> Adding arch in build.prop")
+    with open(os.path.join(sys_image_mount, "system", "build.prop"), "r") as propfile:
+        prop_content = propfile.read()
+        for key in apply_props:
+            if key not in prop_content:
+                prop_content = prop_content+"\n{key}={value}".format(key=key, value=apply_props[key])
+            else:
+                p = re.compile(r"^{key}=.*$".format(key=key), re.M)
+                prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
+    with open(os.path.join(sys_image_mount, "system", "build.prop"), "w") as propfile:
+        propfile.write(prop_content)
+
+    # Add entry to init.rc
+    print("==> Adding entry to init.rc")
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc") if os.environ.get("ANDROID_VERSION", "10") == "11" else os.path.join(sys_image_mount, "init.rc")
+    with open(init_path, "r") as initfile:
+        initcontent = initfile.read()
+        if init_rc_component not in initcontent:
+            initcontent=initcontent+init_rc_component
+    with open(init_path, "w") as initfile:
+        initfile.write(initcontent)
+
+    # Unmount and exit
+    print("==> Unmounting .. ")
+    try:
+        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
+
+    print("==> libhoudini translation installed ! Restart waydroid service to apply changes !")
+
 
 def install_magisk():
     dl_link = "https://github.com/topjohnwu/Magisk/releases/download/v20.4/Magisk-v20.4.zip"
@@ -442,6 +543,9 @@ def main():
     parser.add_argument('-m', '--install-magisk', dest='magisk',
                         help='Attempts to install Magisk ( Bootless )',
                         action='store_true')
+    parser.add_argument('-l', '--install-libhoudini', dest='houdini',
+                        help='Install libhoudini for arm translation',
+                        action='store_true')
 
     args = parser.parse_args()
     if args.install:
@@ -454,6 +558,8 @@ def main():
         get_android_id()
     elif args.magisk:
         install_magisk()
+    elif args.houdini:
+        install_houdini()
 
 if __name__ == "__main__":
     main()

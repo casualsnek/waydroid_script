@@ -53,6 +53,16 @@ Open terminal and switch to directory where "waydroid_extras.py" is located then
 Then restart waydroid service with command below :
 
     sudo systemctl start waydroid-container.service
+
+## Install libhoudini arm translation
+
+This may or may not work properly and is only for testing: ( Much stable than libndk ) and works on android 11 images
+Open terminal and switch to directory where "waydroid_extras.py" is located then run:
+
+    sudo python3 waydroid_extras.py -l
+Then restart waydroid service with command below :
+
+    sudo systemctl start waydroid-container.service
  
 ## Get Android ID for device registration
 
