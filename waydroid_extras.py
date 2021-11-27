@@ -268,7 +268,11 @@ on property:ro.enable.native.bridge.exec=1
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc") if os.environ.get("ANDROID_VERSION", "10") == "11" else os.path.join(sys_image_mount, "init.rc")
+    # Check if init.rc is located in Android 11's path
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
+    if not os.path.isfile(init_path):
+        # init.rc not found, assuming it's located in the root folder (Android 10 and older)
+        init_path = os.path.join(sys_image_mount, "init.rc")
     with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
@@ -367,8 +371,11 @@ on property:ro.enable.native.bridge.exec=1
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
-    print("==> Set android version: {}".format(os.environ.get("ANDROID_VERSION", "11")))
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc") if os.environ.get("ANDROID_VERSION", "11") == "11" else os.path.join(sys_image_mount, "init.rc")
+    # Check if init.rc is located in Android 11's path
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
+    if not os.path.isfile(init_path):
+        # init.rc not found, assuming it's located in the root folder (Android 10 and older)
+        init_path = os.path.join(sys_image_mount, "init.rc")
     with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
