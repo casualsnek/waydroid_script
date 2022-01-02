@@ -5,13 +5,13 @@
 Script to add gapps and other stuff to waydroid !
 
 # Installation/Usage
-"lzip" is required for this script to work, install it using your distribution's package manager:
+"lzip" and "sqlite" is required for this script to work, install it using your distribution's package manager:
 Arch linux:
 
-    sudo pacman -S lzip
+    sudo pacman -S lzip sqlite
 Ubuntu/Ubuntu based:
 
-    sudo apt install lzip
+    sudo apt install lzip sqlite
 Then run:
 	
     git clone https://github.com/casualsnek/waydroid_script
