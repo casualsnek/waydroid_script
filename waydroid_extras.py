@@ -124,8 +124,10 @@ def install_gapps():
         sys.exit(1)
     print("==> Found system image: "+system_img)
 
+    img_size = int(os.path.getsize(system_img)/(1024*1024))
+
     # Resize image to get some free space
-    resize_img(system_img, "5G")
+    resize_img(system_img, "{}M".format(img_size+500))
 
     # Mount the system image
     mount_image(system_img, sys_image_mount)
@@ -226,7 +228,10 @@ on property:ro.enable.native.bridge.exec=1
     print("==> Found system image: "+system_img)
 
     # Resize rootfs
-    resize_img(system_img, "6G")
+    img_size = int(os.path.getsize(system_img)/(1024*1024))
+
+    # Resize image to get some free space
+    resize_img(system_img, "{}M".format(img_size+50))
 
     # Mount the system image
     mount_image(system_img, sys_image_mount)
@@ -329,8 +334,11 @@ on property:ro.enable.native.bridge.exec=1
         sys.exit(1)
     print("==> Found system image: "+system_img)
 
-    # Resize rootfs
-    resize_img(system_img, "6G")
+    img_size = int(os.path.getsize(system_img)/(1024*1024))
+
+    # Resize image to get some free space
+    resize_img(system_img, "{}M".format(img_size+300))
+
 
     # Mount the system image
     mount_image(system_img, sys_image_mount)
@@ -450,8 +458,10 @@ service magisk /system/bin/init-magisk.sh
         sys.exit(1)
     print("==> Found system image: " + system_img)
 
-    # Resize rootfs
-    resize_img(system_img, "6G")
+    img_size = int(os.path.getsize(system_img)/(1024*1024))
+
+    # Resize image to get some free space
+    resize_img(system_img, "{}M".format(img_size+50))
 
     # Mount the system image
     mount_image(system_img, sys_image_mount)
