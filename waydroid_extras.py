@@ -11,6 +11,17 @@ from tqdm import tqdm
 import requests
 import re
 
+download_loc = ""
+if os.environ.get("XDG_CACHE_HOME", None) is None:
+    download_loc = os.path.join('/', "home", os.environ.get("SUDO_USER", os.environ["USER"]), ".cache", "waydroid_script", "downloads")
+else:
+    os.path.join(os.environ["XDG_CACHE_HOME"], "waydroid_script", "downloads")
+
+print(download_loc)
+
+if not os.path.exists(download_loc):
+    os.makedirs(download_loc)
+
 def stop_waydroid():
     print("==> Stopping waydroid and unmounting already mounted images...")
     os.system("waydroid container stop &> /dev/null")
@@ -91,7 +102,7 @@ def install_gapps():
         print("==> Unsupported architecture '{}' .. ".format(platform.machine()))
         sys.exit(1)
     google_apps_dl_link = dl_links[platform.machine()][0]
-    dl_file_name = "open_gapps.zip"
+    dl_file_name = os.path.join(download_loc, "open_gapps.zip")
     act_md5 = dl_links[platform.machine()][1]
     loc_md5 = ""
     sys_image_mount = "/tmp/waydroidimage"
@@ -111,8 +122,8 @@ def install_gapps():
     if not os.path.exists(os.path.join(extract_to, "appunpack")):
         os.makedirs(os.path.join(extract_to, "appunpack"))
 
-    if os.path.isfile("/tmp/"+dl_file_name):
-        with open("/tmp/"+dl_file_name,"rb") as f:
+    if os.path.isfile(dl_file_name):
+        with open(dl_file_name,"rb") as f:
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
     print("==> Excepted hash: {}  | File hash: {}".format(act_md5, loc_md5))
@@ -133,15 +144,15 @@ def install_gapps():
     mount_image(system_img, sys_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
-    while not os.path.isfile("/tmp/"+dl_file_name) or loc_md5 != act_md5:
-        if os.path.isfile("/tmp/"+dl_file_name):
-            os.remove("/tmp/"+dl_file_name)
+    while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
+        if os.path.isfile(dl_file_name):
+            os.remove(dl_file_name)
         print("==> OpenGapps zip not downloaded or hash mismatches, downloading now .....")
-        loc_md5 = download_file(google_apps_dl_link, '/tmp/'+dl_file_name)
+        loc_md5 = download_file(google_apps_dl_link, dl_file_name)
 
     # Extract opengapps
     print("==> Extracting opengapps...")
-    with zipfile.ZipFile("/tmp/"+dl_file_name) as z:
+    with zipfile.ZipFile(dl_file_name) as z:
             z.extractall(extract_to)
 
     # Now copy the files
@@ -192,7 +203,7 @@ def get_android_id():
 def install_ndk():
     sys_image_mount = "/tmp/waydroidimage"
     ndk_zip_url = "https://github.com/newbit1/libndk_translation_Module/archive/c6077f3398172c64f55aad7aab0e55fad9110cf3.zip"
-    dl_file_name = "libndktranslation.zip"
+    dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
     act_md5 = "5e8e0cbde0e672fdc2b47f20a87472fd"
     loc_md5 = ""
@@ -216,8 +227,8 @@ on property:ro.enable.native.bridge.exec=1
     exec -- /system/bin/sh -c "cat /system/etc/binfmt_misc/arm64_exe >> /proc/sys/fs/binfmt_misc/register"
     exec -- /system/bin/sh -c "cat /system/etc/binfmt_misc/arm64_dyn >> /proc/sys/fs/binfmt_misc/register"
     """
-    if os.path.isfile("/tmp/"+dl_file_name):
-        with open("/tmp/"+dl_file_name,"rb") as f:
+    if os.path.isfile(dl_file_name):
+        with open(dl_file_name,"rb") as f:
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
 
@@ -237,15 +248,15 @@ on property:ro.enable.native.bridge.exec=1
     mount_image(system_img, sys_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
-    while not os.path.isfile("/tmp/"+dl_file_name) or loc_md5 != act_md5:
-        if os.path.isfile("/tmp/"+dl_file_name):
-            os.remove("/tmp/"+dl_file_name)
+    while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
+        if os.path.isfile(dl_file_name):
+            os.remove(dl_file_name)
         print("==> NDK Translation zip not downloaded or hash mismatches, downloading now .....")
-        loc_md5 = download_file(ndk_zip_url, '/tmp/'+dl_file_name)
+        loc_md5 = download_file(ndk_zip_url, dl_file_name)
 
     # Extract ndk files
     print("==> Extracting archive...")
-    with zipfile.ZipFile("/tmp/"+dl_file_name) as z:
+    with zipfile.ZipFile(dl_file_name) as z:
             z.extractall(extract_to)
 
     #Mark ndk files as executable
@@ -298,7 +309,7 @@ on property:ro.enable.native.bridge.exec=1
 def install_houdini():
     sys_image_mount = "/tmp/waydroidimage"
     houdini_zip_url = "https://raw.githubusercontent.com/casualsnek/miscpackages/main/libhoudini_a11.zip"
-    dl_file_name = "libhoudini.zip"
+    dl_file_name = os.path.join(download_loc, "libhoudini.zip")
     extract_to = "/tmp/houdiniunpack" #All catalog files will be marked as executable!
     act_md5 = "c9a80831641de8fd44ccf93a0ad8b585"
     loc_md5 = ""
@@ -323,8 +334,8 @@ on property:ro.enable.native.bridge.exec=1
     exec -- /system/bin/sh -c "echo ':arm64_dyn:M::\\\\x7f\\\\x45\\\\x4c\\\\x46\\\\x02\\\\x01\\\\x01\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x03\\\\x00\\\\xb7::/system/bin/houdini64:P' >> /proc/sys/fs/binfmt_misc/register"
     """
 
-    if os.path.isfile("/tmp/"+dl_file_name):
-        with open("/tmp/"+dl_file_name,"rb") as f:
+    if os.path.isfile(dl_file_name):
+        with open(dl_file_name,"rb") as f:
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
 
@@ -344,15 +355,15 @@ on property:ro.enable.native.bridge.exec=1
     mount_image(system_img, sys_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
-    while not os.path.isfile("/tmp/"+dl_file_name) or loc_md5 != act_md5:
-        if os.path.isfile("/tmp/"+dl_file_name):
-            os.remove("/tmp/"+dl_file_name)
+    while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
+        if os.path.isfile(dl_file_name):
+            os.remove(dl_file_name)
         print("==> libhoudini zip not downloaded or hash mismatches, downloading now .....")
-        loc_md5 = download_file(houdini_zip_url, '/tmp/'+dl_file_name)
+        loc_md5 = download_file(houdini_zip_url, dl_file_name)
 
     # Extract ndk files
     print("==> Extracting archive...")
-    with zipfile.ZipFile("/tmp/"+dl_file_name) as z:
+    with zipfile.ZipFile(dl_file_name) as z:
             z.extractall(extract_to)
 
     # Mark libhoudini files as executable
@@ -404,8 +415,8 @@ on property:ro.enable.native.bridge.exec=1
 def install_magisk():
     dl_link = "https://github.com/topjohnwu/Magisk/releases/download/v20.4/Magisk-v20.4.zip"
     busybox_dl_link = "https://github.com/Gnurou/busybox-android/raw/master/busybox-android"
-    busybox_dl_file_name = "busybox-android"
-    dl_file_name = "magisk.zip"
+    busybox_dl_file_name = os.path.join(download_loc, "busybox-android")
+    dl_file_name = os.path.join(download_loc, "magisk.zip")
     extract_to = "/tmp/magisk_unpack"
     act_md5 = "9503fc692e03d60cb8897ff2753c193f"
     busybox_act_md5 = "2e43cc2e8f44b83f9029a6561ce5d8b9"
@@ -441,13 +452,13 @@ service magisk /system/bin/init-magisk.sh
     group root
     oneshot
     """
-    if os.path.isfile("/tmp/"+dl_file_name):
-        with open("/tmp/"+dl_file_name,"rb") as f:
+    if os.path.isfile(dl_file_name):
+        with open(dl_file_name,"rb") as f:
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
 
-    if os.path.isfile("/tmp/"+busybox_dl_file_name):
-        with open("/tmp/"+busybox_dl_file_name,"rb") as f:
+    if os.path.isfile(busybox_dl_file_name):
+        with open(busybox_dl_file_name,"rb") as f:
             bytes = f.read()
             busybox_loc_md5 = hashlib.md5(bytes).hexdigest()
 
@@ -467,22 +478,22 @@ service magisk /system/bin/init-magisk.sh
     mount_image(system_img, sys_image_mount)
 
     # Download magisk
-    while not os.path.isfile("/tmp/"+dl_file_name) or loc_md5 != act_md5:
-        if os.path.isfile("/tmp/"+dl_file_name):
-            os.remove("/tmp/"+dl_file_name)
+    while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
+        if os.path.isfile(dl_file_name):
+            os.remove(dl_file_name)
         print("==> Magisk zip not downloaded or hash mismatches, downloading now .....")
-        loc_md5 = download_file(dl_link, '/tmp/'+dl_file_name)
+        loc_md5 = download_file(dl_link, dl_file_name)
 
     # Download busybox android binary
-    while not os.path.isfile("/tmp/"+busybox_dl_file_name) or busybox_loc_md5 != busybox_act_md5:
-        if os.path.isfile("/tmp/"+busybox_dl_file_name):
-            os.remove("/tmp/"+busybox_dl_file_name)
+    while not os.path.isfile(busybox_dl_file_name) or busybox_loc_md5 != busybox_act_md5:
+        if os.path.isfile(busybox_dl_file_name):
+            os.remove(busybox_dl_file_name)
         print("==> BusyBox binary not downloaded or hash mismatches, downloading now .....")
-        busybox_loc_md5 = download_file(busybox_dl_link, '/tmp/'+busybox_dl_file_name)
+        busybox_loc_md5 = download_file(busybox_dl_link, busybox_dl_file_name)
 
     # Extract magisk files
     print("==> Extracting archive...")
-    with zipfile.ZipFile("/tmp/" + dl_file_name) as z:
+    with zipfile.ZipFile(dl_file_name) as z:
         z.extractall(extract_to)
 
     # Now setup and install magisk binary and app
@@ -500,7 +511,7 @@ service magisk /system/bin/init-magisk.sh
 
     # Copy busybox
     print("==> Installing BusyBox")
-    shutil.copyfile(os.path.join("/tmp", busybox_dl_file_name), os.path.join(sys_image_mount, "busybox"))
+    shutil.copyfile(busybox_dl_file_name, os.path.join(sys_image_mount, "busybox"))
     os.system("chmod 755 {}".format(os.path.join(sys_image_mount, "busybox")))
 
     # Copy files from common directory
@@ -541,7 +552,7 @@ service magisk /system/bin/init-magisk.sh
 
     print("==> Magisk was  installed ! Restart waydroid service to apply changes !")
 def main():
-    about = """s
+    about = """
     WayDroid Helper script v0.3
     Does stuff like installing Gapps, Installing NDK Translation and getting Android ID for device registration.
     Use -h  flag for help !
