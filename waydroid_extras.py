@@ -93,10 +93,10 @@ def resize_img(img_file, size):
 def install_gapps():
 
     dl_links = {
-            "x86_64": ["https://nchc.dl.sourceforge.net/project/opengapps/x86_64/20210918/open_gapps-x86_64-10.0-pico-20210918.zip", "55db1a79b1d41573d7c2cd5927189779"],
-            "x86": ["https://altushost-swe.dl.sourceforge.net/project/opengapps/x86/20210918/open_gapps-x86-10.0-pico-20210918.zip", "f5101b20422684904f1e927fc5c7839b"],
-            "aarch64": ["https://altushost-swe.dl.sourceforge.net/project/opengapps/arm64/20210918/open_gapps-arm64-10.0-pico-20210918.zip", "0384dcee9a102995ad544533381139c2"],
-            "arm": ["https://altushost-swe.dl.sourceforge.net/project/opengapps/arm/20210918/open_gapps-arm-10.0-pico-20210918.zip", "b6674e2fe7ea345d5c21ddf59039201e"]
+            "x86_64": ["https://master.dl.sourceforge.net/project/opengapps/x86_64/20220121/open_gapps-x86_64-10.0-pico-20220121.zip?viasf=1", "e8c9a7412f5712eea7948957a62a7d66"],
+            "x86": ["https://udomain.dl.sourceforge.net/project/opengapps/x86/20220122/open_gapps-x86-10.0-pico-20220122.zip", "9e39e45584b7ade4529e6be654af7b81"],
+            "aarch64": ["https://liquidtelecom.dl.sourceforge.net/project/opengapps/arm64/20220122/open_gapps-arm64-10.0-pico-20220122.zip", "8dfa6e76aeb2d1d5aed40b058e8a852c"],
+            "arm": ["https://nav.dl.sourceforge.net/project/opengapps/arm/20220122/open_gapps-arm-10.0-pico-20220122.zip", "a48ccbd25eb0a3c5e30f5db5435f5536"]
         }
     if platform.machine() not in dl_links.keys():
         print("==> Unsupported architecture '{}' .. ".format(platform.machine()))
