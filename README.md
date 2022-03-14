@@ -6,12 +6,14 @@ Script to add gapps and other stuff to waydroid !
 
 # Installation/Usage
 "lzip" and "sqlite" is required for this script to work, install it using your distribution's package manager:
-Arch linux:
-
-    sudo pacman -S lzip sqlite
-Ubuntu/Ubuntu based:
-
-    sudo apt install lzip sqlite
+## Arch, Manjaro and EndeavourOS based distributions:
+	sudo pacman -S lzip sqlite
+## Debian and Ubuntu based distributions:
+	sudo apt install lzip sqlite  
+## RHEL, Fedora and Rocky based distributions:
+	sudo dnf install lzip sqlite
+## openSUSE based distributions:
+	sudo zypper install lzip sqlite
 Then run:
 	
     git clone https://github.com/casualsnek/waydroid_script
