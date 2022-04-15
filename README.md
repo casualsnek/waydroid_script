@@ -76,3 +76,17 @@ Open terminal and switch to directory where "waydroid_extras.py" is located then
     sudo python3 waydroid_extras.py -i
 
 Star this repository if you find this useful, if you encounter problem create a issue on github !
+
+## Error handling  
+
+In case of error, if you retry immediately and it fails with this error 
+```
+==> Failed to resize image '/var/lib/waydroid/images/system.img' .. !  e2fsck 1.45.5 (07-Jan-2020)
+/var/lib/waydroid/images/system.img is mounted.
+e2fsck: Cannot continue, aborting.
+```
+You need to get the mounting point using `df | grep waydroid`. It will be something like `/dev/loopXXX`. Then, unmount it
+```
+sudo umount /dev/loopXXX
+```
+And re-run the script.
