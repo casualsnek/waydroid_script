@@ -1,7 +1,7 @@
 # Waydroid Extras Script
 
 
-## Since waydroid images with libndk/gapps/magisk and libhoudini are already available. This script has little to no use. So, i am archiving this repository. If you have any questions or queries, my Inbox is avaibale at casualsnek(at)pm(d0t)me. Free free to send emails :)
+## Since waydroid images with libndk/gapps/magisk and libhoudini are already available. This script has little to no use. So, i am archiving this repository. If you have any questions or queries, my Inbox is available at casualsnek(at)pm(d0t)me. Free free to send emails :)
 
 [![Visits Badge](https://badges.pufler.dev/visits/casualsnek/waydroid_script)](https://github.com/casualsnek)
 
