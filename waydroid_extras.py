@@ -205,7 +205,7 @@ def install_ndk():
     ndk_zip_url = "https://github.com/LegacyGamerHD/libndk_translation_Module/releases/download/v1.0/libndk_translation_Module.zip"
     dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
-    act_md5 = "CC9D109BDC550CDA41BA4990798905D3"
+    act_md5 = "cc9d109bdc550cda41ba4990798905d3"
     loc_md5 = ""
     apply_props = {
         "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
