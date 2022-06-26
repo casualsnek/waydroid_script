@@ -202,15 +202,21 @@ def get_android_id():
 
 def install_ndk():
     sys_image_mount = "/tmp/waydroidimage"
-    ndk_zip_url = "https://github.com/newbit1/libndk_translation_Module/releases/download/v1.0/libndk_translation_Module.zip"
+    ndk_zip_url = "https://github.com/LegacyGamerHD/libndk_translation_Module/releases/download/v1.0/libndk_translation_Module.zip"
     dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
-    act_md5 = "5D2F9E3D94906BAEBD3CEFA7860BD7EC"
+    act_md5 = "CC9D109BDC550CDA41BA4990798905D3"
     loc_md5 = ""
     apply_props = {
-        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi", #arm64-v8a,
+        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
-        "ro.product.cpu.abilist64": "x86_64", #,arm64-v8a",
+        "ro.product.cpu.abilist64": "x86_64",
+        "ro.odm.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
+        "ro.odm.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
+        "ro.odm.product.cpu.abilist6": "x86_64",
+        "ro.vendor.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
+        "ro.vendor.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
+        "ro.vendor.product.cpu.abilist64": "x86_64",
         "ro.dalvik.vm.native.bridge": "libndk_translation.so",
         "ro.enable.native.bridge.exec": "1",
         "ro.ndk_translation.version": "0.2.2",
