@@ -272,7 +272,7 @@ on property:ro.enable.native.bridge.exec=1
     
     # Copy library file
     print("==> Copying library files ...")
-    shutil.copytree(os.path.join(extract_to, "libndk_translation_Module", "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
+    shutil.copytree(os.path.join(extract_to, "libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3", "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
 
     # Add entries to build.prop
     print("==> Adding arch in build.prop")
