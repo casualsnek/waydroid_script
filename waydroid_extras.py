@@ -58,7 +58,7 @@ def get_image_dir():
 
     cfg.read(cfg_file)
     if "waydroid" not in cfg:
-        print("==> Required entry in config was not found, Cannot continue !s")
+        print("==> Required entry in config was not found, Cannot continue !s") #magisk
         sys.exit(1)
     return cfg["waydroid"]["images_path"]
 
@@ -202,21 +202,15 @@ def get_android_id():
 
 def install_ndk():
     sys_image_mount = "/tmp/waydroidimage"
-    ndk_zip_url = "https://github.com/LegacyGamerHD/libndk_translation_Module/releases/download/v1.0/libndk_translation_Module.zip"
+    ndk_zip_url = "https://github.com/newbit1/libndk_translation_Module/archive/c6077f3398172c64f55aad7aab0e55fad9110cf3.zip"
     dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
-    act_md5 = "cc9d109bdc550cda41ba4990798905d3"
+    act_md5 = "5e8e0cbde0e672fdc2b47f20a87472fd"
     loc_md5 = ""
     apply_props = {
-        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
+        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi", #arm64-v8a,
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
-        "ro.product.cpu.abilist64": "x86_64",
-        "ro.odm.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
-        "ro.odm.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
-        "ro.odm.product.cpu.abilist6": "x86_64",
-        "ro.vendor.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
-        "ro.vendor.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
-        "ro.vendor.product.cpu.abilist64": "x86_64",
+        "ro.product.cpu.abilist64": "x86_64", #,arm64-v8a",
         "ro.dalvik.vm.native.bridge": "libndk_translation.so",
         "ro.enable.native.bridge.exec": "1",
         "ro.ndk_translation.version": "0.2.2",
@@ -272,7 +266,7 @@ on property:ro.enable.native.bridge.exec=1
     
     # Copy library file
     print("==> Copying library files ...")
-    shutil.copytree(os.path.join(extract_to, "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
+    shutil.copytree(os.path.join(extract_to, "libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3", "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
 
     # Add entries to build.prop
     print("==> Adding arch in build.prop")
@@ -314,10 +308,10 @@ on property:ro.enable.native.bridge.exec=1
 
 def install_houdini():
     sys_image_mount = "/tmp/waydroidimage"
-    houdini_zip_url = "https://raw.githubusercontent.com/casualsnek/miscpackages/main/libhoudini_a11.zip"
+    houdini_zip_url = "https://github.com/natsumerinchan/libhoudini-package/archive/refs/tags/v2.1.zip"
     dl_file_name = os.path.join(download_loc, "libhoudini.zip")
-    extract_to = "/tmp/houdiniunpack" #All catalog files will be marked as executable!
-    act_md5 = "c9a80831641de8fd44ccf93a0ad8b585"
+    extract_to = "/tmp/houdiniunpack/libhoudini-package-2.1" #All catalog files will be marked as executable!
+    act_md5 = "25c7532cc4256ee64c12695fc0bc60d0"
     loc_md5 = ""
 
     apply_props = {
@@ -419,12 +413,12 @@ on property:ro.enable.native.bridge.exec=1
 
 
 def install_magisk():
-    dl_link = "https://github.com/topjohnwu/Magisk/releases/download/v20.4/Magisk-v20.4.zip"
+    dl_link = "https://www.dropbox.com/s/eawfmhlot8q61i9/Magisk-v25.2.zip?dl=1"
     busybox_dl_link = "https://github.com/Gnurou/busybox-android/raw/master/busybox-android"
     busybox_dl_file_name = os.path.join(download_loc, "busybox-android")
     dl_file_name = os.path.join(download_loc, "magisk.zip")
     extract_to = "/tmp/magisk_unpack"
-    act_md5 = "9503fc692e03d60cb8897ff2753c193f"
+    act_md5 = "278576ca7483716bcbc16af7cff268bd"
     busybox_act_md5 = "2e43cc2e8f44b83f9029a6561ce5d8b9"
     sys_image_mount = "/tmp/waydroidimage"
     loc_md5 = ""
