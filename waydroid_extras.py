@@ -308,10 +308,10 @@ on property:ro.enable.native.bridge.exec=1
 
 def install_houdini():
     sys_image_mount = "/tmp/waydroidimage"
-    houdini_zip_url = "https://github.com/natsumerinchan/libhoudini-package/archive/refs/tags/v2.1.zip"
+    houdini_zip_url = "https://www.dropbox.com/s/v7g0fluc7e8tod8/libhoudini.zip?dl=1"
     dl_file_name = os.path.join(download_loc, "libhoudini.zip")
-    extract_to = "/tmp/houdiniunpack/libhoudini-package-2.1" #All catalog files will be marked as executable!
-    act_md5 = "25c7532cc4256ee64c12695fc0bc60d0"
+    extract_to = "/tmp/houdiniunpack" #All catalog files will be marked as executable!
+    act_md5 = "838097117cec7762e958d7cbc209415e"
     loc_md5 = ""
 
     apply_props = {
