@@ -215,7 +215,9 @@ def install_ndk():
         "ro.enable.native.bridge.exec": "1",
         "ro.ndk_translation.version": "0.2.2",
         "ro.dalvik.vm.isa.arm": "x86",
-        "ro.dalvik.vm.isa.arm64": "x86_64"
+        "ro.dalvik.vm.isa.arm64": "x86_64",
+        "ro.sys.sdcardfs": "false",
+        "persist.sys.sdcardfs": "force_off"
         }
     init_rc_component = """
 on early-init
@@ -321,7 +323,9 @@ def install_houdini():
         "ro.dalvik.vm.native.bridge": "libhoudini.so",
         "ro.enable.native.bridge.exec": "1",
         "ro.dalvik.vm.isa.arm": "x86",
-        "ro.dalvik.vm.isa.arm64": "x86_64"
+        "ro.dalvik.vm.isa.arm64": "x86_64",
+        "ro.sys.sdcardfs": "false",
+        "persist.sys.sdcardfs": "force_off"
         }
     init_rc_component = """
 on early-init
@@ -413,7 +417,7 @@ on property:ro.enable.native.bridge.exec=1
 
 
 def install_magisk():
-    dl_link = "https://www.dropbox.com/s/eawfmhlot8q61i9/Magisk-v25.2.zip?dl=1"
+    dl_link = "https://github.com/topjohnwu/Magisk/releases/download/v21.4/Magisk-v21.4.zip"
     busybox_dl_link = "https://github.com/Gnurou/busybox-android/raw/master/busybox-android"
     busybox_dl_file_name = os.path.join(download_loc, "busybox-android")
     dl_file_name = os.path.join(download_loc, "magisk.zip")
