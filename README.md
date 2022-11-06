@@ -1,8 +1,5 @@
 # Waydroid Extras Script
 
-
-[![Visits Badge](https://badges.pufler.dev/visits/casualsnek/waydroid_script)](https://github.com/casualsnek)
-
 Script to add gapps and other stuff to waydroid !
 
 # Installation/Usage
