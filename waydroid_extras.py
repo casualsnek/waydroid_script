@@ -215,9 +215,7 @@ def install_ndk():
         "ro.enable.native.bridge.exec": "1",
         "ro.ndk_translation.version": "0.2.2",
         "ro.dalvik.vm.isa.arm": "x86",
-        "ro.dalvik.vm.isa.arm64": "x86_64",
-        "ro.sys.sdcardfs": "false",
-        "persist.sys.sdcardfs": "force_off"
+        "ro.dalvik.vm.isa.arm64": "x86_64"
         }
     init_rc_component = """
 on early-init
@@ -323,9 +321,7 @@ def install_houdini():
         "ro.dalvik.vm.native.bridge": "libhoudini.so",
         "ro.enable.native.bridge.exec": "1",
         "ro.dalvik.vm.isa.arm": "x86",
-        "ro.dalvik.vm.isa.arm64": "x86_64",
-        "ro.sys.sdcardfs": "false",
-        "persist.sys.sdcardfs": "force_off"
+        "ro.dalvik.vm.isa.arm64": "x86_64"
         }
     init_rc_component = """
 on early-init
