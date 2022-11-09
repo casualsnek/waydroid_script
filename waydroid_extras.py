@@ -418,7 +418,7 @@ def install_magisk():
     busybox_dl_file_name = os.path.join(download_loc, "busybox-android")
     dl_file_name = os.path.join(download_loc, "magisk.zip")
     extract_to = "/tmp/magisk_unpack"
-    act_md5 = "278576ca7483716bcbc16af7cff268bd"
+    act_md5 = "ee6dd05579776e7de3a6077087846e53"
     busybox_act_md5 = "2e43cc2e8f44b83f9029a6561ce5d8b9"
     sys_image_mount = "/tmp/waydroidimage"
     loc_md5 = ""
