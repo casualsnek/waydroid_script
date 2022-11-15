@@ -62,34 +62,6 @@ def get_image_dir():
         sys.exit(1)
     return cfg["waydroid"]["images_path"]
 
-#def mount_image(image, mount_point):
-#    print("==> Unmounting .. ")
-#    try:
-#        subprocess.check_output(["losetup", "-D"], stderr=subprocess.STDOUT)
-#        subprocess.check_output(["umount", mount_point], stderr=subprocess.STDOUT)
-#    except subprocess.CalledProcessError as e:
-#        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
-#    if not os.path.exists(mount_point):
-#        os.makedirs(mount_point)
-#    try:
-#        subprocess.check_output(["mount", "-o", "rw", image, mount_point], stderr=subprocess.STDOUT)
-#    except subprocess.CalledProcessError as e:
-#        print("==> Failed to mount system image... !  {}".format(str(e.output.decode())))
-#        sys.exit(1)
-
-#def resize_img(img_file, size):
-#    # Resize the system image
-#    print("==> Resizing system image....")
-#    try:
-#        subprocess.check_output(["e2fsck -y -f "+img_file], stderr=subprocess.STDOUT, shell=True)
-#        subprocess.check_output(["resize2fs '{}' {}".format(img_file, size)], stderr=subprocess.STDOUT, shell=True)
-#    except subprocess.CalledProcessError as e:
-#        print("==> Failed to resize image '{}' .. !  {}".format(img_file, str(e.output.decode())))
-#        p = input("==> You can exit and retry with sudo or force continue (May fail installation !), Continue ? [y/N]: ")
-#        if not p.lower() == "y":
-#            sys.exit(1)
-
-
 def install_gapps():
 
     dl_links = {
@@ -105,7 +77,8 @@ def install_gapps():
     dl_file_name = os.path.join(download_loc, "open_gapps.zip")
     act_md5 = dl_links[platform.machine()][1]
     loc_md5 = ""
-    sys_image_mount = "/tmp/waydroidimage"
+    sys_image_mount = "/var/lib/waydroid/overlay"
+    prop_file = "/var/lib/waydroid/waydroid_base.prop"
     extract_to = "/tmp/ogapps/extract"
     non_apks = [
         "defaultetc-common.tar.lz",
@@ -127,21 +100,6 @@ def install_gapps():
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
     print("==> Excepted hash: {}  | File hash: {}".format(act_md5, loc_md5))
-
-
-    system_img = os.path.join(get_image_dir(), "system.img")
-    if not os.path.isfile(system_img):
-        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
-        sys.exit(1)
-    print("==> Found system image: "+system_img)
-
-    img_size = int(os.path.getsize(system_img)/(1024*1024))
-
-    # Resize image to get some free space
-    resize_img(system_img, "{}M".format(img_size+500))
-
-    # Mount the system image
-    mount_image(system_img, sys_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
@@ -176,11 +134,6 @@ def install_gapps():
                 common_content_dirs = os.listdir(os.path.join(extract_to, "appunpack", app_name, "common"))
                 for ccdir in common_content_dirs:
                     shutil.copytree(os.path.join(extract_to, "appunpack", app_name, "common", ccdir), os.path.join(sys_image_mount, "system", ccdir), dirs_exist_ok=True)
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
     print("==> OpenGapps installation complete try re init /restarting waydroid")
     print("==> Please note, google apps wont be usable without device registration !, Use --get-android-id for registration instructions")
 
