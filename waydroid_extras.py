@@ -78,7 +78,6 @@ def install_gapps():
     act_md5 = dl_links[platform.machine()][1]
     loc_md5 = ""
     sys_image_mount = "/var/lib/waydroid/overlay"
-    prop_file = "/var/lib/waydroid/waydroid_base.prop"
     extract_to = "/tmp/ogapps/extract"
     non_apks = [
         "defaultetc-common.tar.lz",
@@ -353,7 +352,7 @@ def install_magisk():
     extract_to = "/tmp/magisk_unpack"
     act_md5 = "ee6dd05579776e7de3a6077087846e53"
     busybox_act_md5 = "2e43cc2e8f44b83f9029a6561ce5d8b9"
-    sys_image_mount = "/tmp/waydroidimage"
+    sys_image_mount = "/var/lib/waydroid/overlay_rw"
     loc_md5 = ""
     busybox_loc_md5 = ""
     magisk_init = """#!/system/bin/sh
@@ -395,21 +394,6 @@ service magisk /system/bin/init-magisk.sh
             bytes = f.read()
             busybox_loc_md5 = hashlib.md5(bytes).hexdigest()
 
-
-    system_img = os.path.join(get_image_dir(), "system.img")
-    if not os.path.isfile(system_img):
-        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
-        sys.exit(1)
-    print("==> Found system image: " + system_img)
-
-    img_size = int(os.path.getsize(system_img)/(1024*1024))
-
-    # Resize image to get some free space
-    resize_img(system_img, "{}M".format(img_size+50))
-
-    # Mount the system image
-    mount_image(system_img, sys_image_mount)
-
     # Download magisk
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
         if os.path.isfile(dl_file_name):
@@ -431,11 +415,16 @@ service magisk /system/bin/init-magisk.sh
 
     # Now setup and install magisk binary and app
     print("==> Installing magisk now ...")
+    if not os.path.isdir(os.path.join(sys_image_mount, "system", "bin")):
+        os.makedirs(os.path.join(sys_image_mount, "system", "bin"), exist_ok=True)
     with open(os.path.join(sys_image_mount, "system", "bin", "init-magisk.sh"), "w") as imf:
         imf.write(magisk_init)
     os.system("chmod 755 {}".format(os.path.join(sys_image_mount, "system", "bin", "init-magisk.sh")))
     arch_dir = "x86" if "x86" in platform.machine() else "arm"
     arch = "64" if "64" in platform.machine() else ""
+    #prep folders
+    if not os.path.isdir(os.path.join(sys_image_mount, "sbin")):
+        os.makedirs(os.path.join(sys_image_mount, "sbin"), exist_ok=True)
     shutil.copyfile(os.path.join(extract_to, arch_dir, "magiskinit{arch}".format(arch=arch)),
                     os.path.join(sys_image_mount, "sbin", "magiskinit"))
     shutil.copyfile(os.path.join(extract_to, arch_dir, "magiskinit{arch}".format(arch=arch)),
@@ -462,12 +451,16 @@ service magisk /system/bin/init-magisk.sh
     print("==>     magiskinit  ->  magiskpolicy")
 
     # Add entry to init.rc
-    print("==> Adding entry to init.rc")
-    with open(os.path.join(sys_image_mount, "init.rc"), "r") as initfile:
+    print("==> Adding entry to magsik.rc")
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "magisk.rc")
+    if not os.path.isfile(init_path):
+        os.makedirs(os.path.dirname(init_path), exist_ok=True)
+        f = open(init_path, "x")
+    with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
             initcontent=initcontent+init_rc_component
-    with open(os.path.join(sys_image_mount, "init.rc"), "w") as initfile:
+    with open(init_path, "w") as initfile:
         initfile.write(initcontent)
 
     # Install Magisk apk
@@ -476,12 +469,6 @@ service magisk /system/bin/init-magisk.sh
     shutil.copyfile(os.path.join(extract_to, "common", "magisk.apk"),
                     os.path.join(sys_image_mount, "system", "priv-app", "Magisk", "magisk.apk"))
 
-    # Unmount and exit
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
 
     print("==> Magisk was  installed ! Restart waydroid service to apply changes !")
 def main():
