@@ -202,18 +202,18 @@ def get_android_id():
 
 def install_ndk():
     sys_image_mount = "/tmp/waydroidimage"
-    ndk_zip_url = "https://github.com/newbit1/libndk_translation_Module/archive/c6077f3398172c64f55aad7aab0e55fad9110cf3.zip"
+    ndk_zip_url = "https://www.dropbox.com/s/eaf4dj3novwiccp/libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3.zip?dl=1"
     dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
-    act_md5 = "5e8e0cbde0e672fdc2b47f20a87472fd"
+    act_md5 = "4456fc1002dc78e544e8d9721bb24398"
     loc_md5 = ""
     apply_props = {
-        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi", #arm64-v8a,
+        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi,arm64-v8a",
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
-        "ro.product.cpu.abilist64": "x86_64", #,arm64-v8a",
+        "ro.product.cpu.abilist64": "x86_64,arm64-v8a",
         "ro.dalvik.vm.native.bridge": "libndk_translation.so",
         "ro.enable.native.bridge.exec": "1",
-        "ro.ndk_translation.version": "0.2.2",
+      #  "ro.ndk_translation.version": "0.2.2",
         "ro.dalvik.vm.isa.arm": "x86",
         "ro.dalvik.vm.isa.arm64": "x86_64"
         }
