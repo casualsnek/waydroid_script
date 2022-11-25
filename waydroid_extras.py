@@ -153,7 +153,9 @@ def get_android_id():
         print("==> Error getting id... '{}' ".format(str(e.output.decode())))
 
 def install_ndk():
-    sys_image_mount = "/tmp/waydroidimage"
+   # sys_image_mount = "/tmp/waydroidimage"
+    sys_image_mount = "/var/lib/waydroid/overlay"
+    prop_file = "/var/lib/waydroid/waydroid_base.prop"
     ndk_zip_url = "https://www.dropbox.com/s/eaf4dj3novwiccp/libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3.zip?dl=1"
     dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
@@ -184,20 +186,20 @@ on property:ro.enable.native.bridge.exec=1
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
 
-    system_img = os.path.join(get_image_dir(), "system.img")
-    if not os.path.isfile(system_img):
-        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
-        sys.exit(1)
-    print("==> Found system image: "+system_img)
+    #system_img = os.path.join(get_image_dir(), "system.img")
+    #if not os.path.isfile(system_img):
+    #    print("The system image path '{}' from waydroid config is not valid !".format(system_img))
+    #    sys.exit(1)
+    #print("==> Found system image: "+system_img)
 
     # Resize rootfs
-    img_size = int(os.path.getsize(system_img)/(1024*1024))
+    #img_size = int(os.path.getsize(system_img)/(1024*1024))
 
     # Resize image to get some free space
-    resize_img(system_img, "{}M".format(img_size+50))
+    #resize_img(system_img, "{}M".format(img_size+50))
 
     # Mount the system image
-    mount_image(system_img, sys_image_mount)
+    #mount_image(system_img, sys_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
@@ -220,9 +222,23 @@ on property:ro.enable.native.bridge.exec=1
     print("==> Copying library files ...")
     shutil.copytree(os.path.join(extract_to, "libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3", "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
 
+    ##add this
     # Add entries to build.prop
-    print("==> Adding arch in build.prop")
-    with open(os.path.join(sys_image_mount, "system", "build.prop"), "r") as propfile:
+    #print("==> Adding arch in build.prop")
+    #with open(os.path.join(sys_image_mount, "system", "build.prop"), "r") as propfile:
+    #    prop_content = propfile.read()
+    #    for key in apply_props:
+    #        if key not in prop_content:
+    #            prop_content = prop_content+"\n{key}={value}".format(key=key, value=apply_props[key])
+    #        else:
+    #            p = re.compile(r"^{key}=.*$".format(key=key), re.M)
+    #            prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
+    #with open(os.path.join(sys_image_mount, "system", "build.prop"), "w") as propfile:
+    #    propfile.write(prop_content)
+
+    # Add entries to build.prop
+    print("==> Adding arch in", prop_file)
+    with open(os.path.join(prop_file), "r") as propfile:
         prop_content = propfile.read()
         for key in apply_props:
             if key not in prop_content:
@@ -230,17 +246,31 @@ on property:ro.enable.native.bridge.exec=1
             else:
                 p = re.compile(r"^{key}=.*$".format(key=key), re.M)
                 prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
-    with open(os.path.join(sys_image_mount, "system", "build.prop"), "w") as propfile:
+    with open(os.path.join(prop_file), "w") as propfile:
         propfile.write(prop_content)
 
+    ###add This
+    ## Add entry to init.rc
+    #print("==> Adding entry to init.rc")
+    ## Check if init.rc is located in Android 11's path
+    #init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
+    #if not os.path.isfile(init_path):
+    #    # init.rc not found, assuming it's located in the root folder (Android 10 and older)
+    #    init_path = os.path.join(sys_image_mount, "init.rc")
+    #with open(init_path, "r") as initfile:
+    #    initcontent = initfile.read()
+    #    if init_rc_component not in initcontent:
+    #        initcontent=initcontent+init_rc_component
+    #with open(init_path, "w") as initfile:
+    #    initfile.write(initcontent)
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
     # Check if init.rc is located in Android 11's path
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "houdini.rc")
     if not os.path.isfile(init_path):
-        # init.rc not found, assuming it's located in the root folder (Android 10 and older)
-        init_path = os.path.join(sys_image_mount, "init.rc")
+        os.makedirs(os.path.dirname(init_path), exist_ok=True)
+        f = open(init_path, "x")
     with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
@@ -249,11 +279,11 @@ on property:ro.enable.native.bridge.exec=1
         initfile.write(initcontent)
 
     # Unmount and exit
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
+    ##print("==> Unmounting .. ")
+    ##try:
+    ##    subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
+    ##except subprocess.CalledProcessError as e:
+    ##    print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
 
     print("==> libndk translation installed ! Restart waydroid service to apply changes !")
 
