@@ -627,5 +627,5 @@ def main():
     elif args.widevine:
         install_widevine()
 
-if __name__ == "__main__": #sbin
+if __name__ == "__main__":
     main()
