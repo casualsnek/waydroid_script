@@ -31,7 +31,7 @@ def stop_waydroid():
 
 def download_file(url, f_name):
     md5 = ""
-    response = requests.get(url, stream=True,proxies={"http":"127.0.0.1:7890","https":"127.0.0.1:7890"})
+    response = requests.get(url, stream=True)
     total_size_in_bytes = int(response.headers.get('content-length', 0))
     block_size = 1024  # 1 Kibibyte
     progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
@@ -418,7 +418,7 @@ def install_magisk():
     # act_md5 = "d60706f6ac22dc7ee32ae297e5252ef7"
     sys_image_mount = "/tmp/waydroidimage"
     sbin_dir = os.path.join(sys_image_mount, "sbin")
-    loc_md5 = ""
+    # loc_md5 = ""
     init_rc_component = """
 on post-fs-data
     start logd
@@ -464,12 +464,7 @@ on property:init.svc.zygote=restarting
 on property:init.svc.zygote=stopped
     exec - root root -- /dev/waydroid-magisk/magisk --zygote-restart
     """
-
-    if os.path.isfile(dl_file_name):
-        with open(dl_file_name,"rb") as f:
-            bytes = f.read()
-            loc_md5 = hashlib.md5(bytes).hexdigest()
-
+    
     system_img = os.path.join(get_image_dir(), "system.img")
     if not os.path.isfile(system_img):
         print("The system image path '{}' from waydroid config is not valid !".format(system_img))
