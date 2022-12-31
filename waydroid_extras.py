@@ -31,7 +31,7 @@ def stop_waydroid():
 
 def download_file(url, f_name):
     md5 = ""
-    response = requests.get(url, stream=True)
+    response = requests.get(url, stream=True,proxies={"http":"127.0.0.1:7890","https":"127.0.0.1:7890"})
     total_size_in_bytes = int(response.headers.get('content-length', 0))
     block_size = 1024  # 1 Kibibyte
     progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
@@ -412,65 +412,63 @@ on property:ro.enable.native.bridge.exec=1
     print("==> libhoudini translation installed ! Restart waydroid service to apply changes !")
 
 def install_magisk():
-    dl_link = "https://huskydg.github.io/download/magisk/25.2-delta-5.apk"
-    busybox_dl_link = "https://github.com/Gnurou/busybox-android/raw/master/busybox-android"
-    busybox_dl_file_name = os.path.join(download_loc, "busybox-android")
+    dl_link = "https://huskydg.github.io/magisk-files/app-release.apk"
     dl_file_name = os.path.join(download_loc, "magisk.apk")
     extract_to = "/tmp/magisk_unpack"
-    act_md5 = "ea22b994ba110d0dba9f85748e264607"
-    busybox_act_md5 = "2e43cc2e8f44b83f9029a6561ce5d8b9"
+    # act_md5 = "d60706f6ac22dc7ee32ae297e5252ef7"
     sys_image_mount = "/tmp/waydroidimage"
-    magisk_sbin = os.path.join(sys_image_mount, "sbin")
+    sbin_dir = os.path.join(sys_image_mount, "sbin")
     loc_md5 = ""
-    busybox_loc_md5 = ""
     init_rc_component = """
 on post-fs-data
+    start logd
     mkdir /dev/waydroid-magisk
     mount tmpfs tmpfs /dev/waydroid-magisk mode=0755
     copy /sbin/magisk64 /dev/waydroid-magisk/magisk64
     chmod 0755 /dev/waydroid-magisk/magisk64
     symlink ./magisk64 /dev/waydroid-magisk/magisk
-    symlink ./magisk64 /dev/waydroid-magisk/su
-    symlink ./magisk64 /dev/waydroid-magisk/resetprop
+    exec - root root -- /dev/waydroid-magisk/magisk64 --install
     copy /sbin/magisk32 /dev/waydroid-magisk/magisk32
     chmod 0755 /dev/waydroid-magisk/magisk32
     copy /sbin/magiskinit /dev/waydroid-magisk/magiskinit
     chmod 0755 /dev/waydroid-magisk/magiskinit
-    symlink ./magiskinit /dev/waydroid-magisk/magiskpolicy
+    copy /sbin/magiskpolicy /dev/waydroid-magisk/magiskpolicy
+    chmod 0755 /dev/waydroid-magisk/magiskpolicy
+    exec - root root -- /dev/waydroid-magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
+    exec - root root -- /dev/waydroid-magisk/magiskinit -x manager  /dev/waydroid-magisk/stub.apk
+    write /dev/.magisk_livepatch 0
     mkdir /dev/waydroid-magisk/.magisk 700
     mkdir /dev/waydroid-magisk/.magisk/mirror 700
-    mkdir /dev/waydroid-magisk/.magisk/mirror/data 700
     mkdir /dev/waydroid-magisk/.magisk/block 700
-    mount none /data /dev/waydroid-magisk/.magisk/mirror/data bind rec
     start FAhW7H9G5sf
+    wait /dev/.magisk_unblock 40
 
 service FAhW7H9G5sf /dev/waydroid-magisk/magisk --post-fs-data
     user root
+    seclabel -
     oneshot
 
 service HLiFsR1HtIXVN6 /dev/waydroid-magisk/magisk --service
     class late_start
     user root
+    seclabel -
     oneshot
 
 on property:sys.boot_completed=1
-    start YqCTLTppv3ML
-    exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /sbin/magisk.apk; fi"
+    mkdir /data/adb/magisk 755
+    exec - root root -- /dev/waydroid-magisk/magisk --boot-complete
 
-service YqCTLTppv3ML /dev/waydroid-magisk/magisk --boot-complete
-    user root
-    oneshot
-    """ #sbin
+on property:init.svc.zygote=restarting
+    exec - root root -- /dev/waydroid-magisk/magisk --zygote-restart
+   
+on property:init.svc.zygote=stopped
+    exec - root root -- /dev/waydroid-magisk/magisk --zygote-restart
+    """
+
     if os.path.isfile(dl_file_name):
         with open(dl_file_name,"rb") as f:
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
-
-    if os.path.isfile(busybox_dl_file_name):
-        with open(busybox_dl_file_name,"rb") as f:
-            bytes = f.read()
-            busybox_loc_md5 = hashlib.md5(bytes).hexdigest()
-
 
     system_img = os.path.join(get_image_dir(), "system.img")
     if not os.path.isfile(system_img):
@@ -487,26 +485,19 @@ service YqCTLTppv3ML /dev/waydroid-magisk/magisk --boot-complete
     mount_image(system_img, sys_image_mount)
 
     # Download magisk
-    while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
+    while not os.path.isfile(dl_file_name):
         if os.path.isfile(dl_file_name):
             os.remove(dl_file_name)
         print("==> Magisk zip not downloaded or hash mismatches, downloading now .....")
         loc_md5 = download_file(dl_link, dl_file_name)
-
-    # Download busybox android binary
-    while not os.path.isfile(busybox_dl_file_name) or busybox_loc_md5 != busybox_act_md5:
-        if os.path.isfile(busybox_dl_file_name):
-            os.remove(busybox_dl_file_name)
-        print("==> BusyBox binary not downloaded or hash mismatches, downloading now .....")
-        busybox_loc_md5 = download_file(busybox_dl_link, busybox_dl_file_name)
 
     # Extract magisk files
     print("==> Extracting archive...")
     with zipfile.ZipFile(dl_file_name) as z:
         z.extractall(extract_to)
 
-    if not os.path.exists(magisk_sbin):
-        os.makedirs(magisk_sbin)
+    if not os.path.exists(sbin_dir):
+        os.makedirs(sbin_dir, exist_ok=True)
 
     # Now setup and install magisk binary and app
     print("==> Installing magisk now ...")
@@ -519,9 +510,8 @@ service YqCTLTppv3ML /dev/waydroid-magisk/magisk --boot-complete
         for filename in filenames:
             o_path = os.path.join(lib_dir, filename)  
             filename = re.search('lib(.*)\.so', filename)
-            n_path = os.path.join(magisk_sbin, filename.group(1))
+            n_path = os.path.join(sbin_dir, filename.group(1))
             shutil.copyfile(o_path, n_path)
-    shutil.copyfile(dl_file_name, os.path.join(magisk_sbin,"magisk.apk") )
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
