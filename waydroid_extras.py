@@ -10,6 +10,7 @@ import platform
 from tqdm import tqdm
 import requests
 import re
+import gzip
 
 download_loc = ""
 if os.environ.get("XDG_CACHE_HOME", None) is None:
@@ -415,54 +416,40 @@ def install_magisk():
     dl_link = "https://huskydg.github.io/magisk-files/app-release.apk"
     dl_file_name = os.path.join(download_loc, "magisk.apk")
     extract_to = "/tmp/magisk_unpack"
-    # act_md5 = "d60706f6ac22dc7ee32ae297e5252ef7"
     sys_image_mount = "/tmp/waydroidimage"
-    sbin_dir = os.path.join(sys_image_mount, "sbin")
-    # loc_md5 = ""
+    magisk_dir = os.path.join(sys_image_mount, "system", "etc", "init", "magisk")
     init_rc_component = """
 on post-fs-data
     start logd
-    mkdir /dev/waydroid-magisk
-    mount tmpfs tmpfs /dev/waydroid-magisk mode=0755
-    copy /sbin/magisk64 /dev/waydroid-magisk/magisk64
-    chmod 0755 /dev/waydroid-magisk/magisk64
-    symlink ./magisk64 /dev/waydroid-magisk/magisk
-    exec - root root -- /dev/waydroid-magisk/magisk64 --install
-    copy /sbin/magisk32 /dev/waydroid-magisk/magisk32
-    chmod 0755 /dev/waydroid-magisk/magisk32
-    copy /sbin/magiskinit /dev/waydroid-magisk/magiskinit
-    chmod 0755 /dev/waydroid-magisk/magiskinit
-    copy /sbin/magiskpolicy /dev/waydroid-magisk/magiskpolicy
-    chmod 0755 /dev/waydroid-magisk/magiskpolicy
-    exec - root root -- /dev/waydroid-magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
-    exec - root root -- /dev/waydroid-magisk/magiskinit -x manager  /dev/waydroid-magisk/stub.apk
-    write /dev/.magisk_livepatch 0
-    mkdir /dev/waydroid-magisk/.magisk 700
-    mkdir /dev/waydroid-magisk/.magisk/mirror 700
-    mkdir /dev/waydroid-magisk/.magisk/block 700
+    exec - root root -- /system/etc/init/magisk/magisk64 --setup-sbin /system/etc/init/magisk
+    exec - root root -- /system/etc/init/magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
+    mkdir /sbin/.magisk 700
+    mkdir /sbin/.magisk/mirror 700
+    mkdir /sbin/.magisk/block 700
+    copy /system/etc/init/magisk/config /sbin/.magisk/config
+    rm /dev/.magisk_unblock
     start FAhW7H9G5sf
     wait /dev/.magisk_unblock 40
-
-service FAhW7H9G5sf /dev/waydroid-magisk/magisk --post-fs-data
+    rm /dev/.magisk_unblock
+service FAhW7H9G5sf /sbin/magisk --post-fs-data
     user root
     seclabel -
     oneshot
-
-service HLiFsR1HtIXVN6 /dev/waydroid-magisk/magisk --service
+service HLiFsR1HtIXVN6 /sbin/magisk --service
     class late_start
     user root
     seclabel -
     oneshot
-
 on property:sys.boot_completed=1
     mkdir /data/adb/magisk 755
-    exec - root root -- /dev/waydroid-magisk/magisk --boot-complete
-
+    exec - root root -- /sbin/magisk --boot-complete
+    exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /system/etc/init/magisk/magisk.apk; fi"
+   
 on property:init.svc.zygote=restarting
-    exec - root root -- /dev/waydroid-magisk/magisk --zygote-restart
+    exec - root root -- /sbin/magisk --zygote-restart
    
 on property:init.svc.zygote=stopped
-    exec - root root -- /dev/waydroid-magisk/magisk --zygote-restart
+    exec - root root -- /sbin/magisk --zygote-restart
     """
     
     system_img = os.path.join(get_image_dir(), "system.img")
@@ -480,20 +467,22 @@ on property:init.svc.zygote=stopped
     mount_image(system_img, sys_image_mount)
 
     # Download magisk
-    while not os.path.isfile(dl_file_name):
-        if os.path.isfile(dl_file_name):
-            os.remove(dl_file_name)
-        print("==> Magisk zip not downloaded or hash mismatches, downloading now .....")
-        loc_md5 = download_file(dl_link, dl_file_name)
+    if os.path.isfile(dl_file_name):
+        os.remove(dl_file_name)
+    print("==> Downloading latest Magisk-Delta now .....")
+    download_file(dl_link, dl_file_name)
 
     # Extract magisk files
     print("==> Extracting archive...")
     with zipfile.ZipFile(dl_file_name) as z:
         z.extractall(extract_to)
 
-    if not os.path.exists(sbin_dir):
-        os.makedirs(sbin_dir, exist_ok=True)
+    if not os.path.exists(magisk_dir):
+        os.makedirs(magisk_dir, exist_ok=True)
 
+    if not os.path.exists(os.path.join(sys_image_mount, "sbin")):
+        os.makedirs(os.path.join(sys_image_mount, "sbin"), exist_ok=True)
+    
     # Now setup and install magisk binary and app
     print("==> Installing magisk now ...")
 
@@ -505,28 +494,37 @@ on property:init.svc.zygote=stopped
         for filename in filenames:
             o_path = os.path.join(lib_dir, filename)  
             filename = re.search('lib(.*)\.so', filename)
-            n_path = os.path.join(sbin_dir, filename.group(1))
+            n_path = os.path.join(magisk_dir, filename.group(1))
             shutil.copyfile(o_path, n_path)
+    shutil.copyfile(dl_file_name, os.path.join(magisk_dir,"magisk.apk") )
+
+    # Mark magisk files as executable
+    print("==> Chmodding...")
+    try: os.system("chmod +x "+ os.path.join(magisk_dir, "magisk*"))
+    except: print("==> Couldn't mark files as executable!")
 
     # Add entry to init.rc
+    # Updating Magisk from Magisk manager will modify bootanim.rc, 
+    # So it is necessary to backup the original bootanim.rc.
     print("==> Adding entry to init.rc")
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
-    if not os.path.isfile(init_path):
-        # init.rc not found, assuming it's located in the root folder (Android 10 and older)
-        init_path = os.path.join(sys_image_mount, "init.rc")
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "bootanim.rc")
+    gz_filename = os.path.join(init_path)+".gz"
+    with open(init_path,'rb') as f_ungz:
+        with gzip.open(gz_filename,'wb') as f_gz:
+            f_gz.writelines(f_ungz)
     with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
             initcontent=initcontent+init_rc_component
     with open(init_path, "w") as initfile:
         initfile.write(initcontent)
+
     # Unmount and exit
     print("==> Unmounting .. ")
     try:
         subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
-
 
     print("==> Magisk was  installed ! Restart waydroid service to apply changes !")
     
