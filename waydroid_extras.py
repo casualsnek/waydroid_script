@@ -410,7 +410,8 @@ service HLiFsR1HtIXVN6 /sbin/magisk --service
 on property:sys.boot_completed=1
     mkdir /data/adb/magisk 755
     exec - root root -- /sbin/magisk --boot-complete
-    exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /system/etc/init/magisk/magisk.apk; fi"
+    exec -- /system/bin/sh -c "if [ -e /data/data/io.github.huskydg.magisk ] ; then pm uninstall io.github.huskydg.magisk; fi"
+    exec -- /system/bin/sh -c "pm install /system/etc/init/magisk/magisk.apk"
    
 on property:init.svc.zygote=restarting
     exec - root root -- /sbin/magisk --zygote-restart
