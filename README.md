@@ -16,7 +16,7 @@ Script to add gapps and other stuff to waydroid !
 	sudo zypper install lzip sqlite
 Then run:
 	
-    git clone https://github.com/casualsnek/waydroid_script
+    git clone https://github.com/LegacyGamerHD/waydroid_script
     cd waydroid_script
     sudo python3 -m pip install -r requirements.txt
     sudo python3 waydroid_extras.py [-i/-g/-n/-h]
@@ -49,7 +49,7 @@ Magisk will be installed on next boot !
 
 Zygisk and modules like LSPosed should work now.
 
-Please use `Direct Install into system partition` to update Magisk in Magisk manager.
+~~Please use Direct Install into system partition to update Magisk in Magisk manager.~~ (Temporarily does not work when using the overlay file system)
 
 ## Install libndk arm translation 
 

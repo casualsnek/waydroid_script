@@ -63,34 +63,6 @@ def get_image_dir():
         sys.exit(1)
     return cfg["waydroid"]["images_path"]
 
-def mount_image(image, mount_point):
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["losetup", "-D"], stderr=subprocess.STDOUT)
-        subprocess.check_output(["umount", mount_point], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
-    if not os.path.exists(mount_point):
-        os.makedirs(mount_point)
-    try:
-        subprocess.check_output(["mount", "-o", "rw", image, mount_point], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Failed to mount system image... !  {}".format(str(e.output.decode())))
-        sys.exit(1)
-
-def resize_img(img_file, size):
-    # Resize the system image
-    print("==> Resizing system image....")
-    try:
-        subprocess.check_output(["e2fsck -y -f "+img_file], stderr=subprocess.STDOUT, shell=True)
-        subprocess.check_output(["resize2fs '{}' {}".format(img_file, size)], stderr=subprocess.STDOUT, shell=True)
-    except subprocess.CalledProcessError as e:
-        print("==> Failed to resize image '{}' .. !  {}".format(img_file, str(e.output.decode())))
-        p = input("==> You can exit and retry with sudo or force continue (May fail installation !), Continue ? [y/N]: ")
-        if not p.lower() == "y":
-            sys.exit(1)
-
-
 def install_gapps():
 
     dl_links = {
@@ -106,7 +78,7 @@ def install_gapps():
     dl_file_name = os.path.join(download_loc, "open_gapps.zip")
     act_md5 = dl_links[platform.machine()][1]
     loc_md5 = ""
-    sys_image_mount = "/tmp/waydroidimage"
+    sys_image_mount = "/var/lib/waydroid/overlay"
     extract_to = "/tmp/ogapps/extract"
     non_apks = [
         "defaultetc-common.tar.lz",
@@ -128,21 +100,6 @@ def install_gapps():
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
     print("==> Excepted hash: {}  | File hash: {}".format(act_md5, loc_md5))
-
-
-    system_img = os.path.join(get_image_dir(), "system.img")
-    if not os.path.isfile(system_img):
-        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
-        sys.exit(1)
-    print("==> Found system image: "+system_img)
-
-    img_size = int(os.path.getsize(system_img)/(1024*1024))
-
-    # Resize image to get some free space
-    resize_img(system_img, "{}M".format(img_size+500))
-
-    # Mount the system image
-    mount_image(system_img, sys_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
@@ -177,11 +134,6 @@ def install_gapps():
                 common_content_dirs = os.listdir(os.path.join(extract_to, "appunpack", app_name, "common"))
                 for ccdir in common_content_dirs:
                     shutil.copytree(os.path.join(extract_to, "appunpack", app_name, "common", ccdir), os.path.join(sys_image_mount, "system", ccdir), dirs_exist_ok=True)
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
     print("==> OpenGapps installation complete try re init /restarting waydroid")
     print("==> Please note, google apps wont be usable without device registration !, Use --get-android-id for registration instructions")
 
@@ -202,7 +154,9 @@ def get_android_id():
         print("==> Error getting id... '{}' ".format(str(e.output.decode())))
 
 def install_ndk():
-    sys_image_mount = "/tmp/waydroidimage"
+   # sys_image_mount = "/tmp/waydroidimage"
+    sys_image_mount = "/var/lib/waydroid/overlay"
+    prop_file = "/var/lib/waydroid/waydroid_base.prop"
     ndk_zip_url = "https://www.dropbox.com/s/eaf4dj3novwiccp/libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3.zip?dl=1"
     dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
@@ -233,20 +187,20 @@ on property:ro.enable.native.bridge.exec=1
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
 
-    system_img = os.path.join(get_image_dir(), "system.img")
-    if not os.path.isfile(system_img):
-        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
-        sys.exit(1)
-    print("==> Found system image: "+system_img)
+    #system_img = os.path.join(get_image_dir(), "system.img")
+    #if not os.path.isfile(system_img):
+    #    print("The system image path '{}' from waydroid config is not valid !".format(system_img))
+    #    sys.exit(1)
+    #print("==> Found system image: "+system_img)
 
     # Resize rootfs
-    img_size = int(os.path.getsize(system_img)/(1024*1024))
+    #img_size = int(os.path.getsize(system_img)/(1024*1024))
 
     # Resize image to get some free space
-    resize_img(system_img, "{}M".format(img_size+50))
+    #resize_img(system_img, "{}M".format(img_size+50))
 
     # Mount the system image
-    mount_image(system_img, sys_image_mount)
+    #mount_image(system_img, sys_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
@@ -269,9 +223,23 @@ on property:ro.enable.native.bridge.exec=1
     print("==> Copying library files ...")
     shutil.copytree(os.path.join(extract_to, "libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3", "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
 
+    ##add this
     # Add entries to build.prop
-    print("==> Adding arch in build.prop")
-    with open(os.path.join(sys_image_mount, "system", "build.prop"), "r") as propfile:
+    #print("==> Adding arch in build.prop")
+    #with open(os.path.join(sys_image_mount, "system", "build.prop"), "r") as propfile:
+    #    prop_content = propfile.read()
+    #    for key in apply_props:
+    #        if key not in prop_content:
+    #            prop_content = prop_content+"\n{key}={value}".format(key=key, value=apply_props[key])
+    #        else:
+    #            p = re.compile(r"^{key}=.*$".format(key=key), re.M)
+    #            prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
+    #with open(os.path.join(sys_image_mount, "system", "build.prop"), "w") as propfile:
+    #    propfile.write(prop_content)
+
+    # Add entries to build.prop
+    print("==> Adding arch in", prop_file)
+    with open(os.path.join(prop_file), "r") as propfile:
         prop_content = propfile.read()
         for key in apply_props:
             if key not in prop_content:
@@ -279,17 +247,31 @@ on property:ro.enable.native.bridge.exec=1
             else:
                 p = re.compile(r"^{key}=.*$".format(key=key), re.M)
                 prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
-    with open(os.path.join(sys_image_mount, "system", "build.prop"), "w") as propfile:
+    with open(os.path.join(prop_file), "w") as propfile:
         propfile.write(prop_content)
 
+    ###add This
+    ## Add entry to init.rc
+    #print("==> Adding entry to init.rc")
+    ## Check if init.rc is located in Android 11's path
+    #init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
+    #if not os.path.isfile(init_path):
+    #    # init.rc not found, assuming it's located in the root folder (Android 10 and older)
+    #    init_path = os.path.join(sys_image_mount, "init.rc")
+    #with open(init_path, "r") as initfile:
+    #    initcontent = initfile.read()
+    #    if init_rc_component not in initcontent:
+    #        initcontent=initcontent+init_rc_component
+    #with open(init_path, "w") as initfile:
+    #    initfile.write(initcontent)
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
     # Check if init.rc is located in Android 11's path
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "houdini.rc")
     if not os.path.isfile(init_path):
-        # init.rc not found, assuming it's located in the root folder (Android 10 and older)
-        init_path = os.path.join(sys_image_mount, "init.rc")
+        os.makedirs(os.path.dirname(init_path), exist_ok=True)
+        f = open(init_path, "x")
     with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
@@ -298,17 +280,18 @@ on property:ro.enable.native.bridge.exec=1
         initfile.write(initcontent)
 
     # Unmount and exit
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
+    ##print("==> Unmounting .. ")
+    ##try:
+    ##    subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
+    ##except subprocess.CalledProcessError as e:
+    ##    print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
 
     print("==> libndk translation installed ! Restart waydroid service to apply changes !")
 
 
 def install_houdini():
-    sys_image_mount = "/tmp/waydroidimage"
+    sys_image_mount = "/var/lib/waydroid/overlay"
+    prop_file = "/var/lib/waydroid/waydroid_base.prop"
     houdini_zip_url = "https://www.dropbox.com/s/v7g0fluc7e8tod8/libhoudini.zip?dl=1"
     dl_file_name = os.path.join(download_loc, "libhoudini.zip")
     extract_to = "/tmp/houdiniunpack" #All catalog files will be marked as executable!
@@ -340,21 +323,6 @@ on property:ro.enable.native.bridge.exec=1
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
 
-    system_img = os.path.join(get_image_dir(), "system.img")
-    if not os.path.isfile(system_img):
-        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
-        sys.exit(1)
-    print("==> Found system image: "+system_img)
-
-    img_size = int(os.path.getsize(system_img)/(1024*1024))
-
-    # Resize image to get some free space
-    resize_img(system_img, "{}M".format(img_size+300))
-
-
-    # Mount the system image
-    mount_image(system_img, sys_image_mount)
-
     # Download the file if hash mismatches or if file does not exist
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
         if os.path.isfile(dl_file_name):
@@ -377,8 +345,8 @@ on property:ro.enable.native.bridge.exec=1
     shutil.copytree(os.path.join(extract_to, "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
 
     # Add entries to build.prop
-    print("==> Adding arch in build.prop")
-    with open(os.path.join(sys_image_mount, "system", "build.prop"), "r") as propfile:
+    print("==> Adding arch in", prop_file)
+    with open(os.path.join(prop_file), "r") as propfile:
         prop_content = propfile.read()
         for key in apply_props:
             if key not in prop_content:
@@ -386,16 +354,16 @@ on property:ro.enable.native.bridge.exec=1
             else:
                 p = re.compile(r"^{key}=.*$".format(key=key), re.M)
                 prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
-    with open(os.path.join(sys_image_mount, "system", "build.prop"), "w") as propfile:
+    with open(os.path.join(prop_file), "w") as propfile:
         propfile.write(prop_content)
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
     # Check if init.rc is located in Android 11's path
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "houdini.rc")
     if not os.path.isfile(init_path):
-        # init.rc not found, assuming it's located in the root folder (Android 10 and older)
-        init_path = os.path.join(sys_image_mount, "init.rc")
+        os.makedirs(os.path.dirname(init_path), exist_ok=True)
+        f = open(init_path, "x")
     with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
@@ -403,12 +371,6 @@ on property:ro.enable.native.bridge.exec=1
     with open(init_path, "w") as initfile:
         initfile.write(initcontent)
 
-    # Unmount and exit
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
 
     print("==> libhoudini translation installed ! Restart waydroid service to apply changes !")
 
@@ -416,8 +378,10 @@ def install_magisk():
     dl_link = "https://huskydg.github.io/magisk-files/app-release.apk"
     dl_file_name = os.path.join(download_loc, "magisk.apk")
     extract_to = "/tmp/magisk_unpack"
-    sys_image_mount = "/tmp/waydroidimage"
-    magisk_dir = os.path.join(sys_image_mount, "system", "etc", "init", "magisk")
+    # sys_overlay_dir = "/var/lib/waydroid/overlay_rw/system"
+    sys_overlay_dir = "/var/lib/waydroid/overlay"
+    merge_dir = "/var/lib/waydroid/rootfs"
+    magisk_dir = os.path.join(sys_overlay_dir, "system", "etc", "init", "magisk")
     arch_dir = "x86" if "x86" in platform.machine() else "arm"
     arch = "_64" if "64" in platform.machine() else ""
     init_rc_component = """
@@ -453,20 +417,10 @@ on property:init.svc.zygote=restarting
 on property:init.svc.zygote=stopped
     exec - root root -- /sbin/magisk --zygote-restart
     """.format(arch=32 if arch=="" else 64)
-    
-    system_img = os.path.join(get_image_dir(), "system.img")
-    if not os.path.isfile(system_img):
-        print("The system image path '{}' from waydroid config is not valid !".format(system_img))
+
+    if "RUNNING" not in subprocess.check_output ("waydroid status | grep Container | awk -F'[:\t]' '{print $3}'", shell=True).decode():
+        print("Please make sure waydroid container is running!")
         sys.exit(1)
-    print("==> Found system image: " + system_img)
-
-    img_size = int(os.path.getsize(system_img)/(1024*1024))
-
-    # Resize image to get some free space
-    resize_img(system_img, "{}M".format(img_size+50))
-
-    # Mount the system image
-    mount_image(system_img, sys_image_mount)
 
     # Download magisk
     if os.path.isfile(dl_file_name):
@@ -482,8 +436,8 @@ on property:init.svc.zygote=stopped
     if not os.path.exists(magisk_dir):
         os.makedirs(magisk_dir, exist_ok=True)
 
-    if not os.path.exists(os.path.join(sys_image_mount, "sbin")):
-        os.makedirs(os.path.join(sys_image_mount, "sbin"), exist_ok=True)
+    if not os.path.exists(os.path.join(sys_overlay_dir, "sbin")):
+        os.makedirs(os.path.join(sys_overlay_dir, "sbin"), exist_ok=True)
     
     # Now setup and install magisk binary and app
     print("==> Installing magisk now ...")
@@ -503,33 +457,30 @@ on property:init.svc.zygote=stopped
     try: os.system("chmod +x "+ os.path.join(magisk_dir, "magisk*"))
     except: print("==> Couldn't mark files as executable!")
 
-    # Add entry to init.rc
     # Updating Magisk from Magisk manager will modify bootanim.rc, 
     # So it is necessary to backup the original bootanim.rc.
-    print("==> Adding entry to init.rc")
-    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "bootanim.rc")
-    gz_filename = os.path.join(init_path)+".gz"
-    with open(init_path,'rb') as f_ungz:
+    print("==> Adding entry to bootanim.rc")
+
+    bootanim = os.path.join(sys_overlay_dir, "system", "etc", "init", "bootanim.rc")
+    original_bootanim = os.path.join(merge_dir, "system", "etc", "init", "bootanim.rc")
+
+    if not os.path.isfile(bootanim):
+        os.makedirs(os.path.dirname(bootanim), exist_ok=True)  
+    gz_filename = bootanim+".gz"
+    with open(original_bootanim,'rb') as f_ungz:
         with gzip.open(gz_filename,'wb') as f_gz:
             f_gz.writelines(f_ungz)
-    with open(init_path, "r") as initfile:
+    with open(original_bootanim, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
             initcontent=initcontent+init_rc_component
-    with open(init_path, "w") as initfile:
+    with open(bootanim, "w") as initfile:
         initfile.write(initcontent)
 
-    # Unmount and exit
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
-
     print("==> Magisk was  installed ! Restart waydroid service to apply changes !")
-    
+     
 def install_widevine():
-    vendor_image_mount = "/tmp/waydroidvendor"
+    vendor_image_mount = "/var/lib/waydroid/overlay/vendor"
     widevine_zip_url = "https://codeload.github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/zip/refs/heads/chromeos_hatch"
     dl_file_name = os.path.join(download_loc, "widevine.zip")
     extract_to = "/tmp/widevineunpack" #All catalog files will be marked as executable!
@@ -540,19 +491,6 @@ def install_widevine():
         with open(dl_file_name,"rb") as f:
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
-    vendor_img = os.path.join(get_image_dir(), "vendor.img")
-    if not os.path.isfile(vendor_img):
-        print("The vendor image path '{}' from waydroid config is not valid !".format(vendor_img))
-        sys.exit(1)
-    print("==> Found vendor image: "+vendor_img)
-
-    img_size = int(os.path.getsize(vendor_img)/(1024*1024))
-
-    # Resize image to get some free space
-    resize_img(vendor_img, "{}M".format(img_size+50))
-
-    # Mount the system image
-    mount_image(vendor_img, vendor_image_mount)
 
     # Download the file if hash mismatches or if file does not exist
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
@@ -575,12 +513,6 @@ def install_widevine():
     print("==> Copying library files ...")
     shutil.copytree(os.path.join(extract_to, "vendor_google_proprietary_widevine-prebuilt-chromeos_hatch", "prebuilts"), vendor_image_mount, dirs_exist_ok=True)
     
-    print("==> Unmounting .. ")
-    try:
-        subprocess.check_output(["umount", vendor_image_mount], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
-
     print("==> Widevine installed ! Restart waydroid service to apply changes !")
     
 def main():
