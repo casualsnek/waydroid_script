@@ -45,8 +45,11 @@ Open terminal and switch to directory where "waydroid_extras.py" is located then
 Then restart waydroid service with command below :
 
     sudo systemctl start waydroid-container.service
-Magisk will be installed on next boot !
-Note That this is bootless installation and modules don't work as of now !
+Magisk will be installed on next boot ! 
+
+Zygisk and modules like LSPosed should work now.
+
+Please use `Direct Install into system partition` to update Magisk in Magisk manager.
 
 ## Install libndk arm translation 
 
@@ -67,7 +70,7 @@ Open terminal and switch to directory where "waydroid_extras.py" is located then
 Then restart waydroid service with command below :
 
     sudo systemctl start waydroid-container.service
- 
+
 ## Get Android ID for device registration
 
 You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for google apps:
