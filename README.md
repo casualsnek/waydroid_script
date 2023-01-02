@@ -70,6 +70,14 @@ Open terminal and switch to directory where "waydroid_extras.py" is located then
 Then restart waydroid service with command below :
 
     sudo systemctl start waydroid-container.service
+    
+## Integrate Widevine DRM (L3)
+
+    sudo python3 waydroid_extras.py -w
+Then restart waydroid service with command below :
+
+    sudo systemctl start waydroid-container.service
+ 
 
 ## Get Android ID for device registration
 
