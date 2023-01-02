@@ -382,6 +382,7 @@ def install_magisk():
     sys_overlay_dir = "/var/lib/waydroid/overlay"
     merge_dir = "/var/lib/waydroid/rootfs"
     magisk_dir = os.path.join(sys_overlay_dir, "system", "etc", "init", "magisk")
+    sys_overlay_rw = "/var/lib/waydroid/overlay_rw"
     arch_dir = "x86" if "x86" in platform.machine() else "arm"
     arch = "_64" if "64" in platform.machine() else ""
     init_rc_component = """
@@ -422,6 +423,22 @@ on property:init.svc.zygote=stopped
         print("Please make sure waydroid container is running!")
         sys.exit(1)
 
+    # Clear overlay_rw
+    print("==> Deleting residual files...")
+    old_bootanim_rc = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "bootanim.rc")
+    old_bootanim_rc_gz = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "bootanim.rc.gz")
+    old_magisk = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "magisk")
+
+    if os.path.exists(old_bootanim_rc):
+        os.remove(old_bootanim_rc)
+    if os.path.exists(old_bootanim_rc_gz):
+        os.remove(old_bootanim_rc_gz)
+    if os.path.exists(old_magisk):
+        if os.path.isdir(old_magisk):
+            shutil.rmtree(old_magisk)
+        else:
+            os.remove(old_magisk)
+
     # Download magisk
     if os.path.isfile(dl_file_name):
         os.remove(dl_file_name)
@@ -441,7 +458,6 @@ on property:init.svc.zygote=stopped
     
     # Now setup and install magisk binary and app
     print("==> Installing magisk now ...")
-
     
     lib_dir = os.path.join(extract_to, "lib", "{arch_dir}{arch}".format(arch_dir=arch_dir, arch=arch))
     for parent, dirnames, filenames in os.walk(lib_dir):
