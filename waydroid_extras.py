@@ -10,13 +10,14 @@ import platform
 from tqdm import tqdm
 import requests
 import re
+import gzip
 
 download_loc = ""
 if os.environ.get("XDG_CACHE_HOME", None) is None:
     download_loc = os.path.join('/', "home", os.environ.get("SUDO_USER", os.environ["USER"]), ".cache", "waydroid_script", "downloads")
 else:
     download_loc = os.path.join(os.environ["XDG_CACHE_HOME"], "waydroid_script", "downloads")
-
+    
 print(download_loc)
 
 if not os.path.exists(download_loc):
@@ -58,7 +59,7 @@ def get_image_dir():
 
     cfg.read(cfg_file)
     if "waydroid" not in cfg:
-        print("==> Required entry in config was not found, Cannot continue !s")
+        print("==> Required entry in config was not found, Cannot continue !s") #magisk
         sys.exit(1)
     return cfg["waydroid"]["images_path"]
 
@@ -202,18 +203,18 @@ def get_android_id():
 
 def install_ndk():
     sys_image_mount = "/tmp/waydroidimage"
-    ndk_zip_url = "https://github.com/newbit1/libndk_translation_Module/archive/c6077f3398172c64f55aad7aab0e55fad9110cf3.zip"
+    ndk_zip_url = "https://www.dropbox.com/s/eaf4dj3novwiccp/libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3.zip?dl=1"
     dl_file_name = os.path.join(download_loc, "libndktranslation.zip")
     extract_to = "/tmp/libndkunpack" #All catalog files will be marked as executable!
-    act_md5 = "5e8e0cbde0e672fdc2b47f20a87472fd"
+    act_md5 = "4456fc1002dc78e544e8d9721bb24398"
     loc_md5 = ""
     apply_props = {
-        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi", #arm64-v8a,
+        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi,arm64-v8a",
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
-        "ro.product.cpu.abilist64": "x86_64", #,arm64-v8a",
+        "ro.product.cpu.abilist64": "x86_64,arm64-v8a",
         "ro.dalvik.vm.native.bridge": "libndk_translation.so",
         "ro.enable.native.bridge.exec": "1",
-        "ro.ndk_translation.version": "0.2.2",
+      #  "ro.ndk_translation.version": "0.2.2",
         "ro.dalvik.vm.isa.arm": "x86",
         "ro.dalvik.vm.isa.arm64": "x86_64"
         }
@@ -308,10 +309,10 @@ on property:ro.enable.native.bridge.exec=1
 
 def install_houdini():
     sys_image_mount = "/tmp/waydroidimage"
-    houdini_zip_url = "https://raw.githubusercontent.com/casualsnek/miscpackages/main/libhoudini_a11.zip"
+    houdini_zip_url = "https://www.dropbox.com/s/v7g0fluc7e8tod8/libhoudini.zip?dl=1"
     dl_file_name = os.path.join(download_loc, "libhoudini.zip")
     extract_to = "/tmp/houdiniunpack" #All catalog files will be marked as executable!
-    act_md5 = "c9a80831641de8fd44ccf93a0ad8b585"
+    act_md5 = "838097117cec7762e958d7cbc209415e"
     loc_md5 = ""
 
     apply_props = {
@@ -411,58 +412,48 @@ on property:ro.enable.native.bridge.exec=1
 
     print("==> libhoudini translation installed ! Restart waydroid service to apply changes !")
 
-
 def install_magisk():
-    dl_link = "https://github.com/topjohnwu/Magisk/releases/download/v20.4/Magisk-v20.4.zip"
-    busybox_dl_link = "https://github.com/Gnurou/busybox-android/raw/master/busybox-android"
-    busybox_dl_file_name = os.path.join(download_loc, "busybox-android")
-    dl_file_name = os.path.join(download_loc, "magisk.zip")
+    dl_link = "https://huskydg.github.io/magisk-files/app-release.apk"
+    dl_file_name = os.path.join(download_loc, "magisk.apk")
     extract_to = "/tmp/magisk_unpack"
-    act_md5 = "9503fc692e03d60cb8897ff2753c193f"
-    busybox_act_md5 = "2e43cc2e8f44b83f9029a6561ce5d8b9"
     sys_image_mount = "/tmp/waydroidimage"
-    loc_md5 = ""
-    busybox_loc_md5 = ""
-    magisk_init = """#!/system/bin/sh
-mount -o remount,rw /
-rm /sbin/magisk /sbin/magiskpolicy /sbin/magiskinit
-cp /magiskinit /sbin/magiskinit
-ln -s /sbin/magiskinit /sbin/magisk
-ln -s /sbin/magiskinit /sbin/magiskpolicy
-mkdir -p /data/adb/magisk
-cp /busybox /data/adb/magisk/busybox
-cp /util_functions.sh /data/adb/magisk/util_functions.sh
-cp /boot_patch.sh /data/adb/magisk/boot_patch.sh
-cp /addon.d.sh /data/adb/magisk/addon.d.sh
-magisk -c >&2
-ln -sf /data /sbin/.magisk/mirror/data
-ln -sf /vendor /sbin/.magisk/mirror/vendor
-magisk --post-fs-data
-sleep 1
-magisk --service
-magisk --boot-complete
-mount -o remount,ro /
-    """
-    init_rc_component = """on property:dev.bootcomplete=1
-    start magisk
-
-service magisk /system/bin/init-magisk.sh
-    class main
+    magisk_dir = os.path.join(sys_image_mount, "system", "etc", "init", "magisk")
+    arch_dir = "x86" if "x86" in platform.machine() else "arm"
+    arch = "_64" if "64" in platform.machine() else ""
+    init_rc_component = """
+on post-fs-data
+    start logd
+    exec - root root -- /system/etc/init/magisk/magisk{arch} --setup-sbin /system/etc/init/magisk
+    exec - root root -- /system/etc/init/magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
+    mkdir /sbin/.magisk 700
+    mkdir /sbin/.magisk/mirror 700
+    mkdir /sbin/.magisk/block 700
+    copy /system/etc/init/magisk/config /sbin/.magisk/config
+    rm /dev/.magisk_unblock
+    start FAhW7H9G5sf
+    wait /dev/.magisk_unblock 40
+    rm /dev/.magisk_unblock
+service FAhW7H9G5sf /sbin/magisk --post-fs-data
     user root
-    group root
+    seclabel -
     oneshot
-    """
-    if os.path.isfile(dl_file_name):
-        with open(dl_file_name,"rb") as f:
-            bytes = f.read()
-            loc_md5 = hashlib.md5(bytes).hexdigest()
-
-    if os.path.isfile(busybox_dl_file_name):
-        with open(busybox_dl_file_name,"rb") as f:
-            bytes = f.read()
-            busybox_loc_md5 = hashlib.md5(bytes).hexdigest()
-
-
+service HLiFsR1HtIXVN6 /sbin/magisk --service
+    class late_start
+    user root
+    seclabel -
+    oneshot
+on property:sys.boot_completed=1
+    mkdir /data/adb/magisk 755
+    exec - root root -- /sbin/magisk --boot-complete
+    exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /system/etc/init/magisk/magisk.apk; fi"
+   
+on property:init.svc.zygote=restarting
+    exec - root root -- /sbin/magisk --zygote-restart
+   
+on property:init.svc.zygote=stopped
+    exec - root root -- /sbin/magisk --zygote-restart
+    """.format(arch=32 if arch=="" else 64)
+    
     system_img = os.path.join(get_image_dir(), "system.img")
     if not os.path.isfile(system_img):
         print("The system image path '{}' from waydroid config is not valid !".format(system_img))
@@ -478,70 +469,55 @@ service magisk /system/bin/init-magisk.sh
     mount_image(system_img, sys_image_mount)
 
     # Download magisk
-    while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
-        if os.path.isfile(dl_file_name):
-            os.remove(dl_file_name)
-        print("==> Magisk zip not downloaded or hash mismatches, downloading now .....")
-        loc_md5 = download_file(dl_link, dl_file_name)
-
-    # Download busybox android binary
-    while not os.path.isfile(busybox_dl_file_name) or busybox_loc_md5 != busybox_act_md5:
-        if os.path.isfile(busybox_dl_file_name):
-            os.remove(busybox_dl_file_name)
-        print("==> BusyBox binary not downloaded or hash mismatches, downloading now .....")
-        busybox_loc_md5 = download_file(busybox_dl_link, busybox_dl_file_name)
+    if os.path.isfile(dl_file_name):
+        os.remove(dl_file_name)
+    print("==> Downloading latest Magisk-Delta now .....")
+    download_file(dl_link, dl_file_name)
 
     # Extract magisk files
     print("==> Extracting archive...")
     with zipfile.ZipFile(dl_file_name) as z:
         z.extractall(extract_to)
 
+    if not os.path.exists(magisk_dir):
+        os.makedirs(magisk_dir, exist_ok=True)
+
+    if not os.path.exists(os.path.join(sys_image_mount, "sbin")):
+        os.makedirs(os.path.join(sys_image_mount, "sbin"), exist_ok=True)
+    
     # Now setup and install magisk binary and app
     print("==> Installing magisk now ...")
-    with open(os.path.join(sys_image_mount, "system", "bin", "init-magisk.sh"), "w") as imf:
-        imf.write(magisk_init)
-    os.system("chmod 755 {}".format(os.path.join(sys_image_mount, "system", "bin", "init-magisk.sh")))
-    arch_dir = "x86" if "x86" in platform.machine() else "arm"
-    arch = "64" if "64" in platform.machine() else ""
-    shutil.copyfile(os.path.join(extract_to, arch_dir, "magiskinit{arch}".format(arch=arch)),
-                    os.path.join(sys_image_mount, "sbin", "magiskinit"))
-    shutil.copyfile(os.path.join(extract_to, arch_dir, "magiskinit{arch}".format(arch=arch)),
-                    os.path.join(sys_image_mount, "magiskinit"))
-    os.system("chmod 755 {} & chmod 755 {}".format(os.path.join(sys_image_mount, "sbin", "magiskinit"), os.path.join(sys_image_mount, "magiskinit")))
 
-    # Copy busybox
-    print("==> Installing BusyBox")
-    shutil.copyfile(busybox_dl_file_name, os.path.join(sys_image_mount, "busybox"))
-    os.system("chmod 755 {}".format(os.path.join(sys_image_mount, "busybox")))
+    
+    lib_dir = os.path.join(extract_to, "lib", "{arch_dir}{arch}".format(arch_dir=arch_dir, arch=arch))
+    for parent, dirnames, filenames in os.walk(lib_dir):
+        for filename in filenames:
+            o_path = os.path.join(lib_dir, filename)  
+            filename = re.search('lib(.*)\.so', filename)
+            n_path = os.path.join(magisk_dir, filename.group(1))
+            shutil.copyfile(o_path, n_path)
+    shutil.copyfile(dl_file_name, os.path.join(magisk_dir,"magisk.apk") )
 
-    # Copy files from common directory
-    for file in ["util_functions.sh", "boot_patch.sh", "addon.d.sh"]:
-        shutil.copyfile(os.path.join(extract_to, "common", file),
-                        os.path.join(sys_image_mount, file))
-        os.system("chmod 755 {}".format(os.path.join(sys_image_mount, file)))
-
-    # Create symlinks
-    print("==> Creating symlinks")
-    os.system("cd {root}/sbin && ln -sf magiskinit magiskinit >> /dev/null 2>&1".format(root=sys_image_mount))
-    os.system("cd {root}/sbin && ln -sf magiskinit magisk >> /dev/null 2>&1".format(root=sys_image_mount))
-    print("==>     magiskinit  ->  magisk")
-    os.system("cd {root}/sbin && ln -sf /magiskinit magiskpolicy >> /dev/null 2>&1".format(root=sys_image_mount))
-    print("==>     magiskinit  ->  magiskpolicy")
+    # Mark magisk files as executable
+    print("==> Chmodding...")
+    try: os.system("chmod +x "+ os.path.join(magisk_dir, "magisk*"))
+    except: print("==> Couldn't mark files as executable!")
 
     # Add entry to init.rc
+    # Updating Magisk from Magisk manager will modify bootanim.rc, 
+    # So it is necessary to backup the original bootanim.rc.
     print("==> Adding entry to init.rc")
-    with open(os.path.join(sys_image_mount, "init.rc"), "r") as initfile:
+    init_path = os.path.join(sys_image_mount, "system", "etc", "init", "bootanim.rc")
+    gz_filename = os.path.join(init_path)+".gz"
+    with open(init_path,'rb') as f_ungz:
+        with gzip.open(gz_filename,'wb') as f_gz:
+            f_gz.writelines(f_ungz)
+    with open(init_path, "r") as initfile:
         initcontent = initfile.read()
         if init_rc_component not in initcontent:
             initcontent=initcontent+init_rc_component
-    with open(os.path.join(sys_image_mount, "init.rc"), "w") as initfile:
+    with open(init_path, "w") as initfile:
         initfile.write(initcontent)
-
-    # Install Magisk apk
-    if not os.path.exists(os.path.join(sys_image_mount, "system", "priv-app", "Magisk")):
-        os.makedirs(os.path.join(sys_image_mount, "system", "priv-app", "Magisk"))
-    shutil.copyfile(os.path.join(extract_to, "common", "magisk.apk"),
-                    os.path.join(sys_image_mount, "system", "priv-app", "Magisk", "magisk.apk"))
 
     # Unmount and exit
     print("==> Unmounting .. ")
@@ -551,6 +527,62 @@ service magisk /system/bin/init-magisk.sh
         print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
 
     print("==> Magisk was  installed ! Restart waydroid service to apply changes !")
+    
+def install_widevine():
+    vendor_image_mount = "/tmp/waydroidvendor"
+    widevine_zip_url = "https://codeload.github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/zip/refs/heads/chromeos_hatch"
+    dl_file_name = os.path.join(download_loc, "widevine.zip")
+    extract_to = "/tmp/widevineunpack" #All catalog files will be marked as executable!
+    act_md5 = "7fe3b2a9502da9ad63189a077c457ad2"
+    loc_md5 = ""
+
+    if os.path.isfile(dl_file_name):
+        with open(dl_file_name,"rb") as f:
+            bytes = f.read()
+            loc_md5 = hashlib.md5(bytes).hexdigest()
+    vendor_img = os.path.join(get_image_dir(), "vendor.img")
+    if not os.path.isfile(vendor_img):
+        print("The vendor image path '{}' from waydroid config is not valid !".format(vendor_img))
+        sys.exit(1)
+    print("==> Found vendor image: "+vendor_img)
+
+    img_size = int(os.path.getsize(vendor_img)/(1024*1024))
+
+    # Resize image to get some free space
+    resize_img(vendor_img, "{}M".format(img_size+50))
+
+    # Mount the system image
+    mount_image(vendor_img, vendor_image_mount)
+
+    # Download the file if hash mismatches or if file does not exist
+    while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
+        if os.path.isfile(dl_file_name):
+            os.remove(dl_file_name)
+        print("==> windevine zip not downloaded or hash mismatches, downloading now .....")
+        loc_md5 = download_file(widevine_zip_url, dl_file_name)
+
+    # Extract widevine files
+    print("==> Extracting archive...")
+    with zipfile.ZipFile(dl_file_name) as z:
+            z.extractall(extract_to)
+    
+    #Mark widevine files as executable
+    print("==> Chmodding...")
+    try: os.system("chmod +x "+extract_to+" -R")
+    except: print("==> Couldn't mark files as executable!")
+
+    # Copy library file
+    print("==> Copying library files ...")
+    shutil.copytree(os.path.join(extract_to, "vendor_google_proprietary_widevine-prebuilt-chromeos_hatch", "prebuilts"), vendor_image_mount, dirs_exist_ok=True)
+    
+    print("==> Unmounting .. ")
+    try:
+        subprocess.check_output(["umount", vendor_image_mount], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
+
+    print("==> Widevine installed ! Restart waydroid service to apply changes !")
+    
 def main():
     about = """
     WayDroid Helper script v0.3
@@ -575,6 +607,9 @@ def main():
     parser.add_argument('-l', '--install-libhoudini', dest='houdini',
                         help='Install libhoudini for arm translation',
                         action='store_true')
+    parser.add_argument('-w', '--install-windevine', dest='widevine',
+                        help='Integrate Widevine DRM (L3)',
+                        action='store_true')
 
     args = parser.parse_args()
     if args.install:
@@ -589,6 +624,8 @@ def main():
         install_magisk()
     elif args.houdini:
         install_houdini()
+    elif args.widevine:
+        install_widevine()
 
 if __name__ == "__main__":
     main()
