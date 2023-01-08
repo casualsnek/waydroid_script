@@ -56,6 +56,12 @@ def DBusContainerService(object_path="/ContainerManager", intf="id.waydro.Contai
 def DBusSessionService(object_path="/SessionManager", intf="id.waydro.SessionManager"):
     return dbus.Interface(dbus.SessionBus().get_object("id.waydro.Session", object_path), intf)
 
+def restart():
+    waydroid_session = DBusContainerService().GetSession()
+    if DBusContainerService().GetSession():
+        DBusContainerService().Stop()
+        DBusContainerService().Start(waydroid_session)
+    
 def install_gapps():
 
     dl_links = {
@@ -129,6 +135,7 @@ def install_gapps():
                     shutil.copytree(os.path.join(extract_to, "appunpack", app_name, "common", ccdir), os.path.join(sys_image_mount, "system", ccdir), dirs_exist_ok=True)
     print("==> OpenGapps installation complete try re init /restarting waydroid")
     print("==> Please note, google apps wont be usable without device registration !, Use --get-android-id for registration instructions")
+    restart()
 
 
 def get_android_id():
@@ -228,7 +235,8 @@ on property:ro.enable.native.bridge.exec=1
     with open(init_path, "w") as initfile:
         initfile.write(initcontent)
 
-    print("==> libndk translation installed ! Restart waydroid service to apply changes !")
+    print("==> libndk translation installed ! Restarting waydroid service to apply changes !")
+    restart()
 
 
 def install_houdini():
@@ -313,8 +321,8 @@ on property:ro.enable.native.bridge.exec=1
     with open(init_path, "w") as initfile:
         initfile.write(initcontent)
 
-
-    print("==> libhoudini translation installed ! Restart waydroid service to apply changes !")
+    print("==> libhoudini translation installed ! Restarting waydroid container to apply changes !")
+    restart()
 
 def install_magisk():
     dl_link = "https://huskydg.github.io/magisk-files/app-release.apk"
@@ -441,7 +449,8 @@ on property:init.svc.zygote=stopped
     with open(bootanim, "w") as initfile:
         initfile.write(initcontent)
 
-    print("==> Magisk was  installed ! Restart waydroid service to apply changes !")
+    print("==> Magisk was  installed ! Restarting waydroid container to apply changes !")
+    restart()
      
 def install_widevine():
     vendor_image_mount = "/var/lib/waydroid/overlay/vendor"
@@ -478,7 +487,8 @@ def install_widevine():
     shutil.copytree(os.path.join(extract_to, "vendor_google_proprietary_widevine-prebuilt-94c9ee172e3d78fecc81863f50a59e3646f7a2bd",
                     "prebuilts"), vendor_image_mount, dirs_exist_ok=True)
     
-    print("==> Widevine installed ! Restart waydroid service to apply changes !")
+    print("==> Widevine installed ! Restarting waydroid container to apply changes !")
+    restart()
     
 def main():
     about = """
