@@ -383,8 +383,13 @@ def install_magisk():
     merge_dir = "/var/lib/waydroid/rootfs"
     magisk_dir = os.path.join(sys_overlay_dir, "system", "etc", "init", "magisk")
     sys_overlay_rw = "/var/lib/waydroid/overlay_rw"
-    arch_dir = "x86" if "x86" in platform.machine() else "arm"
-    arch = "_64" if "64" in platform.machine() else ""
+    arch = platform.architecture()[0][0:2]
+    machine = platform.machine()
+    if "x86" not in machine:
+        if arch == "64":
+            machine = "arm64-v8a"
+        else:
+            machine = "armeabi-v7a"
     init_rc_component = """
 on post-fs-data
     start logd
@@ -418,7 +423,7 @@ on property:init.svc.zygote=restarting
    
 on property:init.svc.zygote=stopped
     exec - root root -- /sbin/magisk --zygote-restart
-    """.format(arch=32 if arch=="" else 64)
+    """.format(arch=arch)
 
     if "RUNNING" not in subprocess.check_output ("waydroid status | grep Container | awk -F'[:\t]' '{print $3}'", shell=True).decode():
         print("Please make sure waydroid container is running!")
@@ -460,7 +465,7 @@ on property:init.svc.zygote=stopped
     # Now setup and install magisk binary and app
     print("==> Installing magisk now ...")
     
-    lib_dir = os.path.join(extract_to, "lib", "{arch_dir}{arch}".format(arch_dir=arch_dir, arch=arch))
+    lib_dir = os.path.join(extract_to, "lib", machine)
     for parent, dirnames, filenames in os.walk(lib_dir):
         for filename in filenames:
             o_path = os.path.join(lib_dir, filename)  
