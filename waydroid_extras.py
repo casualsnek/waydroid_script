@@ -1,4 +1,3 @@
-import configparser
 import sys
 import os
 import hashlib
@@ -45,6 +44,11 @@ def download_file(url, f_name):
         sys.exit(1)
     return md5
 
+def check_root():
+    if os.geteuid() != 0:
+        print("This script must be run as root. Aborting.")
+        sys.exit(1)
+
 def DBusContainerService(object_path="/ContainerManager", intf="id.waydro.ContainerManager"):
     return dbus.Interface(dbus.SystemBus().get_object("id.waydro.Container", object_path), intf)
 
@@ -56,6 +60,14 @@ def restart():
     if DBusContainerService().GetSession():
         DBusContainerService().Stop()
         DBusContainerService().Start(waydroid_session)
+
+def run(args):
+    try:
+        result = subprocess.run(args=args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result.check_returncode()
+    except subprocess.CalledProcessError as e:
+        print("\nOutput: ", e.stderr.decode("utf-8") )
+        raise
     
 def install_gapps():
 
@@ -114,7 +126,7 @@ def install_gapps():
         if lz_file not in skip:
             if lz_file not in non_apks:
                 print("==> Processing app package : "+os.path.join(extract_to, "Core", lz_file))
-                os.system("tar --lzip -xvf '{}' -C '{}'>/dev/null".format(os.path.join(extract_to, "Core", lz_file), os.path.join(extract_to, "appunpack")))
+                run(["tar", "--lzip", "-xvf", os.path.join(extract_to, "Core", lz_file), "-C", os.path.join(extract_to, "appunpack")])
                 app_name = os.listdir(os.path.join(extract_to, "appunpack"))[0]
                 xx_dpi = os.listdir(os.path.join(extract_to, "appunpack", app_name))[0]
                 app_priv = os.listdir(os.path.join(extract_to, "appunpack", app_name, "nodpi"))[0]
@@ -123,7 +135,7 @@ def install_gapps():
                     shutil.copytree(os.path.join(app_src_dir, app), os.path.join(sys_image_mount, "system", "priv-app", app), dirs_exist_ok=True)
             else:
                 print("==> Processing extra package : "+os.path.join(extract_to, "Core", lz_file))
-                os.system("tar --lzip -xvf '{}' -C '{}'>/dev/null".format(os.path.join(extract_to, "Core", lz_file), os.path.join(extract_to, "appunpack")))
+                run(["tar", "--lzip", "-xvf", os.path.join(extract_to, "Core", lz_file), "-C", os.path.join(extract_to, "appunpack")])
                 app_name = os.listdir(os.path.join(extract_to, "appunpack"))[0]
                 common_content_dirs = os.listdir(os.path.join(extract_to, "appunpack", app_name, "common"))
                 for ccdir in common_content_dirs:
@@ -196,8 +208,7 @@ on property:ro.enable.native.bridge.exec=1
 
     #Mark ndk files as executable
     print("==> Chmodding...")
-    try: os.system("chmod +x "+extract_to+" -R")
-    except: print("==> Couldn't mark files as executable!")
+    run(["chmod", "+x", extract_to, "-R"])
     
     # Copy library file
     print("==> Copying library files ...")
@@ -282,8 +293,7 @@ on property:ro.enable.native.bridge.exec=1
 
     # Mark libhoudini files as executable
     print("==> Chmodding...")
-    try: os.system("chmod +x "+extract_to+" -R")
-    except: print("==> Couldn't mark files as executable!")
+    run(["chmod", "+x", extract_to, "-R"])
 
     # Copy library file
     print("==> Copying library files ...")
@@ -417,12 +427,8 @@ on property:init.svc.zygote=stopped
             filename = re.search('lib(.*)\.so', filename)
             n_path = os.path.join(magisk_dir, filename.group(1))
             shutil.copyfile(o_path, n_path)
+            run(["chmod", "+x", n_path])
     shutil.copyfile(dl_file_name, os.path.join(magisk_dir,"magisk.apk") )
-
-    # Mark magisk files as executable
-    print("==> Chmodding...")
-    try: os.system("chmod +x "+ os.path.join(magisk_dir, "magisk*"))
-    except: print("==> Couldn't mark files as executable!")
 
     # Updating Magisk from Magisk manager will modify bootanim.rc, 
     # So it is necessary to backup the original bootanim.rc.
@@ -474,8 +480,7 @@ def install_widevine():
     
     #Mark widevine files as executable
     print("==> Chmodding...")
-    try: os.system("chmod +x "+extract_to+" -R")
-    except: print("==> Couldn't mark files as executable!")
+    run(["chmod", "+x", extract_to, "-R"])
 
     # Copy library file
     print("==> Copying library files ...")
@@ -491,6 +496,7 @@ def main():
     Does stuff like installing Gapps, Installing NDK Translation and getting Android ID for device registration.
     Use -h  flag for help !
     """
+    check_root()
     parser = argparse.ArgumentParser(description=about, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-g', '--install-gapps',
                         dest='install',
