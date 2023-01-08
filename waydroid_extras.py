@@ -445,10 +445,10 @@ on property:init.svc.zygote=stopped
      
 def install_widevine():
     vendor_image_mount = "/var/lib/waydroid/overlay/vendor"
-    widevine_zip_url = "https://codeload.github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/zip/refs/heads/chromeos_hatch"
+    widevine_zip_url = "https://codeload.github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/zip/94c9ee172e3d78fecc81863f50a59e3646f7a2bd"
     dl_file_name = os.path.join(download_loc, "widevine.zip")
     extract_to = "/tmp/widevineunpack" #All catalog files will be marked as executable!
-    act_md5 = "7fe3b2a9502da9ad63189a077c457ad2"
+    act_md5 = "a31f325453c5d239c21ecab8cfdbd878"
     loc_md5 = ""
 
     if os.path.isfile(dl_file_name):
@@ -475,7 +475,8 @@ def install_widevine():
 
     # Copy library file
     print("==> Copying library files ...")
-    shutil.copytree(os.path.join(extract_to, "vendor_google_proprietary_widevine-prebuilt-chromeos_hatch", "prebuilts"), vendor_image_mount, dirs_exist_ok=True)
+    shutil.copytree(os.path.join(extract_to, "vendor_google_proprietary_widevine-prebuilt-94c9ee172e3d78fecc81863f50a59e3646f7a2bd",
+                    "prebuilts"), vendor_image_mount, dirs_exist_ok=True)
     
     print("==> Widevine installed ! Restart waydroid service to apply changes !")
     
