@@ -11,6 +11,7 @@ from tqdm import tqdm
 import requests
 import re
 import gzip
+import dbus
 
 download_loc = ""
 if os.environ.get("XDG_CACHE_HOME", None) is None:
@@ -49,19 +50,11 @@ def download_file(url, f_name):
         sys.exit(1)
     return md5
 
-def get_image_dir():
-    # Read waydroid config to get image location
-    cfg = configparser.ConfigParser()
-    cfg_file = os.environ.get("WAYDROID_CONFIG", "/var/lib/waydroid/waydroid.cfg")
-    if not os.path.isfile(cfg_file):
-        print("==> Cannot locate waydroid config file, reinit wayland and try again !")
-        sys.exit(1)
+def DBusContainerService(object_path="/ContainerManager", intf="id.waydro.ContainerManager"):
+    return dbus.Interface(dbus.SystemBus().get_object("id.waydro.Container", object_path), intf)
 
-    cfg.read(cfg_file)
-    if "waydroid" not in cfg:
-        print("==> Required entry in config was not found, Cannot continue !s") #magisk
-        sys.exit(1)
-    return cfg["waydroid"]["images_path"]
+def DBusSessionService(object_path="/SessionManager", intf="id.waydro.SessionManager"):
+    return dbus.Interface(dbus.SessionBus().get_object("id.waydro.Session", object_path), intf)
 
 def install_gapps():
 
@@ -187,21 +180,6 @@ on property:ro.enable.native.bridge.exec=1
             bytes = f.read()
             loc_md5 = hashlib.md5(bytes).hexdigest()
 
-    #system_img = os.path.join(get_image_dir(), "system.img")
-    #if not os.path.isfile(system_img):
-    #    print("The system image path '{}' from waydroid config is not valid !".format(system_img))
-    #    sys.exit(1)
-    #print("==> Found system image: "+system_img)
-
-    # Resize rootfs
-    #img_size = int(os.path.getsize(system_img)/(1024*1024))
-
-    # Resize image to get some free space
-    #resize_img(system_img, "{}M".format(img_size+50))
-
-    # Mount the system image
-    #mount_image(system_img, sys_image_mount)
-
     # Download the file if hash mismatches or if file does not exist
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
         if os.path.isfile(dl_file_name):
@@ -223,20 +201,6 @@ on property:ro.enable.native.bridge.exec=1
     print("==> Copying library files ...")
     shutil.copytree(os.path.join(extract_to, "libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3", "system"), os.path.join(sys_image_mount, "system"), dirs_exist_ok=True)
 
-    ##add this
-    # Add entries to build.prop
-    #print("==> Adding arch in build.prop")
-    #with open(os.path.join(sys_image_mount, "system", "build.prop"), "r") as propfile:
-    #    prop_content = propfile.read()
-    #    for key in apply_props:
-    #        if key not in prop_content:
-    #            prop_content = prop_content+"\n{key}={value}".format(key=key, value=apply_props[key])
-    #        else:
-    #            p = re.compile(r"^{key}=.*$".format(key=key), re.M)
-    #            prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
-    #with open(os.path.join(sys_image_mount, "system", "build.prop"), "w") as propfile:
-    #    propfile.write(prop_content)
-
     # Add entries to build.prop
     print("==> Adding arch in", prop_file)
     with open(os.path.join(prop_file), "r") as propfile:
@@ -249,21 +213,6 @@ on property:ro.enable.native.bridge.exec=1
                 prop_content = re.sub(p, "{key}={value}".format(key=key, value=apply_props[key]), prop_content)
     with open(os.path.join(prop_file), "w") as propfile:
         propfile.write(prop_content)
-
-    ###add This
-    ## Add entry to init.rc
-    #print("==> Adding entry to init.rc")
-    ## Check if init.rc is located in Android 11's path
-    #init_path = os.path.join(sys_image_mount, "system", "etc", "init", "hw", "init.rc")
-    #if not os.path.isfile(init_path):
-    #    # init.rc not found, assuming it's located in the root folder (Android 10 and older)
-    #    init_path = os.path.join(sys_image_mount, "init.rc")
-    #with open(init_path, "r") as initfile:
-    #    initcontent = initfile.read()
-    #    if init_rc_component not in initcontent:
-    #        initcontent=initcontent+init_rc_component
-    #with open(init_path, "w") as initfile:
-    #    initfile.write(initcontent)
 
     # Add entry to init.rc
     print("==> Adding entry to init.rc")
@@ -278,13 +227,6 @@ on property:ro.enable.native.bridge.exec=1
             initcontent=initcontent+init_rc_component
     with open(init_path, "w") as initfile:
         initfile.write(initcontent)
-
-    # Unmount and exit
-    ##print("==> Unmounting .. ")
-    ##try:
-    ##    subprocess.check_output(["umount", sys_image_mount], stderr=subprocess.STDOUT)
-    ##except subprocess.CalledProcessError as e:
-    ##    print("==> Warning: umount failed.. {} ".format(str(e.output.decode())))
 
     print("==> libndk translation installed ! Restart waydroid service to apply changes !")
 
@@ -425,7 +367,7 @@ on property:init.svc.zygote=stopped
     exec - root root -- /sbin/magisk --zygote-restart
     """.format(arch=arch)
 
-    if "RUNNING" not in subprocess.check_output ("waydroid status | grep Container | awk -F'[:\t]' '{print $3}'", shell=True).decode():
+    if not DBusContainerService().GetSession():
         print("Please make sure waydroid container is running!")
         sys.exit(1)
 
