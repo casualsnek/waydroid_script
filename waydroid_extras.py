@@ -12,6 +12,7 @@ import requests
 import re
 import gzip
 import dbus
+import subprocess
 
 download_loc = ""
 if os.environ.get("XDG_CACHE_HOME", None) is None:
@@ -24,12 +25,6 @@ print(download_loc)
 if not os.path.exists(download_loc):
     os.makedirs(download_loc)
 
-def stop_waydroid():
-    print("==> Stopping waydroid and unmounting already mounted images...")
-    os.system("waydroid container stop &> /dev/null")
-    os.system("umount /var/lib/waydroid/rootfs/vendor/waydroid.prop &> /dev/null")
-    os.system("umount /var/lib/waydroid/rootfs/vendor &> /dev/null")
-    os.system("umount /var/lib/waydroid/rootfs &> /dev/null")
 
 def download_file(url, f_name):
     md5 = ""
@@ -520,10 +515,8 @@ def main():
 
     args = parser.parse_args()
     if args.install:
-        stop_waydroid()
         install_gapps()
     elif args.installndk:
-        stop_waydroid()
         install_ndk()
     elif args.getid:
         get_android_id()
