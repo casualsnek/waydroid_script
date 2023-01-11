@@ -348,36 +348,38 @@ def install_magisk():
     init_rc_component = """
 on post-fs-data
     start logd
-    exec - root root -- /system/etc/init/magisk/magisk{arch} --setup-sbin /system/etc/init/magisk
-    exec - root root -- /system/etc/init/magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
+    exec u:r:su:s0 root root -- /system/etc/init/magisk/magisk{arch} --auto-selinux --setup-sbin /system/etc/init/magisk
+    exec u:r:su:s0 root root -- /system/etc/init/magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
     mkdir /sbin/.magisk 700
     mkdir /sbin/.magisk/mirror 700
     mkdir /sbin/.magisk/block 700
     copy /system/etc/init/magisk/config /sbin/.magisk/config
     rm /dev/.magisk_unblock
-    start FAhW7H9G5sf
+    start 7zKkuZ1ZhD
     wait /dev/.magisk_unblock 40
     rm /dev/.magisk_unblock
-service FAhW7H9G5sf /sbin/magisk --post-fs-data
+
+service 7zKkuZ1ZhD /sbin/magisk --auto-selinux --post-fs-data
     user root
-    seclabel -
+    seclabel u:r:su:s0
     oneshot
-service HLiFsR1HtIXVN6 /sbin/magisk --service
+
+service wHgGlkRCtMoIQw /sbin/magisk --auto-selinux --service
     class late_start
     user root
-    seclabel -
+    seclabel u:r:su:s0
     oneshot
+
 on property:sys.boot_completed=1
     mkdir /data/adb/magisk 755
-    exec - root root -- /sbin/magisk --boot-complete
-    exec -- /system/bin/sh -c "if [ -e /data/data/io.github.huskydg.magisk ] ; then pm uninstall io.github.huskydg.magisk; fi"
-    exec -- /system/bin/sh -c "pm install /system/etc/init/magisk/magisk.apk"
+    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --boot-complete
+    exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /system/etc/init/magisk/magisk.apk ; fi"
    
 on property:init.svc.zygote=restarting
-    exec - root root -- /sbin/magisk --zygote-restart
+    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --zygote-restart
    
 on property:init.svc.zygote=stopped
-    exec - root root -- /sbin/magisk --zygote-restart
+    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --zygote-restart
     """.format(arch=arch)
 
     if not DBusContainerService().GetSession():
