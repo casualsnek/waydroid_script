@@ -62,12 +62,15 @@ def restart():
         DBusContainerService().Start(waydroid_session)
 
 def run(args):
-    try:
-        result = subprocess.run(args=args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result.check_returncode()
-    except subprocess.CalledProcessError as e:
-        print("\nOutput: ", e.stderr.decode("utf-8") )
-        raise
+    result = subprocess.run(args=args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.stderr:
+        print(result.stderr.decode("utf-8"))
+        raise subprocess.CalledProcessError(
+                    returncode = result.returncode,
+                    cmd = result.args,
+                    stderr = result.stderr
+                )
+    return result
     
 def install_gapps():
 
@@ -153,8 +156,8 @@ def get_android_id():
         sqs = """
                 SELECT * FROM main WHERE name='android_id'
             """
-        queryout = subprocess.check_output(["sqlite3", "/var/lib/waydroid/data/data/com.google.android.gsf/databases/gservices.db", sqs.strip()], stderr=subprocess.STDOUT)
-        print(queryout.decode().replace("android_id|", "").strip())
+        queryout = run(["sqlite3", "/var/lib/waydroid/data/data/com.google.android.gsf/databases/gservices.db", sqs.strip()])
+        print(queryout.stdout.decode().replace("android_id|", "").strip())
         print("   ^----- Open https://google.com/android/uncertified/?pli=1")
         print("          Login with your google id then submit the form with id shown above")
     except subprocess.CalledProcessError as e:
