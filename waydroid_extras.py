@@ -558,7 +558,7 @@ def install_widevine():
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
         if os.path.isfile(dl_file_name):
             os.remove(dl_file_name)
-        print("==> windevine zip not downloaded or hash mismatches, downloading now .....")
+        print("==> widevine zip not downloaded or hash mismatches, downloading now .....")
         loc_md5 = download_file(widevine_zip_url, dl_file_name)
 
     # Extract widevine files
