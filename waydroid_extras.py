@@ -533,7 +533,7 @@ def install_widevine():
     widevine_zip_url = "https://codeload.github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/zip/refs/heads/chromeos_hatch"
     dl_file_name = os.path.join(download_loc, "widevine.zip")
     extract_to = "/tmp/widevineunpack" #All catalog files will be marked as executable!
-    act_md5 = "7fe3b2a9502da9ad63189a077c457ad2"
+    act_md5 = "0c311ea2ebee1acee4cfb092aaef1701"
     loc_md5 = ""
 
     if os.path.isfile(dl_file_name):
