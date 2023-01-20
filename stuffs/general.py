@@ -29,8 +29,11 @@ class General:
 
     @property
     def use_overlayfs(self):
-        return os.path.isdir("/var/lib/waydroid/overlay")
-        # return False
+        with open("/var/lib/waydroid/waydroid.cfg") as f:
+            cont=f.read()
+            if re.search("mount_overlays[ \t]*=[ \t]*True", cont):
+                return True
+            return False
 
     def download(self):
         loc_md5 = ""
