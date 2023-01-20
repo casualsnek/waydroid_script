@@ -1,4 +1,5 @@
 import argparse
+from logging import Logger
 from stuffs.android_id import Android_id
 from stuffs.gapps import Gapps
 from stuffs.houdini import Houdini
@@ -43,12 +44,16 @@ def main():
         Gapps().install()
     if args.ndk and not args.houdini:
         arch = helper.host()[0]
-        if arch == "x86" or arch == "x86_64":
+        if arch == "x86_64":
             Ndk().install()
+        else:
+            Logger.warn("libndk is not supported on your CPU")
     if args.houdini and not args.ndk:
         arch = helper.host()[0]
-        if arch == "x86" or arch == "x86_64":
+        if arch == "x86_64":
             Houdini().install()
+        else:
+            Logger.warn("libhoudini is not supported on your CPU")
     if args.magisk:
         Magisk().install()
     if args.widevine:
