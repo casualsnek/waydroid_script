@@ -95,20 +95,19 @@ class General:
         if self.use_dbus:
             self.session = DBusContainerService().GetSession()
             if self.session:
-                    DBusContainerService().Stop(False)
+                DBusContainerService().Stop(False)
         else:
             run(["waydroid", "container", "stop"])
 
     def start(self):
-        if self.use_dbus:
+        if self.use_dbus and self.session:
             DBusContainerService().Start(self.session)
         else:
             run(["systemctl", "restart", "waydroid-container.service"])
 
     def restart(self):
-        if DBusContainerService().GetSession():
-            self.stop()
-            self.start()
+        self.stop()
+        self.start()
 
     def copy(self):
         pass
