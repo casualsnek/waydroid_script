@@ -533,7 +533,7 @@ def install_widevine():
     widevine_zip_url = "https://codeload.github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/zip/refs/heads/chromeos_hatch"
     dl_file_name = os.path.join(download_loc, "widevine.zip")
     extract_to = "/tmp/widevineunpack" #All catalog files will be marked as executable!
-    act_md5 = "7fe3b2a9502da9ad63189a077c457ad2"
+    act_md5 = "0c311ea2ebee1acee4cfb092aaef1701"
     loc_md5 = ""
 
     if os.path.isfile(dl_file_name):
@@ -558,7 +558,7 @@ def install_widevine():
     while not os.path.isfile(dl_file_name) or loc_md5 != act_md5:
         if os.path.isfile(dl_file_name):
             os.remove(dl_file_name)
-        print("==> windevine zip not downloaded or hash mismatches, downloading now .....")
+        print("==> widevine zip not downloaded or hash mismatches, downloading now .....")
         loc_md5 = download_file(widevine_zip_url, dl_file_name)
 
     # Extract widevine files
@@ -607,7 +607,7 @@ def main():
     parser.add_argument('-l', '--install-libhoudini', dest='houdini',
                         help='Install libhoudini for arm translation',
                         action='store_true')
-    parser.add_argument('-w', '--install-windevine', dest='widevine',
+    parser.add_argument('-w', '--install-widevine', dest='widevine',
                         help='Integrate Widevine DRM (L3)',
                         action='store_true')
 
