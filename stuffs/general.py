@@ -25,7 +25,7 @@ class General:
             DBusContainerService()
         except:
             return False
-        return 
+        return True
 
     @property
     def use_overlayfs(self):
