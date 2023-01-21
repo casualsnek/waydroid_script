@@ -32,10 +32,6 @@ on property:ro.enable.native.bridge.exec=1
         "ro.dalvik.vm.isa.arm64": "x86_64"
     }
 
-    def download(self):
-        Logger.info("Downloading libhoudini to {}now .....".format(self.download_loc))
-        super().download()
-
     def copy(self):
         run(["chmod", "+x", self.extract_to, "-R"])
         Logger.info("Copying libhoudini library files ...")

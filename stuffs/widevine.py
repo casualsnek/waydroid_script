@@ -12,10 +12,6 @@ class Widevine(General):
     extract_to = "/tmp/widevineunpack"
     act_md5 = "a31f325453c5d239c21ecab8cfdbd878"
 
-    def download(self):
-        Logger.info("Downloading widevine to {} now .....".format(self.download_loc))
-        super().download()
-
     def copy(self):
         run(["chmod", "+x", self.extract_to, "-R"])
         Logger.info("Copying widevine library files ...")

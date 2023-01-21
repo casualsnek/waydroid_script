@@ -10,6 +10,10 @@ from tools.logger import Logger
 
 class General:
     @property
+    def skip_extract(self):
+        return False 
+
+    @property
     def download_loc(self):
         return os.path.join(get_download_dir(), self.dl_file_name)
 
@@ -37,6 +41,7 @@ class General:
             return False
 
     def download(self):
+        Logger.info("Downloading {} now to {} .....".format(self.dl_file_name, self.download_loc))
         loc_md5 = ""
         if os.path.isfile(self.download_loc):
             with open(self.download_loc, "rb") as f:
@@ -113,21 +118,28 @@ class General:
     def copy(self):
         pass
 
+    def extra(self):
+        pass
+
     def install(self):
         if self.use_overlayfs:
             self.download()
-            self.extract()
+            if not self.skip_extract:
+                self.extract()
             self.copy()
+            self.extra()
             if hasattr(self, "apply_props"):
                 self.add_props()
             self.restart()
         else:
             self.stop()
             self.download()
-            self.extract()
+            if not self.skip_extract:
+                self.extract()
             self.resize()
             self.mount()
             self.copy()
+            self.extra()
             if hasattr(self, "apply_props"):
                 self.add_props()
             self.umount()

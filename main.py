@@ -5,59 +5,75 @@ from stuffs.gapps import Gapps
 from stuffs.houdini import Houdini
 from stuffs.magisk import Magisk
 from stuffs.ndk import Ndk
+from stuffs.smartdock import Smartdock
 from stuffs.widevine import Widevine
 import tools.helper as helper
-
-
-def main():
-    about = """
-    WayDroid Helper script v0.3
-    Does stuff like installing Gapps, Installing NDK Translation and getting Android ID for device registration.
-    Use -h  flag for help !
-    """
-    parser = argparse.ArgumentParser(description=about, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-g', '--install-gapps',
-                        dest='gapps',
-                        help='Install OpenGapps to waydroid',
-                        action='store_true')
-    parser.add_argument('-n', '--install-ndk-translation',
-                        dest='ndk',
-                        help='Install libndk translation for arm translation',
-                        action='store_true')
-    parser.add_argument('-i', '--get-android-id', dest='getid',
-                        help='Displays your android id for manual registration',
-                        action='store_true')
-    parser.add_argument('-m', '--install-magisk', dest='magisk',
-                        help='Attempts to install Magisk ( Bootless )',
-                        action='store_true')
-    parser.add_argument('-l', '--install-libhoudini', dest='houdini',
-                        help='Install libhoudini for arm translation',
-                        action='store_true')
-    parser.add_argument('-w', '--install-widevine', dest='widevine',
-                        help='Integrate Widevine DRM (L3)',
-                        action='store_true')
-    args = parser.parse_args()
-    helper.check_root()
-    if args.getid:
-       Android_id().get_id() 
-    if args.gapps:
+def install(*args):
+    if "gapps" in args:
         Gapps().install()
-    if args.ndk and not args.houdini:
+    if "libndk" in args and "houdini" not in args:
         arch = helper.host()[0]
         if arch == "x86_64":
             Ndk().install()
         else:
             Logger.warn("libndk is not supported on your CPU")
-    if args.houdini and not args.ndk:
+    if "libhoudini" in args and "ndk" not in args:
         arch = helper.host()[0]
         if arch == "x86_64":
             Houdini().install()
         else:
             Logger.warn("libhoudini is not supported on your CPU")
-    if args.magisk:
+    if "magisk" in args:
         Magisk().install()
-    if args.widevine:
+    if "widevine" in args:
         Widevine().install()
+    if "smartdock" in args :
+        Smartdock().install()
+
+def uninstall(*args):
+    pass
+
+def main():
+    about = """
+    WayDroid Helper script v0.3
+    Does stuff like installing Gapps, installing Magisk, installing NDK Translation and getting Android ID for device registration.
+    Use -h  flag for help!
+    """
+    helper.check_root()
+
+    parser = argparse.ArgumentParser(prog=about)
+    parser.set_defaults(app="")
+
+    subparsers = parser.add_subparsers(title="subcommands", help="operations")
+
+    google_id_parser=subparsers.add_parser('google',
+                        help='grab device id for unblocking Google Apps')
+    google_id_parser.set_defaults(func=Android_id().get_id)
+    # create the parser for the "a" command
+
+    arg_template = {
+        "dest": "app",
+        "type": str,
+        "nargs": '+',
+        "choices": ["gapps", "libndk","libhoudini","magisk", "smartdock","widevine"],
+    }
+
+    install_parser = subparsers.add_parser("install", help='install something')
+    install_parser.set_defaults(func=install)
+    install_parser.add_argument(**arg_template)
+
+    uninstall_parser = subparsers.add_parser("uninstall", help='uninstall something')
+    uninstall_parser.set_defaults(func=uninstall)
+    uninstall_parser.add_argument(**arg_template)
+
+    args = parser.parse_args()
+
+    if args.app:
+        args.func(*args.app)
+    else:
+        args.func()
+
+    
 
 if __name__ == "__main__":
     main()

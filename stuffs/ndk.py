@@ -31,10 +31,6 @@ on property:ro.enable.native.bridge.exec=1
     copy /system/etc/binfmt_misc/arm64_exe /proc/sys/fs/binfmt_misc/register
     copy /system/etc/binfmt_misc/arm64_dyn /proc/sys/fs/binfmt_misc/register
 """
-    
-    def download(self):
-        Logger.info("Downloading libndk to {} now .....".format(self.download_loc))
-        super().download()
 
     def copy(self):
         run(["chmod", "+x", self.extract_to, "-R"])

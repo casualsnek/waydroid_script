@@ -27,10 +27,6 @@ class Gapps(General):
         "setupwizardtablet-x86_64.tar.lz"
         ]
 
-    def download(self):
-        Logger.info("Downloading OpenGapps now to {} .....".format(self.download_loc))
-        super().download()
-
     def copy(self):
         if not os.path.exists(self.extract_to):
             os.makedirs(self.extract_to)
