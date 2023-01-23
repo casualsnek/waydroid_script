@@ -7,10 +7,10 @@ from tools.logger import Logger
 class Gapps(General):
     partition = "system"
     dl_links = {
-            "x86_64": ["https://master.dl.sourceforge.net/project/opengapps/x86_64/20220121/open_gapps-x86_64-10.0-pico-20220121.zip?viasf=1", "e8c9a7412f5712eea7948957a62a7d66"],
-            "x86": ["https://udomain.dl.sourceforge.net/project/opengapps/x86/20220122/open_gapps-x86-10.0-pico-20220122.zip", "9e39e45584b7ade4529e6be654af7b81"],
-            "arm64-v8a": ["https://liquidtelecom.dl.sourceforge.net/project/opengapps/arm64/20220122/open_gapps-arm64-10.0-pico-20220122.zip", "8dfa6e76aeb2d1d5aed40b058e8a852c"],
-            "armeabi-v7a": ["https://nav.dl.sourceforge.net/project/opengapps/arm/20220122/open_gapps-arm-10.0-pico-20220122.zip", "a48ccbd25eb0a3c5e30f5db5435f5536"]
+            "x86_64": ["https://sourceforge.net/projects/opengapps/files/x86_64/20220503/open_gapps-x86_64-11.0-pico-20220503.zip", "5a6d242be34ad1acf92899c7732afa1b"],
+            "x86": ["https://sourceforge.net/projects/opengapps/files/x86/20220503/open_gapps-x86-11.0-pico-20220503.zip", "efda4943076016d00b40e0874b12ddd3"],
+            "arm64-v8a": ["https://sourceforge.net/projects/opengapps/files/arm64/20220503/open_gapps-arm64-11.0-pico-20220503.zip", "7790055d34bbfc6fe610b0cd263a7add"],
+            "armeabi-v7a": ["https://sourceforge.net/projects/opengapps/files/arm/20220215/open_gapps-arm-11.0-pico-20220215.zip", "8719519fa32ae83a62621c6056d32814"]
         }
     arch = host()
     dl_link = dl_links[arch[0]][0]
@@ -20,7 +20,8 @@ class Gapps(General):
     non_apks = [
         "defaultetc-common.tar.lz",
         "defaultframework-common.tar.lz",
-        "googlepixelconfig-common.tar.lz"
+        "googlepixelconfig-common.tar.lz",
+        "vending-common.tar.lz"
         ]
     skip = [
         "setupwizarddefault-x86_64.tar.lz",

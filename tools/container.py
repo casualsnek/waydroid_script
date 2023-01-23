@@ -16,12 +16,11 @@ def use_dbus():
     return True
 
 def use_overlayfs():
-    # with open("/var/lib/waydroid/waydroid.cfg") as f:
-    #         cont=f.read()
-    #         if re.search("mount_overlays[ \t]*=[ \t]*True", cont):
-    #             return True
-    #         return False
-    return False
+    with open("/var/lib/waydroid/waydroid.cfg") as f:
+            cont=f.read()
+            if re.search("mount_overlays[ \t]*=[ \t]*True", cont):
+                return True
+            return False
 
 def get_session():
     return DBusContainerService().GetSession()
