@@ -72,8 +72,10 @@ Open terminal and switch to directory where "main.py" is located then run:
 ## Integrate Widevine DRM (L3)
 
 Open terminal and switch to directory where "main.py" is located then run:
-
+    
     sudo python3 main.py -w
+    
+
 
 ## Get Android ID for device registration
 
