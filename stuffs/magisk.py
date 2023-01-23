@@ -5,6 +5,7 @@ import re
 from stuffs.general import General
 from tools.helper import download_file, host, run
 from tools.logger import Logger
+from tools import container
 
 class Magisk(General):
     partition = "system"

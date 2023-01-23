@@ -103,12 +103,6 @@ class General:
     def extra2(self):
         pass
 
-    # def install(self):
-    #     if DBusContainerService().GetSession():
-    #         print("running")
-    #     else:
-    #         print("stopped")
-    #     run("waydroid session start".split())
     def install(self):
         if container.use_overlayfs():
             self.download()

@@ -90,6 +90,36 @@ Open terminal and switch to directory where "main.py" is located then run:
 
     sudo python3 main.py install smartdock
 
+## Granting full permission for apps data (HACK)
+
+
+This is a temporary hack to combat against the apps permission issue on Android 11. Whenever an app is open it will always enable a property (persist.sys.nodataperm) to make it execute a script to grant the data full permissions (777). The **correct** way is to use `sdcardfs` or `esdfs`, both need to recompile the kernel or WayDroid image.
+
+Arknights, PUNISHING: GRAY RAVEN and other games won't freeze on the black screen.
+
+![](assets/6.png)
+
+Open terminal and switch to directory where "main.py" is located then run:
+
+```
+sudo python3 main.py install nodataperm
+```
+**WARNING**: Only tested on `lineage-18.1-20230121-VANILLA-waydroid_x86_64`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting.
+
+
+Or you can run the following commands directly in `sudo waydroid shell`. In this way, every time a new game is installed, you need to run it again, but it's much less risky.
+
+```
+chmod 777 -R /sdcard/Android
+chmod 777 -R /data/media/0/Android 
+chmod 777 -R /sdcard/Android/data
+chmod 777 -R /data/media/0/Android/obb 
+chmod 777 -R /mnt/*/*/*/*/Android/data
+chmod 777 -R /mnt/*/*/*/*/Android/obb
+```
+
+- https://github.com/supremegamers/device_generic_common/commit/2d47891376c96011b2ee3c1ccef61cb48e15aed6  
+- https://github.com/supremegamers/android_frameworks_base/commit/24a08bf800b2e461356a9d67d04572bb10b0e819
 
 ## Get Android ID for device registration
 

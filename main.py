@@ -7,6 +7,7 @@ from stuffs.gapps import Gapps
 from stuffs.houdini import Houdini
 from stuffs.magisk import Magisk
 from stuffs.ndk import Ndk
+from stuffs.nodataperm import Nodataperm
 from stuffs.smartdock import Smartdock
 from stuffs.widevine import Widevine
 import tools.helper as helper
@@ -29,8 +30,10 @@ def install(*args):
         Magisk().install()
     if "widevine" in args:
         Widevine().install()
-    if "smartdock" in args :
+    if "smartdock" in args:
         Smartdock().install()
+    if "nodataperm" in args:
+        Nodataperm().install()
 
 def uninstall(*args):
     pass
@@ -57,7 +60,7 @@ def main():
         "dest": "app",
         "type": str,
         "nargs": '+',
-        "choices": ["gapps", "libndk","libhoudini","magisk", "smartdock","widevine"],
+        "choices": ["gapps", "libndk","libhoudini","magisk", "smartdock","widevine", "nodataperm"],
     }
 
     install_parser = subparsers.add_parser("install", help='install something')
