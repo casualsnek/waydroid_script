@@ -4,8 +4,8 @@ import re
 import zipfile
 import hashlib
 from tools import images
-from tools.helper import download_file, get_download_dir, run, upgrade
-from tools.container import DBusContainerService
+from tools.helper import download_file, get_download_dir
+from tools import container
 from tools.logger import Logger
 
 class General:
@@ -19,26 +19,10 @@ class General:
 
     @property
     def copy_dir(self):
-        if self.use_overlayfs:
+        if container.use_overlayfs():
             return "/var/lib/waydroid/overlay"
         else:
             return "/tmp/waydroid"
-
-    @property
-    def use_dbus(self):
-        try:
-            DBusContainerService()
-        except:
-            return False
-        return True
-
-    @property
-    def use_overlayfs(self):
-        with open("/var/lib/waydroid/waydroid.cfg") as f:
-            cont=f.read()
-            if re.search("mount_overlays[ \t]*=[ \t]*True", cont):
-                return True
-            return False
 
     def download(self):
         Logger.info("Downloading {} now to {} .....".format(self.dl_file_name, self.download_loc))
@@ -96,41 +80,46 @@ class General:
         images.umount(mount_point)
 
     def stop(self):
-        if self.use_dbus:
-            self.session = DBusContainerService().GetSession()
-            if self.session:
-                DBusContainerService().Stop(False)
-        else:
-            run(["waydroid", "container", "stop"])
+        if container.use_dbus():
+            self.session = container.get_session()
+        container.stop()
 
     def start(self):
-        if self.use_dbus and self.session:
-            DBusContainerService().Start(self.session)
+        if container.use_dbus() and self.session:
+            container.start(self.session)
         else:
-            run(["systemctl", "restart", "waydroid-container.service"])
-        upgrade()
+            container.start()
 
     def restart(self):
         self.stop()
         self.start()
-        upgrade()
 
     def copy(self):
         pass
 
-    def extra(self):
+    def extra1(self):
         pass
 
+    def extra2(self):
+        pass
+
+    # def install(self):
+    #     if DBusContainerService().GetSession():
+    #         print("running")
+    #     else:
+    #         print("stopped")
+    #     run("waydroid session start".split())
     def install(self):
-        if self.use_overlayfs:
+        if container.use_overlayfs():
             self.download()
             if not self.skip_extract:
                 self.extract()
             self.copy()
-            self.extra()
+            self.extra1()
             if hasattr(self, "apply_props"):
                 self.add_props()
             self.restart()
+            self.extra2()
         else:
             self.stop()
             self.download()
@@ -139,9 +128,10 @@ class General:
             self.resize()
             self.mount()
             self.copy()
-            self.extra()
+            self.extra1()
             if hasattr(self, "apply_props"):
                 self.add_props()
             self.umount()
             self.start()
+            self.extra2()
         Logger.info("Installation finished")

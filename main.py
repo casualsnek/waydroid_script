@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 from logging import Logger
 from stuffs.android_id import Android_id
