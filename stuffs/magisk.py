@@ -88,3 +88,22 @@ on property:init.svc.zygote=stopped
             f_gz.write(self.oringinal_bootanim.encode('utf-8'))
         with open(bootanim_path, "w") as initfile:
             initfile.write(self.oringinal_bootanim+self.bootanim_component)
+
+
+    # Delete the contents of upperdir
+    def extra1(self):
+        if container.use_overlayfs():
+            sys_overlay_rw = "/var/lib/waydroid/overlay_rw"
+            old_bootanim_rc = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "bootanim.rc")
+            old_bootanim_rc_gz = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "bootanim.rc.gz")
+            old_magisk = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "magisk")
+
+            if os.path.exists(old_bootanim_rc):
+                os.remove(old_bootanim_rc)
+            if os.path.exists(old_bootanim_rc_gz):
+                os.remove(old_bootanim_rc_gz)
+            if os.path.exists(old_magisk):
+                if os.path.isdir(old_magisk):
+                    shutil.rmtree(old_magisk)
+                else:
+                    os.remove(old_magisk)
