@@ -58,7 +58,7 @@ on property:init.svc.zygote=stopped
         if os.path.isfile(self.download_loc):
             os.remove(self.download_loc)
         Logger.info("Downloading latest Magisk-Delta to {} now ...".format(self.download_loc))
-        download_file(self.dl_link, self.download_loc)    
+        download_file(self.dl_link, self.download_loc)
 
     def copy(self):
         magisk_absolute_dir = os.path.join(self.copy_dir, self.magisk_dir)

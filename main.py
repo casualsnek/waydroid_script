@@ -6,6 +6,7 @@ from stuffs.android_id import Android_id
 from stuffs.gapps import Gapps
 from stuffs.houdini import Houdini
 from stuffs.magisk import Magisk
+from stuffs.microg import MicroG
 from stuffs.ndk import Ndk
 from stuffs.nodataperm import Nodataperm
 from stuffs.smartdock import Smartdock
@@ -34,9 +35,32 @@ def install(*args):
         Smartdock().install()
     if "nodataperm" in args:
         Nodataperm().install()
+    if "microg" in args:
+        MicroG().install()
 
 def uninstall(*args):
-    pass
+    if "gapps" in args:
+        Gapps().uninstall()
+    if "libndk" in args and "houdini" not in args:
+        arch = helper.host()[0]
+        if arch == "x86_64":
+            Ndk().uninstall()
+        else:
+            Logger.warn("libndk is not supported on your CPU")
+    if "libhoudini" in args and "ndk" not in args:
+        arch = helper.host()[0]
+        if arch == "x86_64":
+            Houdini().uninstall()
+        else:
+            Logger.warn("libhoudini is not supported on your CPU")
+    if "magisk" in args:
+        Magisk().uninstall()
+    if "widevine" in args:
+        Widevine().uninstall()
+    if "smartdock" in args:
+        Smartdock().uninstall()
+    if "nodataperm" in args:
+        Nodataperm().uninstall()
 
 def main():
     about = """
@@ -60,12 +84,21 @@ def main():
         "dest": "app",
         "type": str,
         "nargs": '+',
-        "choices": ["gapps", "libndk","libhoudini","magisk", "smartdock","widevine", "nodataperm"],
+        "metavar":"",
+        "choices": ["gapps", "microg", "libndk","libhoudini","magisk", "smartdock","widevine", "nodataperm"],
     }
 
-    install_parser = subparsers.add_parser("install", help='install something')
+    install_help = """
+gapps: Install Open GApps Pico(minimum GApps installation)
+microg: Add microG, Aurora Store and Aurora Droid to WayDriod
+libndk: Add libndk arm translation, better for AMD CPUs
+libhoudini: Add libhoudini arm translation, better for Intel CPUs
+magisk: Install Magisk Delta to WayDroid
+smartdock: A desktop mode launcher for Android
+    """
+    install_parser = subparsers.add_parser("install",formatter_class=argparse.RawTextHelpFormatter, help='install something')
     install_parser.set_defaults(func=install)
-    install_parser.add_argument(**arg_template)
+    install_parser.add_argument(**arg_template,help=install_help)
 
     uninstall_parser = subparsers.add_parser("uninstall", help='uninstall something')
     uninstall_parser.set_defaults(func=uninstall)

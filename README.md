@@ -16,7 +16,7 @@ Then run:
     git clone https://github.com/casualsnek/waydroid_script
     cd waydroid_script
     sudo python3 -m pip install -r requirements.txt
-    sudo python3 main.py install {gapps, magisk, libndk, libhoudini, smartdock}
+    sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
 
 ## Install OpenGapps
 
@@ -121,6 +121,14 @@ chmod 777 -R /mnt/*/*/*/*/Android/obb
 - https://github.com/supremegamers/device_generic_common/commit/2d47891376c96011b2ee3c1ccef61cb48e15aed6  
 - https://github.com/supremegamers/android_frameworks_base/commit/24a08bf800b2e461356a9d67d04572bb10b0e819
 
+## Install microG, Aurora Store and Aurora Droid
+
+![](assets/7.png)
+
+```
+sudo python main.py install microg
+```
+
 ## Get Android ID for device registration
 
 You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for google apps:
@@ -148,5 +156,7 @@ And re-run the script.
 - [WayDroid](https://github.com/waydroid/waydroid)
 - [waydroid_script](https://github.com/casualsnek/waydroid_script)
 - [Magisk Delta](https://huskydg.github.io/magisk-files/)
-- [OpenGapps](https://github.com/opengapps/opengapps)
+- [microG Project](https://microg.org)
+- [Open GApps](https://opengapps.org)
 - [Smart Dock](https://github.com/axel358/smartdock)
+- [wd-scripts](https://github.com/electrikjesus/wd-scripts/)
