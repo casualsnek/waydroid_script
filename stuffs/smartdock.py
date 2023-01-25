@@ -31,5 +31,6 @@ class Smartdock(General):
             print("\r\tPlease start WayDroid for further setup {}".format(list[index%4]), end="")
             index += 1
         sleep(5)
-        print()
+        if index != 0:
+            print()
         run(["waydroid", "shell", "cmd", "package", "set-home-activity", "cu.axel.smartdock/.activities.LauncherActivity"])

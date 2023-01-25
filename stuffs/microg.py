@@ -84,7 +84,8 @@ class MicroG(General):
             print("\r\tPlease start WayDroid for further setup {}".format(list[index%4]), end="")
             index += 1
         sleep(5)
-        print()
+        if index != 0:
+            print()
         Logger.info("Signature spoofing")
         run("waydroid shell pm grant com.google.android.gms android.permission.FAKE_PACKAGE_SIGNATURE".split())
         run("waydroid shell pm grant com.android.vending android.permission.FAKE_PACKAGE_SIGNATURE".split())
