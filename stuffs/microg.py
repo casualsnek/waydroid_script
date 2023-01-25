@@ -54,6 +54,7 @@ class MicroG(General):
             permission_list = aapt.get_apk_info(os.path.join(download_dir,apk))["permissions"]
             permissions += "\n".join(['\t\t<permission name="{}"/>'.format(permission) for permission in permission_list])
             permissions += "\n\t</privapp-permissions>"
+        permissions += "</permissions>"
         return permissions
 
     def copy(self):
