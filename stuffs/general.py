@@ -1,6 +1,7 @@
-import configparser
+import glob
 import os
 import re
+import shutil
 import zipfile
 import hashlib
 from tools import images
@@ -37,6 +38,21 @@ class General:
                 Logger.warning(
                     "md5 mismatches, redownloading now ....")
             loc_md5 = download_file(self.dl_link, self.download_loc)
+    
+    def remove(self):
+        for f in self.files:
+            file = os.path.join(self.copy_dir, self.partition, f)
+            if "*" in file:
+                for wildcard_file in glob.glob(file):
+                    if os.path.isdir(wildcard_file):
+                        shutil.rmtree(wildcard_file)
+                    elif os.path.isfile(wildcard_file):
+                        os.remove(wildcard_file)
+            else:
+                if os.path.isdir(file):
+                    shutil.rmtree(file)
+                elif os.path.isfile(file):
+                    os.remove(file)
 
     def extract(self):
         Logger.info("Extracting archive...")
@@ -44,14 +60,26 @@ class General:
             z.extractall(self.extract_to)
 
     def add_props(self):
-        cfg = configparser.ConfigParser()
-        cfg.read("/var/lib/waydroid/waydroid.cfg")
-
-        for key in self.apply_props.keys():
-            cfg.set('properties', key, self.apply_props[key])
-        
-        with open("/var/lib/waydroid/waydroid.cfg", "w") as f:
-            cfg.write(f)
+        with open(os.path.join("/var/lib/waydroid/waydroid_base.prop"), "r") as propfile:
+            prop_content = propfile.read()
+            for key in self.apply_props:
+                if key not in prop_content:
+                    prop_content = prop_content+"\n{key}={value}".format(key=key, value=self.apply_props[key])
+                else:
+                    p = re.compile(r"^{key}=.*$".format(key=key), re.M)
+                    prop_content = re.sub(p, "{key}={value}".format(key=key, value=self.apply_props[key]), prop_content)
+        with open(os.path.join("/var/lib/waydroid/waydroid_base.prop"), "w") as propfile:
+            propfile.write(prop_content)
+    
+    def remove_props(self):
+        with open(os.path.join("/var/lib/waydroid/waydroid_base.prop"), "r") as propfile:
+            prop_content = propfile.read()
+            for key in self.apply_props:
+                if key in prop_content:
+                    p = re.compile(r"^{key}=.*(\n)*".format(key=key), re.M)
+                    prop_content = re.sub(p, "", prop_content)
+        with open(os.path.join("/var/lib/waydroid/waydroid_base.prop"), "w") as propfile:
+            propfile.write(prop_content)
 
     def mount(self):
         img = os.path.join(images.get_image_dir(), self.partition+".img")
@@ -103,6 +131,9 @@ class General:
     def extra2(self):
         pass
 
+    def extra3(self):
+        pass
+
     def install(self):
         if container.use_overlayfs():
             self.download()
@@ -131,4 +162,19 @@ class General:
         Logger.info("Installation finished")
 
     def uninstall(self):
-        pass
+        if container.use_overlayfs():
+            self.remove()
+            if hasattr(self, "apply_props"):
+                self.remove_props()
+            self.extra3()
+            self.restart()
+        else:
+            self.stop()
+            self.mount()
+            self.remove()
+            if hasattr(self, "apply_props"):
+                self.remove_props()
+            self.extra3()
+            self.umount()
+            self.start()
+        Logger.info("Uninstallation finished")

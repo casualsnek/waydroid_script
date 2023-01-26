@@ -12,6 +12,10 @@ class Smartdock(General):
     dl_file_name = "smartdock.zip"
     act_md5 = "ad0cc5e023ac6ee97e7b013b9b0defee"
     apply_props = { "qemu.hw.mainkeys" : "1" }
+    files = [
+            "etc/permissions/permissions_cu.axel.smartdock.xml",
+            "priv-app/SmartDock"
+        ]
 
     def copy(self):
         if not os.path.exists(os.path.join(self.copy_dir, self.partition, "priv-app", "SmartDock")):

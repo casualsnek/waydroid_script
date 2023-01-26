@@ -19,6 +19,10 @@ def get_download_dir():
         os.makedirs(download_loc)
     return download_loc
 
+# not good
+def get_data_dir():
+    return os.path.join('/', "home", os.environ.get("SUDO_USER", os.environ["USER"]), ".local", "share", "waydroid", "data")
+
 def run(args, ignore=""):
     result = subprocess.run(args=args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # print(result.stdout.decode())

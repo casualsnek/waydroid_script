@@ -28,6 +28,7 @@ class MicroG(General):
         "com.android.vending-22.apk": "6815d191433ffcd8fa65923d5b0b0573",
         "org.microg.gms.droidguard-14.apk": "4734b41c1a6bc34a541053ddde7a0f8e"
     }
+    priv_apps = ["com.google.android.gms", "com.android.vending"]
 
     def skip_extract(self):
         return True
@@ -59,12 +60,11 @@ class MicroG(General):
 
     def copy(self):
         Logger.info("Copying MicroG and other files")
-        priv_apps = ["com.google.android.gms", "com.android.vending"]
         for apk in {**self.fdroid_repo_apks, **self.microg_apks}.keys():
             splitor = "_" if apk in self.fdroid_repo_apks.keys() else "-"
             package = apk.split(splitor)[0]
             download_dir = get_download_dir()
-            apk_dir = "app" if package not in priv_apps else "priv-app"
+            apk_dir = "app" if package not in self.priv_apps else "priv-app"
             if not os.path.exists(os.path.join(self.copy_dir, self.partition, apk_dir, package)):
                 os.makedirs(os.path.join(self.copy_dir, self.partition, apk_dir, package))
             shutil.copyfile(os.path.join(download_dir, apk),
@@ -89,3 +89,17 @@ class MicroG(General):
         Logger.info("Signature spoofing")
         run("waydroid shell pm grant com.google.android.gms android.permission.FAKE_PACKAGE_SIGNATURE".split())
         run("waydroid shell pm grant com.android.vending android.permission.FAKE_PACKAGE_SIGNATURE".split())
+    
+    def remove(self):
+        system_dir = os.path.join(self.copy_dir, self.partition)
+        files = [key.split("_")[0] for key in self.fdroid_repo_apks.keys()]
+        files += [key.split("-")[0] for key in self.microg_apks.keys()]
+        for f in files:
+            if f in self.priv_apps:
+                file = os.path.join(system_dir, "priv-app", f)
+            else:
+                file = os.path.join(system_dir, "app", f)
+            if os.path.isdir(file):
+                shutil.rmtree(file)
+            elif os.path.isfile(file):
+                os.remove(file)

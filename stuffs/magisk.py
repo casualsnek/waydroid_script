@@ -3,7 +3,7 @@ import os
 import shutil
 import re
 from stuffs.general import General
-from tools.helper import download_file, host, run
+from tools.helper import download_file, get_data_dir, host, run
 from tools.logger import Logger
 from tools import container
 
@@ -14,6 +14,7 @@ class Magisk(General):
     extract_to = "/tmp/magisk_unpack"
     magisk_dir = os.path.join(partition, "etc", "init", "magisk")
     machine = host()
+    files = ["etc/init/magisk"]
     oringinal_bootanim = """
 service bootanim /system/bin/bootanimation
     class core animation
@@ -60,6 +61,13 @@ on property:init.svc.zygote=stopped
         Logger.info("Downloading latest Magisk-Delta to {} now ...".format(self.download_loc))
         download_file(self.dl_link, self.download_loc)
 
+    # require additional setup
+    def setup(self):
+        Logger.info("Additional setup")
+        magisk_absolute_dir = os.path.join(self.copy_dir, self.magisk_dir)
+        data_dir = get_data_dir()
+        shutil.copytree(magisk_absolute_dir, os.path.join(data_dir, "adb", "magisk"), dirs_exist_ok=True)
+
     def copy(self):
         magisk_absolute_dir = os.path.join(self.copy_dir, self.magisk_dir)
         if not os.path.exists(magisk_absolute_dir):
@@ -79,6 +87,16 @@ on property:init.svc.zygote=stopped
                 shutil.copyfile(o_path, n_path)
                 run(["chmod", "+x", n_path])
         shutil.copyfile(self.download_loc, os.path.join(magisk_absolute_dir,"magisk.apk") )
+        shutil.copytree(os.path.join(self.extract_to, "assets", "chromeos"), os.path.join(magisk_absolute_dir, "chromeos"), dirs_exist_ok=True)
+        assets_files = [
+            "addon.d.sh",
+            "boot_patch.sh",
+            "stub.apk",
+            "util_functions.sh"
+        ]
+        for f in assets_files:
+            shutil.copyfile(os.path.join(self.extract_to, "assets", f), os.path.join(magisk_absolute_dir, f))
+        self.setup()
 
         # Updating Magisk from Magisk manager will modify bootanim.rc, 
         # So it is necessary to backup the original bootanim.rc.
@@ -94,16 +112,36 @@ on property:init.svc.zygote=stopped
     def extra1(self):
         if container.use_overlayfs():
             sys_overlay_rw = "/var/lib/waydroid/overlay_rw"
-            old_bootanim_rc = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "bootanim.rc")
-            old_bootanim_rc_gz = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "bootanim.rc.gz")
-            old_magisk = os.path.join(sys_overlay_rw, "system","system", "etc", "init", "magisk")
+            files = [
+                "system/system/etc/init/bootanim.rc",
+                "system/system/etc/init/bootanim.rc.gz",
+                "system/system/etc/init/magisk",               
+                "system/system/addon.d/99-magisk.sh",
+                "vendor/etc/selinux/precompiled_sepolicy"
+            ]
 
-            if os.path.exists(old_bootanim_rc):
-                os.remove(old_bootanim_rc)
-            if os.path.exists(old_bootanim_rc_gz):
-                os.remove(old_bootanim_rc_gz)
-            if os.path.exists(old_magisk):
-                if os.path.isdir(old_magisk):
-                    shutil.rmtree(old_magisk)
-                else:
-                    os.remove(old_magisk)
+            for f in files:
+                file = os.path.join(sys_overlay_rw, f)
+                if os.path.isdir(file):
+                    shutil.rmtree(file)
+                elif os.path.isfile(file) or os.path.exists(file):
+                    os.remove(file)
+    
+    def extra3(self):
+        self.extra1()
+        data_dir = get_data_dir()
+        files = [
+            os.path.join(data_dir, "adb/magisk.db"),
+            os.path.join(data_dir, "adb/magisk")
+        ]
+        for file in files:
+            if os.path.isdir(file):
+                shutil.rmtree(file)
+            elif os.path.isfile(file):
+                os.remove(file)
+        bootanim_path = os.path.join(self.copy_dir, self.partition, "etc", "init", "bootanim.rc")
+        if container.use_overlayfs():
+            os.remove(bootanim_path)
+        else:
+            with open(bootanim_path, "w") as initfile:
+                initfile.write(self.oringinal_bootanim)

@@ -31,6 +31,18 @@ on property:ro.enable.native.bridge.exec=1
         "ro.dalvik.vm.isa.arm": "x86",
         "ro.dalvik.vm.isa.arm64": "x86_64"
     }
+    files = [
+            "bin/arm",
+            "bin/arm64",
+            "bin/houdini",
+            "bin/houdini64",
+            "etc/binfmt_misc",
+            "etc/init/houdini.rc",
+            "lib/arm",
+            "lib/libhoudini.so",
+            "lib64/arm64",
+            "lib64/libhoudini.so"
+        ]
 
     def copy(self):
         run(["chmod", "+x", self.extract_to, "-R"])

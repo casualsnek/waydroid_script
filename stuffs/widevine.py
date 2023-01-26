@@ -11,6 +11,15 @@ class Widevine(General):
     dl_file_name = "widevine.zip"
     extract_to = "/tmp/widevineunpack"
     act_md5 = "a31f325453c5d239c21ecab8cfdbd878"
+    files = [
+            "bin/hw/android.hardware.drm@1.3-service-lazy.widevine",
+            "bin/move_widevine_data.sh",
+            "etc/init/android.hardware.drm@1.3-service-lazy.widevine.rc",
+            "etc/vintf/manifest/manifest_android.hardware.drm@1.3-service.widevine.xml",
+            "lib/libwvhidl.so",
+            "lib/mediadrm",
+            "lib64/mediadrm"
+        ]
 
     def copy(self):
         run(["chmod", "+x", self.extract_to, "-R"])

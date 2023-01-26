@@ -140,17 +140,19 @@ Star this repository if you find this useful, if you encounter problem create a 
 
 ## Error handling  
 
-In case of error, if you retry immediately and it fails with this error 
+- WayDroid no longer boots
+
 ```
-==> Failed to resize image '/var/lib/waydroid/images/system.img' .. !  e2fsck 1.45.5 (07-Jan-2020)
-/var/lib/waydroid/images/system.img is mounted.
-e2fsck: Cannot continue, aborting.
+sudo waydroid upgrade -o
+sudo systemctl restart waydroid-container.service
 ```
-You need to get the mounting point using `df | grep waydroid`. It will be something like `/dev/loopXXX`. Then, unmount it
-```
-sudo umount /dev/loopXXX
-```
-And re-run the script.
+This will make `/var/lib/waydroid/waydroid_base.prop` return to original state, so libndk/libhoudini will be invalid. You need to modify `waydroid_base.prop` again.
+
+Or use `sudo python3 main.py uninstall xxxxx` to remove what is causing the issue.
+
+- Magisk installed: N/A
+
+Check [waydroid-magisk](https://github.com/nitanmarcel/waydroid-magisk)
 
 ## Credits
 - [WayDroid](https://github.com/waydroid/waydroid)

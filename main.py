@@ -41,18 +41,10 @@ def install(*args):
 def uninstall(*args):
     if "gapps" in args:
         Gapps().uninstall()
-    if "libndk" in args and "houdini" not in args:
-        arch = helper.host()[0]
-        if arch == "x86_64":
-            Ndk().uninstall()
-        else:
-            Logger.warn("libndk is not supported on your CPU")
-    if "libhoudini" in args and "ndk" not in args:
-        arch = helper.host()[0]
-        if arch == "x86_64":
-            Houdini().uninstall()
-        else:
-            Logger.warn("libhoudini is not supported on your CPU")
+    if "libndk" in args:
+        Ndk().uninstall()
+    if "libhoudini" in args:
+        Houdini().uninstall()
     if "magisk" in args:
         Magisk().uninstall()
     if "widevine" in args:
@@ -61,6 +53,8 @@ def uninstall(*args):
         Smartdock().uninstall()
     if "nodataperm" in args:
         Nodataperm().uninstall()
+    if "microg" in args:
+        MicroG().uninstall()
 
 def main():
     about = """
@@ -85,7 +79,7 @@ def main():
         "type": str,
         "nargs": '+',
         "metavar":"",
-        "choices": ["gapps", "microg", "libndk","libhoudini","magisk", "smartdock","widevine", "nodataperm"],
+        "choices": ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "widevine", "nodataperm"],
     }
 
     install_help = """
