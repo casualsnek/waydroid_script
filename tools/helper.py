@@ -23,8 +23,8 @@ def get_download_dir():
 def get_data_dir():
     return os.path.join('/', "home", os.environ.get("SUDO_USER", os.environ["USER"]), ".local", "share", "waydroid", "data")
 
-def run(args, ignore=""):
-    result = subprocess.run(args=args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def run(args, env=None, ignore=""):
+    result = subprocess.run(args=args, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # print(result.stdout.decode())
     if result.stderr:
         error = result.stderr.decode("utf-8")
