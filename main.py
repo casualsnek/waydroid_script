@@ -4,6 +4,7 @@ import argparse
 from logging import Logger
 from stuffs.android_id import Android_id
 from stuffs.gapps import Gapps
+from stuffs.hidestatusbar import HideStatusBar
 from stuffs.houdini import Houdini
 from stuffs.magisk import Magisk
 from stuffs.microg import MicroG
@@ -37,6 +38,8 @@ def install(*args):
         Nodataperm().install()
     if "microg" in args:
         MicroG().install()
+    if "hidestatus" in args:
+        HideStatusBar().install()
 
 def uninstall(*args):
     if "gapps" in args:
@@ -55,6 +58,8 @@ def uninstall(*args):
         Nodataperm().uninstall()
     if "microg" in args:
         MicroG().uninstall()
+    if "hidestatus" in args:
+        HideStatusBar().uninstall()
 
 def main():
     about = """
@@ -79,7 +84,7 @@ def main():
         "type": str,
         "nargs": '+',
         "metavar":"",
-        "choices": ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "widevine", "nodataperm"],
+        "choices": ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "widevine", "nodataperm", "hidestatus"],
     }
 
     install_help = """

@@ -16,6 +16,9 @@ Then run:
     git clone https://github.com/casualsnek/waydroid_script
     cd waydroid_script
     sudo python3 -m pip install -r requirements.txt
+    # install something
+    sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg, hidestatus}
+    # uninstall something
     sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
 
 ## Install OpenGapps
@@ -104,7 +107,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 ```
 sudo python3 main.py install nodataperm
 ```
-**WARNING**: Only tested on `lineage-18.1-20230121-VANILLA-waydroid_x86_64`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting.
+**WARNING**: Only tested on `lineage-18.1-20230121-VANILLA-waydroid_x86_64`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo python3 main.py uninstall nodataperm` to remove it.
 
 
 Or you can run the following commands directly in `sudo waydroid shell`. In this way, every time a new game is installed, you need to run it again, but it's much less risky.
@@ -128,6 +131,18 @@ chmod 777 -R /mnt/*/*/*/*/Android/obb
 ```
 sudo python main.py install microg
 ```
+
+## Hide Status Bar
+Before
+![Before](assets/8.png)
+
+After
+![After](assets/9.png)
+
+```
+sudo python3 main.py install hidestatus
+```
+
 
 ## Get Android ID for device registration
 
