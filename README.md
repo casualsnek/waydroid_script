@@ -107,7 +107,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 ```
 sudo python3 main.py install nodataperm
 ```
-**WARNING**: Only tested on `lineage-18.1-20230121-VANILLA-waydroid_x86_64`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo python3 main.py uninstall nodataperm` to remove it.
+**WARNING**: Tested on `lineage-18.1-20230128-VANILLA-waydroid_x86_64.img`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo python3 main.py uninstall nodataperm` to remove it.
 
 
 Or you can run the following commands directly in `sudo waydroid shell`. In this way, every time a new game is installed, you need to run it again, but it's much less risky.

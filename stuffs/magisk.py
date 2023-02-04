@@ -141,7 +141,8 @@ on property:init.svc.zygote=stopped
                 os.remove(file)
         bootanim_path = os.path.join(self.copy_dir, self.partition, "etc", "init", "bootanim.rc")
         if container.use_overlayfs():
-            os.remove(bootanim_path)
+            if os.path.exists(bootanim_path):
+                os.remove(bootanim_path)
         else:
             with open(bootanim_path, "w") as initfile:
                 initfile.write(self.oringinal_bootanim)
