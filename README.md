@@ -19,7 +19,7 @@ Then run:
     # install something
     sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg, hidestatus}
     # uninstall something
-    sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+    sudo python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg, hidestatus}
 
 ## Install OpenGapps
 
