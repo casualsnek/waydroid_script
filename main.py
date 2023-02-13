@@ -2,7 +2,7 @@
 
 import argparse
 from logging import Logger
-from stuffs.android_id import Android_id
+from stuffs.android_id import AndroidId
 from stuffs.gapps import Gapps
 from stuffs.hidestatusbar import HideStatusBar
 from stuffs.houdini import Houdini
@@ -76,7 +76,7 @@ def main():
 
     google_id_parser=subparsers.add_parser('google',
                         help='grab device id for unblocking Google Apps')
-    google_id_parser.set_defaults(func=Android_id().get_id)
+    google_id_parser.set_defaults(func=AndroidId().get_id)
     # create the parser for the "a" command
 
     arg_template = {
