@@ -36,6 +36,6 @@ def get_image_dir():
         sys.exit(1)
     cfg.read(cfg_file)
     if "waydroid" not in cfg:
-        Logger.error("ERROR: Required entry in config was not found, Cannot continue!") #magisk
+        Logger.error("Required entry in config was not found, Cannot continue!") #magisk
         sys.exit(1)
     return cfg["waydroid"]["images_path"]

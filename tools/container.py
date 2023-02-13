@@ -1,6 +1,9 @@
-import re
+import configparser
+import os
+import sys
 import dbus
 from tools.helper import run
+from tools.logger import Logger
 
 def DBusContainerService(object_path="/ContainerManager", intf="id.waydro.ContainerManager"):
     return dbus.Interface(dbus.SystemBus().get_object("id.waydro.Container", object_path), intf)
@@ -16,11 +19,20 @@ def use_dbus():
     return True
 
 def use_overlayfs():
-    with open("/var/lib/waydroid/waydroid.cfg") as f:
-            cont=f.read()
-            if re.search("mount_overlays[ \t]*=[ \t]*True", cont):
-                return True
-            return False
+    cfg = configparser.ConfigParser()
+    cfg_file = os.environ.get("WAYDROID_CONFIG", "/var/lib/waydroid/waydroid.cfg")
+    if not os.path.isfile(cfg_file):
+        Logger.error("Cannot locate waydroid config file, reinit wayland and try again!")
+        sys.exit(1)
+    cfg.read(cfg_file)
+    if "waydroid" not in cfg:
+        Logger.error("Required entry in config was not found, Cannot continue!")
+    if "mount_overlays" not in cfg["waydroid"]:
+        return False
+    if cfg["waydroid"]["mount_overlays"]=="True":
+        return True
+    return False
+
 
 def get_session():
     return DBusContainerService().GetSession()
