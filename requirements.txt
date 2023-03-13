@@ -1,3 +1,4 @@
 tqdm
 requests
 aapt2
+dbus-python
