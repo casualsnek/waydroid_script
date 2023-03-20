@@ -1,4 +1,4 @@
-import os
+from os import path, makedirs
 import shutil
 from stuffs.general import General
 from tools.helper import run
@@ -6,10 +6,10 @@ from tools.logger import Logger
 
 class Ndk(General):
     partition = "system"
-    dl_link = "https://www.dropbox.com/s/eaf4dj3novwiccp/libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3.zip?dl=1"
+    dl_link = "https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/181d9290a69309511185c4417ba3d890b3caaaa8.zip"
     dl_file_name = "libndktranslation.zip"
     extract_to = "/tmp/libndkunpack"
-    act_md5 = "4456fc1002dc78e544e8d9721bb24398"
+    act_md5 = "0beff55f312492f24d539569d84f5bfb"
     apply_props = {
         "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi,arm64-v8a",
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
@@ -39,10 +39,19 @@ on property:ro.enable.native.bridge.exec=1
     def copy(self):
         run(["chmod", "+x", self.extract_to, "-R"])
         Logger.info("Copying libndk library files ...")
-        shutil.copytree(os.path.join(self.extract_to, "libndk_translation_Module-c6077f3398172c64f55aad7aab0e55fad9110cf3", "system"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
+        archive_url, commit_sha = path.split(path.splitext(self.dl_link)[0])
+        zipped_basepath, _ = path.split(archive_url)
+        prebuilts_sourcedir = path.join(
+            self.extract_to,
+            f"{path.basename(zipped_basepath)}-{commit_sha}",
+            "prebuilts")
+        shutil.copytree(
+            prebuilts_sourcedir,
+            path.join(self.copy_dir, self.partition),
+            dirs_exist_ok=True)
 
-        init_path = os.path.join(self.copy_dir, self.partition, "etc", "init", "libndk.rc")
-        if not os.path.isfile(init_path):
-            os.makedirs(os.path.dirname(init_path), exist_ok=True)
+        init_path = path.join(self.copy_dir, self.partition, "etc", "init", "libndk.rc")
+        if not path.isfile(init_path):
+            makedirs(path.dirname(init_path), exist_ok=True)
         with open(init_path, "w") as initfile:
             initfile.write(self.init_rc_component)
