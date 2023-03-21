@@ -2,7 +2,6 @@ import os
 import shutil
 from stuffs.general import General
 from tools.helper import host, run
-from tools.logger import Logger
 
 class Gapps(General):
     partition = "system"

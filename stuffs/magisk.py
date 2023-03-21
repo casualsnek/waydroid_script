@@ -9,7 +9,7 @@ from tools import container
 
 class Magisk(General):
     partition = "system"
-    dl_link = "https://huskydg.github.io/magisk-files/app-release.apk"
+    dl_link = "https://huskydg.github.io/magisk-files/app-debug.apk"
     dl_file_name = "magisk.apk"
     extract_to = "/tmp/magisk_unpack"
     magisk_dir = os.path.join(partition, "etc", "init", "magisk")
