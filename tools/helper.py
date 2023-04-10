@@ -1,5 +1,6 @@
 import os
 import platform
+import re
 import subprocess
 import sys
 import requests
@@ -17,16 +18,25 @@ def get_download_dir():
         os.makedirs(download_loc)
     return download_loc
 
-def run(args):
-    result = subprocess.run(args=args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def run(args: list, env = None, ignore = None):
+    result = subprocess.run(
+        args=args, 
+        env=env, 
+        stdout=subprocess.PIPE, 
+        stderr=subprocess.PIPE
+    )
+
     # print(result.stdout.decode())
     if result.stderr:
-        Logger.error(result.stderr.decode("utf-8"))
+        error = result.stderr.decode("utf-8")
+        if ignore and re.match(ignore, error):
+            return result
+        Logger.error(error)
         raise subprocess.CalledProcessError(
-                    returncode = result.returncode,
-                    cmd = result.args,
-                    stderr = result.stderr
-                )
+            returncode=result.returncode,
+            cmd=result.args,
+            stderr=result.stderr
+        )
     return result
 
 def download_file(url, f_name):
@@ -72,3 +82,6 @@ def check_root():
     if os.geteuid() != 0:
         Logger.error("This script must be run as root. Aborting.")
         sys.exit(1)
+
+def upgrade():
+    run(["waydroid", "upgrade", "-o"], ignore=r"\[.*\] Stopping container\n\[.*\] Starting container")
