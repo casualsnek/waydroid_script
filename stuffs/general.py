@@ -1,3 +1,4 @@
+import configparser
 import os
 import re
 import zipfile
@@ -54,16 +55,14 @@ class General:
             z.extractall(self.extract_to)
 
     def add_props(self):
-        with open(os.path.join("/var/lib/waydroid/waydroid_base.prop"), "r") as propfile:
-            prop_content = propfile.read()
-            for key in self.apply_props:
-                if key not in prop_content:
-                    prop_content = prop_content+"\n{key}={value}".format(key=key, value=self.apply_props[key])
-                else:
-                    p = re.compile(r"^{key}=.*$".format(key=key), re.M)
-                    prop_content = re.sub(p, "{key}={value}".format(key=key, value=self.apply_props[key]), prop_content)
-        with open(os.path.join("/var/lib/waydroid/waydroid_base.prop"), "w") as propfile:
-            propfile.write(prop_content)        
+        cfg = configparser.ConfigParser()
+        cfg.read("/var/lib/waydroid/waydroid.cfg")
+
+        for key in self.apply_props.keys():
+            cfg.set('properties', key, self.apply_props[key])
+        
+        with open("/var/lib/waydroid/waydroid.cfg", "w") as f:
+            cfg.write(f)
 
     def mount(self):
         img = os.path.join(images.get_image_dir(), self.partition+".img")
