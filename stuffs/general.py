@@ -1,12 +1,11 @@
 import configparser
 import glob
 import os
-import re
 import shutil
 import zipfile
 import hashlib
 from tools import images
-from tools.helper import download_file, get_download_dir
+from tools.helper import download_file, get_download_dir, upgrade
 from tools import container
 from tools.logger import Logger
 
@@ -116,10 +115,12 @@ class General:
             container.start(self.session)
         else:
             container.start()
+        upgrade()
 
     def restart(self):
         self.stop()
         self.start()
+        upgrade()
 
     def copy(self):
         pass
