@@ -35,3 +35,7 @@ class Widevine(General):
         Logger.info("Copying widevine library files ...")
         shutil.copytree(os.path.join(self.extract_to, "vendor_google_proprietary_widevine-prebuilt-"+name,
                         "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
+
+        for file in os.listdir(os.path.join(self.copy_dir, self.partition, "etc", "init")):
+            if file.endswith('.rc'):
+                os.chmod(os.path.join(self.copy_dir, self.partition, "etc", "init", file), 0o644)

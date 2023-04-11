@@ -106,6 +106,7 @@ on property:init.svc.zygote=stopped
             f_gz.write(self.oringinal_bootanim.encode('utf-8'))
         with open(bootanim_path, "w") as initfile:
             initfile.write(self.oringinal_bootanim+self.bootanim_component)
+        os.chmod(bootanim_path, 0o644)
 
 
     # Delete the contents of upperdir

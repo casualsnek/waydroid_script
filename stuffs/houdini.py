@@ -55,3 +55,4 @@ on property:ro.enable.native.bridge.exec=1
             os.makedirs(os.path.dirname(init_path), exist_ok=True)
         with open(init_path, "w") as initfile:
             initfile.write(self.init_rc_component)        
+        os.chmod(init_path, 0o644)
