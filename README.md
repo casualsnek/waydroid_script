@@ -35,6 +35,13 @@ After waydroid has finished booting open terminal and switch to directory where 
     sudo python3 main.py -i
 Copy the returned numeric ID open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1) enter the id and register it, you may need to wait upto 10-20 minutes for device to get registered, then clear Google Play Service's cache and try logging in !
 
+<details>
+  <summary>If you get the error: `ERROR: Cannot access gservices.db, make sure gapps is installed and waydroid was started at least once after installation and make sure waydroid is running !`</summary>
+
+  1. run `sudo waydroid shell`
+  2. inside the waydroid shell run ```ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"``` to get the numeric ID as explained here: https://github.com/casualsnek/waydroid_script/issues/72
+</details>
+
 ## Install Magisk
 
 Open terminal and switch to directory where "main.py" is located then run:
