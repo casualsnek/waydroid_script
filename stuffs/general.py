@@ -4,7 +4,7 @@ import re
 import zipfile
 import hashlib
 from tools import images
-from tools.helper import download_file, get_download_dir, run
+from tools.helper import download_file, get_download_dir, run, upgrade
 from tools.container import DBusContainerService
 from tools.logger import Logger
 
@@ -103,10 +103,12 @@ class General:
             DBusContainerService().Start(self.session)
         else:
             run(["systemctl", "restart", "waydroid-container.service"])
+        upgrade()
 
     def restart(self):
         self.stop()
         self.start()
+        upgrade()
 
     def copy(self):
         pass
