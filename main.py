@@ -34,7 +34,7 @@ def main():
     parser.add_argument('-l', '--install-libhoudini', dest='houdini',
                         help='Install libhoudini for arm translation',
                         action='store_true')
-    parser.add_argument('-w', '--install-windevine', dest='widevine',
+    parser.add_argument('-w', '--install-widevine', dest='widevine',
                         help='Integrate Widevine DRM (L3)',
                         action='store_true')
     args = parser.parse_args()
