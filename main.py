@@ -15,7 +15,6 @@ def main():
     Does stuff like installing Gapps, Installing NDK Translation and getting Android ID for device registration.
     Use -h  flag for help !
     """
-    helper.check_root()
     parser = argparse.ArgumentParser(description=about, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-g', '--install-gapps',
                         dest='gapps',
@@ -38,6 +37,7 @@ def main():
                         help='Integrate Widevine DRM (L3)',
                         action='store_true')
     args = parser.parse_args()
+    helper.check_root()
     if args.getid:
        Android_id().get_id() 
     if args.gapps:
