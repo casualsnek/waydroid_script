@@ -5,7 +5,7 @@ import shutil
 import zipfile
 import hashlib
 from tools import images
-from tools.helper import download_file, get_download_dir, upgrade
+from tools.helper import download_file, get_download_dir, host, upgrade
 from tools import container
 from tools.logger import Logger
 
@@ -60,11 +60,31 @@ class General:
             z.extractall(self.extract_to)
 
     def add_props(self):
+        arch = host()[0]
+        bin_dir = os.path.join(self.copy_dir, "system", "bin")
+        resetprop_rc=os.path.join(self.copy_dir, "system/etc/init/resetprop.rc")
+        if not os.path.isfile(os.path.join(bin_dir, "resetprop")):
+            if not os.path.exists(bin_dir):
+                os.makedirs(bin_dir)
+            shutil.copy(os.path.join("./bin",arch,"resetprop"), bin_dir)
+            os.chmod(os.path.join(bin_dir, "resetprop"), 0o755)
+        if not os.path.isfile(os.path.join(bin_dir, "resetprop.sh")):
+            with open(os.path.join(bin_dir, "resetprop.sh"), "w") as f:
+                f.write("#!/system/bin/sh\nwhile read line; do resetprop ${line%=*} ${line#*=}; done < /vendor/waydroid.prop")
+            os.chmod(os.path.join(bin_dir, "resetprop.sh"), 0o755)
+        if not os.path.isfile(resetprop_rc):
+            if not os.path.exists(os.path.dirname(resetprop_rc)):
+                os.makedirs(os.path.dirname(resetprop_rc))
+            with open(resetprop_rc, "w") as f:
+                f.write("on post-fs-data\n    exec u:r:su:s0 root root -- /system/bin/sh /system/bin/resetprop.sh")
+            os.chmod(resetprop_rc, 0o644)
+
         cfg = configparser.ConfigParser()
         cfg.read("/var/lib/waydroid/waydroid.cfg")
 
         for key in self.apply_props.keys():
-            cfg.set('properties', key, self.apply_props[key])
+            if self.apply_props[key]:
+                cfg.set('properties', key, self.apply_props[key])
         
         with open("/var/lib/waydroid/waydroid.cfg", "w") as f:
             cfg.write(f)
@@ -120,7 +140,6 @@ class General:
     def restart(self):
         self.stop()
         self.start()
-        upgrade()
 
     def copy(self):
         pass

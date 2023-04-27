@@ -2,15 +2,15 @@
 Script to add gapps and other stuff to waydroid !
 
 # Installation/Usage
-"lzip" and "sqlite" is required for this script to work, install it using your distribution's package manager:
+"lzip" is required for this script to work, install it using your distribution's package manager:
 ## Arch, Manjaro and EndeavourOS based distributions:
-	sudo pacman -S lzip sqlite
+	sudo pacman -S lzip
 ## Debian and Ubuntu based distributions:
-	sudo apt install lzip sqlite  
+	sudo apt install lzip
 ## RHEL, Fedora and Rocky based distributions:
-	sudo dnf install lzip sqlite
+	sudo dnf install lzip
 ## openSUSE based distributions:
-	sudo zypper install lzip sqlite
+	sudo zypper install lzip
 Then run:
 	
     git clone https://github.com/casualsnek/waydroid_script
@@ -50,7 +50,7 @@ Magisk will be installed on next boot !
 
 Zygisk and modules like LSPosed should work now.
 
-Please use `Direct Install into system partition` to update Magisk in Magisk manager.
+If you want to update Magisk, Please use `Direct Install into system partition` or run this sript again.
 
 This script only focuses on Magisk installation, if you need more management, please check https://github.com/nitanmarcel/waydroid-magisk
 

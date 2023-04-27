@@ -1,9 +1,9 @@
-import glob
 import os
 import shutil
 from stuffs.general import General
 from tools.helper import run
 from tools.logger import Logger
+from tools.container import use_overlayfs
 
 class Ndk(General):
     partition = "system"
@@ -16,8 +16,10 @@ class Ndk(General):
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
         "ro.product.cpu.abilist64": "x86_64,arm64-v8a",
         "ro.dalvik.vm.native.bridge": "libndk_translation.so",
-        "ro.enable.native.bridge.exec": "1",
-      #  "ro.ndk_translation.version": "0.2.2",
+        "ro.enable.native.bridge.exec": None,
+        "ro.vendor.enable.native.bridge.exec": None,
+        "ro.vendor.enable.native.bridge.exec64": None,
+        "ro.ndk_translation.version": "0.2.3",
         "ro.dalvik.vm.isa.arm": "x86",
         "ro.dalvik.vm.isa.arm64": "x86_64"
     }
@@ -35,6 +37,14 @@ class Ndk(General):
             "lib/libndk*",
             "lib64/libndk*"
         ]
+    def __init__(self, android_version="11") -> None:
+        super().__init__()
+        if android_version=="11":
+            self.apply_props["ro.enable.native.bridge.exec"] = "1"
+        elif android_version=="13":
+            self.apply_props["ro.vendor.enable.native.bridge.exec"] = "1"
+            self.apply_props["ro.vendor.enable.native.bridge.exec64"] = "1"
+
 
     def copy(self):
         run(["chmod", "+x", self.extract_to, "-R"])

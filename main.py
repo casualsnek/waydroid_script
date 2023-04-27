@@ -13,52 +13,54 @@ from stuffs.nodataperm import Nodataperm
 from stuffs.smartdock import Smartdock
 from stuffs.widevine import Widevine
 import tools.helper as helper
-def install(*args):
-    if "gapps" in args:
-        Gapps().install()
-    if "libndk" in args and "houdini" not in args:
+def install(args):
+    app = args.app
+    if "gapps" in app:
+        Gapps(args.android_version).install()
+    if "libndk" in app and "houdini" not in app:
         arch = helper.host()[0]
         if arch == "x86_64":
-            Ndk().install()
+            Ndk(args.android_version).install()
         else:
             Logger.warn("libndk is not supported on your CPU")
-    if "libhoudini" in args and "ndk" not in args:
+    if "libhoudini" in app and "ndk" not in app:
         arch = helper.host()[0]
         if arch == "x86_64":
-            Houdini().install()
+            Houdini(args.android_version).install()
         else:
             Logger.warn("libhoudini is not supported on your CPU")
-    if "magisk" in args:
+    if "magisk" in app:
         Magisk().install()
-    if "widevine" in args:
-        Widevine().install()
-    if "smartdock" in args:
+    if "widevine" in app:
+        Widevine(args.android_version).install()
+    if "smartdock" in app:
         Smartdock().install()
-    if "nodataperm" in args:
+    if "nodataperm" in app:
         Nodataperm().install()
-    if "microg" in args:
+    if "microg" in app:
         MicroG().install()
-    if "hidestatus" in args:
+    if "hidestatus" in app:
         HideStatusBar().install()
 
-def uninstall(*args):
-    if "gapps" in args:
-        Gapps().uninstall()
-    if "libndk" in args:
-        Ndk().uninstall()
-    if "libhoudini" in args:
-        Houdini().uninstall()
-    if "magisk" in args:
+def uninstall(args):
+    app = args.app
+    if "gapps" in app:
+        Gapps(args.android_version).uninstall()
+    if "libndk" in app:
+        Ndk(args.android_version).uninstall()
+    if "libhoudini" in app:
+        Houdini(args.android_version).uninstall()
+    if "magisk" in app:
         Magisk().uninstall()
-    if "widevine" in args:
-        Widevine().uninstall()
-    if "smartdock" in args:
+    if "widevine" in app:
+        Widevine(args.android_version).uninstall()
+    if "smartdock" in app:
         Smartdock().uninstall()
-    if "nodataperm" in args:
+    if "nodataperm" in app:
         Nodataperm().uninstall()
-    if "microg" in args:
+    if "microg" in app:
         MicroG().uninstall()
-    if "hidestatus" in args:
+    if "hidestatus" in app:
         HideStatusBar().uninstall()
 
 def main():
@@ -71,7 +73,11 @@ def main():
 
     parser = argparse.ArgumentParser(prog=about)
     parser.set_defaults(app="")
-
+    parser.add_argument('-a', '--android-version',
+                        dest='android_version',
+                        help='Specify the Android version',
+                        default="11",
+                        choices=["11","13"])
     subparsers = parser.add_subparsers(title="subcommands", help="operations")
 
     google_id_parser=subparsers.add_parser('google',
@@ -104,9 +110,8 @@ smartdock: A desktop mode launcher for Android
     uninstall_parser.add_argument(**arg_template)
 
     args = parser.parse_args()
-
     if args.app:
-        args.func(*args.app)
+        args.func(args)
     else:
         args.func()
 
