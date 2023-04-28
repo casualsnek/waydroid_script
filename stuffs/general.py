@@ -63,14 +63,16 @@ class General:
         arch = host()[0]
         bin_dir = os.path.join(self.copy_dir, "system", "bin")
         resetprop_rc=os.path.join(self.copy_dir, "system/etc/init/resetprop.rc")
-        if not os.path.isfile(os.path.join(bin_dir, "resetprop")):
+        if not os.path.isfile(os.path.join(bin_dir, "_resetprop")):
             if not os.path.exists(bin_dir):
                 os.makedirs(bin_dir)
-            shutil.copy(os.path.join("./bin",arch,"resetprop"), bin_dir)
-            os.chmod(os.path.join(bin_dir, "resetprop"), 0o755)
+            shutil.copy(os.path.join("./bin",arch,"_resetprop"), bin_dir)
+            os.chmod(os.path.join(bin_dir, "_resetprop"), 0o755)
         if not os.path.isfile(os.path.join(bin_dir, "resetprop.sh")):
             with open(os.path.join(bin_dir, "resetprop.sh"), "w") as f:
-                f.write("#!/system/bin/sh\nwhile read line; do resetprop ${line%=*} ${line#*=}; done < /vendor/waydroid.prop")
+                f.write("#!/system/bin/sh\n")
+                f.write("temp_dir=$(mktemp -d);ln -s /system/bin/_resetprop \"${temp_dir}/resetprop\"\n")
+                f.write("while read line; do \"${temp_dir}/resetprop\" ${line%=*} ${line#*=}; done < /vendor/waydroid.prop\n")
             os.chmod(os.path.join(bin_dir, "resetprop.sh"), 0o755)
         if not os.path.isfile(resetprop_rc):
             if not os.path.exists(os.path.dirname(resetprop_rc)):
