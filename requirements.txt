@@ -1,4 +1,4 @@
 tqdm
 requests
-aapt2
+InquirerPy
 dbus-python==1.2.18
