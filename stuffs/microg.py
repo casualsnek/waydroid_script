@@ -96,6 +96,7 @@ service microg_service /system/bin/sh /system/bin/npem
         "etc/init/microg.rc",
         "etc/permissions/com.google.android.backuptransport.xml",
         "etc/permissions/com.android.vending.xml",
+        "etc/permissions/foss-permissions.xml",
         "etc/permissions/com.google.android.gms.xml",
         "etc/permissions/com.aurora.services.xml",
         "etc/permissions/com.google.android.maps.xml",

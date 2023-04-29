@@ -9,8 +9,11 @@ from tools import container
 
 class Nodataperm(General):
     id = "nodataperm"
-    dl_links = {"11": ["https://github.com/ayasa520/hack_full_data_permission/archive/refs/heads/main.zip",
-                       "eafd7b0986f3edaebaf1dd89f19d49bf"]}
+    dl_links = {
+        "11": ["https://github.com/ayasa520/hack_full_data_permission/archive/refs/heads/main.zip",
+               "eafd7b0986f3edaebaf1dd89f19d49bf"],
+        "13": ["", ""]
+    }
     dl_file_name = "nodataperm.zip"
     extract_to = "/tmp/nodataperm"
     dl_link = ...

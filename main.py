@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+from InquirerPy.separator import Separator
 import argparse
 import os
 from typing import List
@@ -56,135 +58,210 @@ def umount(partition, copy_dir):
     images.umount(mount_point)
 
 
-def main():
+def install_app(args):
+    install_list: List[General] = []
+    app = args.app
+    if "gapps" in app:
+        install_list.append(Gapps(args.android_version))
+    if "libndk" in app and "houdini" not in app:
+        arch = helper.host()[0]
+        if arch == "x86_64":
+            install_list.append(Ndk(args.android_version))
+        else:
+            Logger.warn("libndk is not supported on your CPU")
+    if "libhoudini" in app and "ndk" not in app:
+        arch = helper.host()[0]
+        if arch == "x86_64":
+            install_list.append(Houdini(args.android_version))
+        else:
+            Logger.warn("libhoudini is not supported on your CPU")
+    if "magisk" in app:
+        install_list.append(Magisk())
+    if "widevine" in app:
+        install_list.append(Widevine(args.android_version))
+    if "smartdock" in app:
+        install_list.append(Smartdock())
+    if "microg" in app:
+        install_list.append(MicroG(args.android_version))
 
-    def install_app(args):
-        install_list: List[General] = []
-        app = args.app
-        if "gapps" in app:
-            install_list.append(Gapps(args.android_version))
-        if "libndk" in app and "houdini" not in app:
-            arch = helper.host()[0]
-            if arch == "x86_64":
-                install_list.append(Ndk(args.android_version))
-            else:
-                Logger.warn("libndk is not supported on your CPU")
-        if "libhoudini" in app and "ndk" not in app:
-            arch = helper.host()[0]
-            if arch == "x86_64":
-                install_list.append(Houdini(args.android_version))
-            else:
-                Logger.warn("libhoudini is not supported on your CPU")
-        if "magisk" in app:
-            install_list.append(Magisk())
-        if "widevine" in app:
-            install_list.append(Widevine(args.android_version))
-        if "smartdock" in app:
-            install_list.append(Smartdock())
-        if "microg" in app:
-            install_list.append(MicroG(args.android_version))
+    if not container.use_overlayfs():
+        copy_dir = "/tmp/waydroid"
+        container.stop()
 
-        if not container.use_overlayfs():
-            copy_dir = "/tmp/waydroid"
-            container.stop()
-
-            resize_system, resize_vendor = False, False
-            for item in install_list:
-                if item.partition == "system":
-                    resize_system = True
-                elif item.partition == "vendor":
-                    resize_vendor = True
-
-            if resize_system:
-                resize("system")
-            if resize_vendor:
-                resize("vendor")
-
-            mount("system", copy_dir)
-            mount("vendor", copy_dir)
-        
+        resize_system, resize_vendor = False, False
         for item in install_list:
-            item.install()
+            if item.partition == "system":
+                resize_system = True
+            elif item.partition == "vendor":
+                resize_vendor = True
 
-        if not container.use_overlayfs():
-            umount("vendor", copy_dir)
-            umount("system", copy_dir)
+        if resize_system:
+            resize("system")
+        if resize_vendor:
+            resize("vendor")
 
-        container.upgrade()
+        mount("system", copy_dir)
+        mount("vendor", copy_dir)
 
-    def remove_app(args):
-        remove_list: List[General] = []
-        app = args.app
-        if "gapps" in app:
-            remove_list.append(Gapps(args.android_version))
-        if "libndk" in app and "houdini" not in app:
-            remove_list.append(Ndk(args.android_version))
-        if "libhoudini" in app and "ndk" not in app:
-            remove_list.append(Houdini(args.android_version))
-        if "magisk" in app:
-            remove_list.append(Magisk())
-        if "widevine" in app:
-            remove_list.append(Widevine(args.android_version))
-        if "smartdock" in app:
-            remove_list.append(Smartdock())
-        if "microg" in app:
-            remove_list.append(MicroG(args.android_version))
-        if "nodataperm" in app:
-            remove_list.append(Nodataperm(args.android_version))
-        if "hidestatusbar" in app:
-            remove_list.append(HideStatusBar())
+    for item in install_list:
+        item.install()
 
-        if not container.use_overlayfs():
-            copy_dir = "/tmp/waydroid"
-            container.stop()
+    if not container.use_overlayfs():
+        umount("vendor", copy_dir)
+        umount("system", copy_dir)
 
-        for item in remove_list:
-            item.uninstall()
+    container.upgrade()
 
-        if not container.use_overlayfs():
-            umount("vendor", copy_dir)
-            umount("system", copy_dir)
 
-        container.upgrade()
+def remove_app(args):
+    remove_list: List[General] = []
+    app = args.app
+    if "gapps" in app:
+        remove_list.append(Gapps(args.android_version))
+    if "libndk" in app and "houdini" not in app:
+        remove_list.append(Ndk(args.android_version))
+    if "libhoudini" in app and "ndk" not in app:
+        remove_list.append(Houdini(args.android_version))
+    if "magisk" in app:
+        remove_list.append(Magisk())
+    if "widevine" in app:
+        remove_list.append(Widevine(args.android_version))
+    if "smartdock" in app:
+        remove_list.append(Smartdock())
+    if "microg" in app:
+        remove_list.append(MicroG(args.android_version, args.microg_variant))
+    if "nodataperm" in app:
+        remove_list.append(Nodataperm(args.android_version))
+    if "hidestatusbar" in app:
+        remove_list.append(HideStatusBar())
 
-    def hack_option(args):
-        Logger.warning("If these hacks cause any problems, run `sudo python main.py remove <hack_option>` to remove")
+    if not container.use_overlayfs():
+        copy_dir = "/tmp/waydroid"
+        container.stop()
 
-        hack_list: List[General] = []
-        options = args.option_name
-        if "nodataperm" in options:
-            hack_list.append(Nodataperm())
-        if "hidestatusbar" in options:
-            hack_list.append(HideStatusBar())
+    for item in remove_list:
+        item.uninstall()
 
-        if not container.use_overlayfs():
-            copy_dir = "/tmp/waydroid"
-            container.stop()
+    if not container.use_overlayfs():
+        umount("vendor", copy_dir)
+        umount("system", copy_dir)
 
-            resize_system, resize_vendor = False, False
-            for item in hack_list:
-                if item.partition == "system":
-                    resize_system = True
-                elif item.partition == "vendor":
-                    resize_vendor = True
+    container.upgrade()
 
-            if resize_system:
-                resize("system")
-            if resize_vendor:
-                resize("vendor")
 
-            mount("system", copy_dir)
-            mount("vendor", copy_dir)
-        
+def hack_option(args):
+    Logger.warning(
+        "If these hacks cause any problems, run `sudo python main.py remove <hack_option>` to remove")
+
+    hack_list: List[General] = []
+    options = args.option_name
+    if "nodataperm" in options:
+        hack_list.append(Nodataperm())
+    if "hidestatusbar" in options:
+        hack_list.append(HideStatusBar())
+
+    if not container.use_overlayfs():
+        copy_dir = "/tmp/waydroid"
+        container.stop()
+
+        resize_system, resize_vendor = False, False
         for item in hack_list:
-            item.install()
+            if item.partition == "system":
+                resize_system = True
+            elif item.partition == "vendor":
+                resize_vendor = True
 
-        if not container.use_overlayfs():
-            umount("vendor", copy_dir)
-            umount("system", copy_dir)
+        if resize_system:
+            resize("system")
+        if resize_vendor:
+            resize("vendor")
 
-        container.upgrade()
+        mount("system", copy_dir)
+        mount("vendor", copy_dir)
 
+    for item in hack_list:
+        item.install()
+
+    if not container.use_overlayfs():
+        umount("vendor", copy_dir)
+        umount("system", copy_dir)
+
+    container.upgrade()
+
+
+def interact():
+    os.system("clear")
+    args = argparse.Namespace()
+    android_version = inquirer.select(
+        message="Select Android version",
+        instruction="(\u2191\u2193 Select Item)",
+        choices=[
+            Choice(name="Android 11", value="11"),
+            Choice(name="Android 13", value="13"),
+            Choice(name="Exit", value=None)
+        ],
+        default="11",
+    ).execute()
+    if not android_version:
+        exit()
+    args.android_version = android_version
+    action = inquirer.select(
+        message="Please select an action",
+        choices=[
+            "Install",
+            "Remove",
+            "Hack",
+        ],
+        default=None,
+    ).execute()
+    if not action:
+        exit()
+    install_choices = ["gapps", "microg", "libndk",
+                       "libhoudini", "magisk", "smartdock", "widevine"]
+    hack_choices = ["nodataperm", "hidestatusbar"]
+    if action == "Install":
+        apps = inquirer.checkbox(
+            message="Select apps",
+            instruction="([\u2191\u2193]: Select Item. [Space]: toggle choice), [Enter]: Confirm",
+            validate=lambda result: len(result) >= 1,
+            invalid_message="should be at least 1 selection",
+            choices=install_choices
+        ).execute()
+        microg_variants = ["Standard", "NoGoolag",
+                           "UNLP", "Minimal", "MinimalIAP"]
+        if "MicroG" in apps:
+            microg_variant = inquirer.select(
+                message="Select MicroG variant",
+                choices=microg_variants,
+                default="Standard",
+            ).execute()
+            args.microg_variant = microg_variant
+        args.app = apps
+        install_app(args)
+    elif action == "Remove":
+        apps = inquirer.checkbox(
+            message="Select apps",
+            instruction="([\u2191\u2193]: Select Item. [Space]: toggle choice), [Enter]: Confirm",
+            validate=lambda result: len(result) >= 1,
+            invalid_message="should be at least 1 selection",
+            choices=[*install_choices, *hack_choices]
+        ).execute()
+        args.app = apps
+        args.microg_variant="Standard"
+        remove_app(args)
+    elif action == "Havk":
+        apps = inquirer.checkbox(
+            message="Select hack options",
+            instruction="([\u2191\u2193]: Select Item. [Space]: toggle choice), [Enter]: Confirm",
+            validate=lambda result: len(result) >= 1,
+            invalid_message="should be at least 1 selection",
+            choices=hack_choices
+        ).execute()
+        args.option_name = apps
+        remove_app(args)
+
+
+def main():
     parser = argparse.ArgumentParser(description='''
     Does stuff like installing Gapps, installing Magisk, installing NDK Translation and getting Android ID for device registration.
     Use -h  flag for help!''')
@@ -231,24 +308,27 @@ widevine: Add support for widevine DRM L3
     install_parser.set_defaults(func=install_app)
 
     # remove and its aliases
-    remove_parser = subparsers.add_parser('remove',aliases=["uninstall"], help='Remove an app')
+    remove_parser = subparsers.add_parser(
+        'remove', aliases=["uninstall"], help='Remove an app')
     remove_parser.add_argument(
-        **arg_template, choices=[*remove_choices,* hack_choices], help='Name of app to remove')
+        **arg_template, choices=[*remove_choices, * hack_choices], help='Name of app to remove')
     remove_parser.set_defaults(func=remove_app)
 
     # hack and its aliases
     hack_parser = subparsers.add_parser('hack', help='Hack the system')
     hack_parser.add_argument(
-        'option_name',nargs="+" , choices=hack_choices, help='Name of hack option')
+        'option_name', nargs="+", choices=hack_choices, help='Name of hack option')
     hack_parser.set_defaults(func=hack_option)
 
     args = parser.parse_args()
+    args.microg_variant = "Standard"
     if hasattr(args, 'func'):
         args_dict = vars(args)
         helper.check_root()
         args.func(args)
     else:
-        parser.print_help()
+        helper.check_root()
+        interact()
 
 
 if __name__ == "__main__":

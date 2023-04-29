@@ -11,15 +11,35 @@ Script to add gapps and other stuff to waydroid !
 	sudo dnf install lzip
 ## openSUSE based distributions:
 	sudo zypper install lzip
-Then run:
-	
+
+
+## Interactive terminal interface
+
+```
+git clone https://github.com/casualsnek/waydroid_script
+cd waydroid_script
+sudo python main.py
+```
+
+![image-20230430013103883](assets/img/README/image-20230430013103883.png)
+
+![image-20230430013119763](assets/img/README/image-20230430013119763.png)
+
+![image-20230430013148814](assets/img/README/image-20230430013148814.png)
+
+
+
+## Command Line
+
     git clone https://github.com/casualsnek/waydroid_script
     cd waydroid_script
     sudo python3 -m pip install -r requirements.txt
     # install something
-    sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg, hidestatus}
+    sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
     # uninstall something
-    sudo python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg, hidestatus}
+    sudo python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+    # some hacks
+    sudo python3 hack {nodataperm, hidestatusbar}
 
 ## Install OpenGapps
 
@@ -107,7 +127,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 ```
 sudo python3 main.py install nodataperm
 ```
-**WARNING**: Tested on `lineage-18.1-20230128-VANILLA-waydroid_x86_64.img`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo python3 main.py uninstall nodataperm` to remove it.
+**WARNING**: Tested on `lineage-18.1-20230128-VANILLA-waydroid_x86_64.img`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo python3 main.py uninstall nodataperm` to remove it.
 
 
 Or you can run the following commands directly in `sudo waydroid shell`. In this way, every time a new game is installed, you need to run it again, but it's much less risky.
@@ -140,7 +160,7 @@ After
 ![After](assets/9.png)
 
 ```
-sudo python3 main.py install hidestatus
+sudo python3 main.py install hidestatusbar
 ```
 
 
@@ -154,16 +174,6 @@ Open terminal and switch to directory where "main.py" is located then run:
 Star this repository if you find this useful, if you encounter problem create a issue on github !
 
 ## Error handling  
-
-- WayDroid no longer boots
-
-```
-sudo waydroid upgrade -o
-sudo systemctl restart waydroid-container.service
-```
-This will make `/var/lib/waydroid/waydroid_base.prop` return to original state, so libndk/libhoudini will be invalid. You need to modify `waydroid_base.prop` again.
-
-Or use `sudo python3 main.py uninstall xxxxx` to remove what is causing the issue.
 
 - Magisk installed: N/A
 
