@@ -171,7 +171,7 @@ Check [waydroid-magisk](https://github.com/nitanmarcel/waydroid-magisk)
 
 ## Credits
 - [WayDroid](https://github.com/waydroid/waydroid)
-- [waydroid_script](https://github.com/casualsnek/waydroid_script)
+- [waydroid_script](https://github.com/ayasa520/waydroid_script)
 - [Magisk Delta](https://huskydg.github.io/magisk-files/)
 - [microG Project](https://microg.org)
 - [Open GApps](https://opengapps.org)
