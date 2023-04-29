@@ -25,8 +25,8 @@ import argparse
 from tools.logger import Logger
 
 
-def get_certified():
-    AndroidId.get_id()
+def get_certified(args):
+    AndroidId().get_id()
 
 
 def mount(partition, copy_dir):
@@ -249,7 +249,7 @@ def interact():
         args.app = apps
         args.microg_variant="Standard"
         remove_app(args)
-    elif action == "Havk":
+    elif action == "Hack":
         apps = inquirer.checkbox(
             message="Select hack options",
             instruction="([\u2191\u2193]: Select Item. [Space]: toggle choice), [Enter]: Confirm",
@@ -258,7 +258,7 @@ def interact():
             choices=hack_choices
         ).execute()
         args.option_name = apps
-        remove_app(args)
+        hack_option(args)
 
 
 def main():
