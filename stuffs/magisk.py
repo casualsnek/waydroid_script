@@ -8,6 +8,7 @@ from tools.logger import Logger
 from tools import container
 
 class Magisk(General):
+    id = "magisk delta"
     partition = "system"
     dl_link = "https://huskydg.github.io/magisk-files/app-debug.apk"
     dl_file_name = "magisk.apk"
@@ -128,7 +129,7 @@ on property:init.svc.zygote=stopped
                 elif os.path.isfile(file) or os.path.exists(file):
                     os.remove(file)
     
-    def extra3(self):
+    def extra2(self):
         self.extra1()
         data_dir = get_data_dir()
         files = [

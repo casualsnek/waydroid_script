@@ -5,6 +5,7 @@ from tools.helper import host, run
 
 
 class Gapps(General):
+    id = ...
     partition = "system"
     dl_links = {
         "11": {
@@ -97,6 +98,10 @@ class Gapps(General):
         self.android_version = android_version
         self.dl_link = self.dl_links[android_version][self.arch[0]][0]
         self.act_md5 = self.dl_links[android_version][self.arch[0]][1]
+        if android_version=="11":
+            self.id = "OpenGapps"
+        else:
+            self.id = "MindTheGapps"
 
     def copy(self):
         if self.android_version == "11":

@@ -7,6 +7,7 @@ from tools.logger import Logger
 
 
 class Widevine(General):
+    id = "widevine"
     partition = "vendor"
     dl_links = {
         # "x86": ["https://github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/archive/94c9ee172e3d78fecc81863f50a59e3646f7a2bd.zip", "a31f325453c5d239c21ecab8cfdbd878"],

@@ -4,8 +4,7 @@ import os
 import shutil
 import zipfile
 import hashlib
-from tools import images
-from tools.helper import download_file, get_download_dir, host, upgrade
+from tools.helper import download_file, get_download_dir, host
 from tools import container
 from tools.logger import Logger
 
@@ -55,7 +54,7 @@ class General:
                     os.remove(file)
 
     def extract(self):
-        Logger.info("Extracting archive...")
+        Logger.info(f"Extracting {self.download_loc} to {self.extract_to}")
         with zipfile.ZipFile(self.download_loc) as z:
             z.extractall(self.extract_to)
 
@@ -100,48 +99,6 @@ class General:
         
         with open("/var/lib/waydroid/waydroid.cfg", "w") as f:
             cfg.write(f)
-    
-    def mount(self):
-        img = os.path.join(images.get_image_dir(), self.partition+".img")
-        mount_point = ""
-        if self.partition == "system":
-            mount_point = os.path.join(self.copy_dir)
-        else:
-            mount_point = os.path.join(self.copy_dir, self.partition)
-        Logger.info("Mounting {} to {}".format(img, mount_point))
-        images.mount(img, mount_point)
-
-    def resize(self):
-        img = os.path.join(images.get_image_dir(), self.partition+".img")
-        img_size = int(os.path.getsize(img)/(1024*1024))
-        new_size = "{}M".format(img_size+500)
-        Logger.info("Resizing {} to {}".format(img, new_size))
-        images.resize(img, new_size)
-
-    def umount(self):
-        mount_point = ""
-        if self.partition == "system":
-            mount_point = os.path.join(self.copy_dir)
-        else:
-            mount_point = os.path.join(self.copy_dir, self.partition)
-        Logger.info("Umounting {}".format(mount_point))
-        images.umount(mount_point)
-
-    def stop(self):
-        if container.use_dbus():
-            self.session = container.get_session()
-        container.stop()
-
-    def start(self):
-        if container.use_dbus() and self.session:
-            container.start(self.session)
-        else:
-            container.start()
-        upgrade()
-
-    def restart(self):
-        self.stop()
-        self.start()
 
     def copy(self):
         pass
@@ -152,50 +109,19 @@ class General:
     def extra2(self):
         pass
 
-    def extra3(self):
-        pass
-
     def install(self):
-        if container.use_overlayfs():
-            self.download()
-            if not self.skip_extract:
-                self.extract()
-            self.copy()
-            self.extra1()
-            if hasattr(self, "apply_props"):
-                self.add_props()
-            self.restart()
-            self.extra2()
-        else:
-            self.stop()
-            self.download()
-            if not self.skip_extract:
-                self.extract()
-            self.resize()
-            self.mount()
-            self.copy()
-            self.extra1()
-            if hasattr(self, "apply_props"):
-                self.add_props()
-            self.umount()
-            self.start()
-            self.extra2()
-        Logger.info("Installation finished")
+        self.download()
+        if not self.skip_extract:
+            self.extract()
+        self.copy()
+        self.extra1()
+        if hasattr(self, "apply_props"):
+            self.add_props()
+        Logger.info(f"{self.id} installation finished")
 
     def uninstall(self):
-        if container.use_overlayfs():
-            self.remove()
-            if hasattr(self, "apply_props"):
-                self.remove_props()
-            self.extra3()
-            self.restart()
-        else:
-            self.stop()
-            self.mount()
-            self.remove()
-            if hasattr(self, "apply_props"):
-                self.remove_props()
-            self.extra3()
-            self.umount()
-            self.start()
+        self.remove()
+        if hasattr(self, "apply_props"):
+            self.remove_props()
+        self.extra2()
         Logger.info("Uninstallation finished")

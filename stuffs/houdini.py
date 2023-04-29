@@ -7,6 +7,7 @@ from tools.logger import Logger
 
 
 class Houdini(General):
+    id = "libhoudini"
     partition = "system"
     dl_links = {
         "11": ["https://github.com/supremegamers/vendor_intel_proprietary_houdini/archive/81f2a51ef539a35aead396ab7fce2adf89f46e88.zip", "fbff756612b4144797fbc99eadcb6653"],

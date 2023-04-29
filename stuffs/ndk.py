@@ -6,6 +6,7 @@ from tools.logger import Logger
 from tools.container import use_overlayfs
 
 class Ndk(General):
+    id = "libndk"
     partition = "system"
     dl_link = "https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/181d9290a69309511185c4417ba3d890b3caaaa8.zip"
     dl_file_name = "libndktranslation.zip"

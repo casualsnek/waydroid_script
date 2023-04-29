@@ -7,7 +7,23 @@ from tools.logger import Logger
 
 
 class MicroG(General):
+    id = "MicroG"
     partition = "system"
+    fdroid_repo_apks = {
+        "com.aurora.store_41.apk": "9e6c79aefde3f0bbfedf671a2d73d1be",
+        "com.etesync.syncadapter_20300.apk": "997d6de7d41c454d39fc22cd7d8fc3c2",
+        "com.aurora.adroid_8.apk": "0010bf93f02c2d18daf9e767035fefc5",
+        "org.fdroid.fdroid.privileged_2130.apk": "b04353155aceb36207a206d6dd14ba6a",
+        "org.microg.nlp.backend.ichnaea_20036.apk": "0b3cb65f8458d1a5802737c7392df903",
+        "org.microg.nlp.backend.nominatim_20042.apk": "88e7397cbb9e5c71c8687d3681a23383",
+    }
+    microg_apks= {
+        "com.google.android.gms-223616054.apk": "a945481ca5d33a03bc0f9418263c3228",
+        "com.google.android.gsf-8.apk": "b2b4ea3642df6158e14689a4b2a246d4",
+        "com.android.vending-22.apk": "6815d191433ffcd8fa65923d5b0b0573",
+        "org.microg.gms.droidguard-14.apk": "4734b41c1a6bc34a541053ddde7a0f8e"
+    }
+    priv_apps = ["com.google.android.gms", "com.android.vending"]
     dl_links = {
         "Standard": [
             "https://github.com/ayasa520/MinMicroG/releases/download/latest/MinMicroG-Standard-2.11.1-20230429100529.zip",
@@ -35,7 +51,6 @@ class MicroG(General):
     dl_file_name = ...
     sdk = ...
     extract_to = "/tmp/microg/extract"
-    copy_dir = "/var/lib/waydroid/overlay_rw/system"
     arch = host()
     rc_content = '''
 on property:sys.boot_completed=1
@@ -94,6 +109,7 @@ service microg_service /system/bin/sh /system/bin/npem
         super().__init__()
         self.dl_link = self.dl_links[variant][0]
         self.act_md5 = self.dl_links[variant][1]
+        self.id = self.id+f"-{variant}"
         self.dl_file_name = f'MinMicroG-{variant}.zip'
         if android_version == "11":
             self.sdk = 30
@@ -176,3 +192,17 @@ service microg_service /system/bin/sh /system/bin/npem
         with open(rc_dir, "w") as f:
             f.write(self.rc_content)
         self.set_permissions(rc_dir)
+
+    def extra2(self):
+        system_dir = os.path.join(self.copy_dir, self.partition)
+        files = [key.split("_")[0] for key in self.fdroid_repo_apks.keys()]
+        files += [key.split("-")[0] for key in self.microg_apks.keys()]
+        for f in files:
+            if f in self.priv_apps:
+                file = os.path.join(system_dir, "priv-app", f)
+            else:
+                file = os.path.join(system_dir, "app", f)
+            if os.path.isdir(file):
+                shutil.rmtree(file)
+            elif os.path.isfile(file):
+                os.remove(file)

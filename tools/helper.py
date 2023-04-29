@@ -131,6 +131,3 @@ def check_root():
     if os.geteuid() != 0:
         Logger.error("This script must be run as root. Aborting.")
         sys.exit(1)
-
-def upgrade():
-    run(["waydroid", "upgrade", "-o"], ignore=r"\[.*\] Stopping container\n\[.*\] Starting container")
