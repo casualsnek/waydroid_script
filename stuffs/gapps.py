@@ -1,7 +1,7 @@
 import os
 import shutil
 from stuffs.general import General
-from tools.helper import host, run
+from tools.helper import run
 
 
 class Gapps(General):

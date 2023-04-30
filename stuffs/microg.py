@@ -1,8 +1,6 @@
 import os
 import shutil
-import zipfile
 from stuffs.general import General
-from tools.helper import host
 from tools.logger import Logger
 
 
