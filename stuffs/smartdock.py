@@ -11,7 +11,7 @@ class Smartdock(General):
     partition = "system"
     extract_to = "/tmp/smartdockunpack"
     dl_file_name = "smartdock.zip"
-    act_md5 = "be965374522d95f28a486c95b1208f0"
+    act_md5 = "912e00189c562505114cce62c7aa9478"
     apply_props = { "qemu.hw.mainkeys" : "1" }
     files = [
             "etc/permissions/permissions_cu.axel.smartdock.xml",
