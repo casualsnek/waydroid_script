@@ -23,7 +23,6 @@ class Widevine(General):
                    "fed6898b5cfd2a908cb134df97802554"]
         }
     }
-    machine = host()
     dl_file_name = "widevine.zip"
     extract_to = "/tmp/widevineunpack"
     files = [
@@ -38,17 +37,11 @@ class Widevine(General):
 
     def __init__(self, android_version) -> None:
         super().__init__()
-        self.dl_link = self.dl_links[self.machine[0]][android_version][0]
-        self.act_md5 = self.dl_links[self.machine[0]][android_version][1]
+        self.dl_link = self.dl_links[self.arch[0]][android_version][0]
+        self.act_md5 = self.dl_links[self.arch[0]][android_version][1]
 
     def copy(self):
-        run(["chmod", "+x", self.extract_to, "-R"])
         name = re.findall("([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
         Logger.info("Copying widevine library files ...")
         shutil.copytree(os.path.join(self.extract_to, "vendor_google_proprietary_widevine-prebuilt-"+name,
                         "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
-
-        for file in os.listdir(os.path.join(self.copy_dir, self.partition, "etc", "init")):
-            if file.endswith('.rc'):
-                os.chmod(os.path.join(self.copy_dir, self.partition,
-                         "etc", "init", file), 0o644)

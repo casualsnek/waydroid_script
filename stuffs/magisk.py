@@ -14,8 +14,7 @@ class Magisk(General):
     dl_file_name = "magisk.apk"
     extract_to = "/tmp/magisk_unpack"
     magisk_dir = os.path.join(partition, "etc", "init", "magisk")
-    machine = host()
-    files = ["etc/init/magisk"]
+    files = ["etc/init/magisk", "etc/init/bootanim.rc"]
     oringinal_bootanim = """
 service bootanim /system/bin/bootanimation
     class core animation
@@ -27,10 +26,10 @@ service bootanim /system/bin/bootanimation
     task_profiles MaxPerformance
     
 """
-    bootanim_component = """
+    bootanim_component = f"""
 on post-fs-data
     start logd
-    exec u:r:su:s0 root root -- /system/etc/init/magisk/magisk{arch} --auto-selinux --setup-sbin /system/etc/init/magisk
+    exec u:r:su:s0 root root -- /system/etc/init/magisk/magisk{host()[1]} --auto-selinux --setup-sbin /system/etc/init/magisk
     exec u:r:su:s0 root root -- /system/etc/init/magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
     mkdir /sbin/.magisk 700
     mkdir /sbin/.magisk/mirror 700
@@ -54,7 +53,7 @@ on property:init.svc.zygote=restarting
    
 on property:init.svc.zygote=stopped
     exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --zygote-restart
-    """.format(arch=machine[1])
+    """
 
     def download(self):
         if os.path.isfile(self.download_loc):
@@ -79,14 +78,13 @@ on property:init.svc.zygote=stopped
 
         Logger.info("Copying magisk libs now ...")
         
-        lib_dir = os.path.join(self.extract_to, "lib", self.machine[0])
+        lib_dir = os.path.join(self.extract_to, "lib", self.arch[0])
         for parent, dirnames, filenames in os.walk(lib_dir):
             for filename in filenames:
                 o_path = os.path.join(lib_dir, filename)  
                 filename = re.search('lib(.*)\.so', filename)
                 n_path = os.path.join(magisk_absolute_dir, filename.group(1))
                 shutil.copyfile(o_path, n_path)
-                run(["chmod", "+x", n_path])
         shutil.copyfile(self.download_loc, os.path.join(magisk_absolute_dir,"magisk.apk") )
         shutil.copytree(os.path.join(self.extract_to, "assets", "chromeos"), os.path.join(magisk_absolute_dir, "chromeos"), dirs_exist_ok=True)
         assets_files = [
@@ -97,7 +95,6 @@ on property:init.svc.zygote=stopped
         ]
         for f in assets_files:
             shutil.copyfile(os.path.join(self.extract_to, "assets", f), os.path.join(magisk_absolute_dir, f))
-        self.setup()
 
         # Updating Magisk from Magisk manager will modify bootanim.rc, 
         # So it is necessary to backup the original bootanim.rc.
@@ -107,11 +104,29 @@ on property:init.svc.zygote=stopped
             f_gz.write(self.oringinal_bootanim.encode('utf-8'))
         with open(bootanim_path, "w") as initfile:
             initfile.write(self.oringinal_bootanim+self.bootanim_component)
-        os.chmod(bootanim_path, 0o644)
 
+    def set_path_perm(self, path):
+        if "magisk" in path.split("/"):
+            perms = [0, 2000, 0o755, 0o755]
+        else:
+            perms = [0, 0, 0o755, 0o644]
 
-    # Delete the contents of upperdir
+        mode = os.stat(path).st_mode
+
+        if os.path.isdir(path):
+            mode |= perms[2]
+        else:
+            mode |= perms[3]
+
+        os.chown(path, perms[0], perms[1])
+        os.chmod(path, mode)
+
     def extra1(self):
+        self.delete_upper()
+        self.setup()
+    
+    # Delete the contents of upperdir
+    def delete_upper(self):
         if container.use_overlayfs():
             sys_overlay_rw = "/var/lib/waydroid/overlay_rw"
             files = [
@@ -130,7 +145,7 @@ on property:init.svc.zygote=stopped
                     os.remove(file)
     
     def extra2(self):
-        self.extra1()
+        self.delete_upper()
         data_dir = get_data_dir()
         files = [
             os.path.join(data_dir, "adb/magisk.db"),

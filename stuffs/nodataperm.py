@@ -40,10 +40,6 @@ class Nodataperm(General):
             with gzip.open(gz_filename, 'wb') as f_gz:
                 with open(services_jar, "rb") as f:
                     f_gz.write(f.read())
-        os.chmod(os.path.join(extract_path, "framework", "services.jar"), 0o644)
-        os.chmod(os.path.join(extract_path, "etc", "nodataperm.sh"), 0o755)
-        os.chmod(os.path.join(extract_path, "etc",
-                 "init", "nodataperm.rc"), 0o755)
         Logger.info("Copying widevine library files ...")
         shutil.copytree(extract_path, os.path.join(
             self.copy_dir, self.partition), dirs_exist_ok=True)

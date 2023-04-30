@@ -22,7 +22,6 @@ class Gapps(General):
         }
     }
     android_version = ...
-    arch = host()
     dl_link = ...
     act_md5 = ...
     dl_file_name = "gapps.zip"
@@ -66,7 +65,9 @@ class Gapps(General):
         "priv-app/GoogleContactsSyncAdapter",
         "priv-app/GooglePartnerSetup",
         "product/overlay/PlayStoreOverlay.apk",
-        "system_ext/permissions/privapp-permissions-google-system-ext.xml",
+        "product/overlay/GmsOverlay.apk.apk",
+        "product/overlay/GmsSettingsProviderOverlay.apk",
+        "system_ext/etc/permissions/privapp-permissions-google-system-ext.xml",
         "system_ext/priv-app/GoogleFeedback",
         "system_ext/priv-app/GoogleServicesFramework",
         "system_ext/priv-app/SetupWizard",
@@ -98,7 +99,7 @@ class Gapps(General):
         self.android_version = android_version
         self.dl_link = self.dl_links[android_version][self.arch[0]][0]
         self.act_md5 = self.dl_links[android_version][self.arch[0]][1]
-        if android_version=="11":
+        if android_version == "11":
             self.id = "OpenGapps"
         else:
             self.id = "MindTheGapps"
@@ -135,6 +136,11 @@ class Gapps(General):
                     for app in os.listdir(app_src_dir):
                         shutil.copytree(os.path.join(app_src_dir, app), os.path.join(
                             self.copy_dir, self.partition, "priv-app", app), dirs_exist_ok=True)
+                        for f in os.listdir(os.path.join(self.copy_dir, self.partition, "priv-app", app)):
+                            dst_file_path = os.path.join(os.path.join(
+                                self.copy_dir, self.partition, "priv-app", app), f)
+                            if os.path.splitext(dst_file_path)[1].lower() == ".apk":
+                                self.extract_app_lib(dst_file_path)
                 else:
                     print("    Processing extra package : " +
                           os.path.join(self.extract_to, "Core", lz_file))
@@ -149,12 +155,18 @@ class Gapps(General):
                             self.copy_dir, self.partition, ccdir), dirs_exist_ok=True)
 
     def copy_13(self):
-        for root, dirs, files in os.walk(os.path.join(self.extract_to, "system")):
-            for dir in dirs:
-                os.chmod(os.path.join(root, dir), 0o755)
+        src_dir = os.path.join(self.extract_to, "system")
+        dst_dir = os.path.join(self.copy_dir, self.partition)
+        for root, dirs, files in os.walk(src_dir):
+            dir_name = os.path.basename(root)
+            # 遍历文件
             for file in files:
-                os.chmod(os.path.join(root, file), 0o644)
-                os.chown(os.path.join(root, file), 0, 0)
-
-        shutil.copytree(os.path.join(self.extract_to, "system"), os.path.join(
-            self.copy_dir, self.partition), dirs_exist_ok=True)
+                src_file_path = os.path.join(root, file)
+                dst_file_path = os.path.join(dst_dir, os.path.relpath(
+                        src_file_path, src_dir))
+                if not os.path.exists(os.path.dirname(dst_file_path)):
+                    os.makedirs(os.path.dirname(dst_file_path))
+                # Logger.info(f"{src_file_path} -> {dst_file_path}")
+                shutil.copy2(src_file_path, dst_file_path)
+                if os.path.splitext(dst_file_path)[1].lower() == ".apk":
+                    self.extract_app_lib(dst_file_path)

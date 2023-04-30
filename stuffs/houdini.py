@@ -55,7 +55,6 @@ on property:ro.enable.native.bridge.exec=1
         self.act_md5 = self.dl_links[android_version][1]
 
     def copy(self):
-        run(["chmod", "+x", self.extract_to, "-R"])
         Logger.info("Copying libhoudini library files ...")
         name = re.findall("([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
         shutil.copytree(os.path.join(self.extract_to, "vendor_intel_proprietary_houdini-" + name,
@@ -66,4 +65,3 @@ on property:ro.enable.native.bridge.exec=1
             os.makedirs(os.path.dirname(init_path), exist_ok=True)
         with open(init_path, "w") as initfile:
             initfile.write(self.init_rc_component)
-        os.chmod(init_path, 0o644)

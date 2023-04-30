@@ -51,7 +51,6 @@ class MicroG(General):
     dl_file_name = ...
     sdk = ...
     extract_to = "/tmp/microg/extract"
-    arch = host()
     rc_content = '''
 on property:sys.boot_completed=1
     start microg_service
@@ -117,25 +116,7 @@ service microg_service /system/bin/sh /system/bin/npem
         elif android_version == "13":
             self.sdk = 33
 
-    def set_permissions(self, path):
-        if "bin" in path.split("/"):
-            perms = [0, 2000, 0o755, 0o777]
-        else:
-            perms = [0, 0, 0o755, 0o644]
-
-        mode = os.stat(path).st_mode
-
-        if os.path.isdir(path):
-            mode |= perms[2]
-        else:
-            mode |= perms[3]
-
-        os.chown(path, perms[0], perms[1])
-
-        os.chmod(path, mode)
-
     def copy(self):
-
         Logger.info("Copying libs and apks...")
         dst_dir = os.path.join(self.copy_dir, self.partition)
         src_dir = os.path.join(self.extract_to, "system")
@@ -163,7 +144,6 @@ service microg_service /system/bin/sh /system/bin/npem
 
             for file in files:
                 src_file_path = os.path.join(root, file)
-                self.set_permissions(src_file_path)
                 if not flag:
                     dst_file_path = os.path.join(dst_dir, os.path.relpath(
                         src_file_path, src_dir))
@@ -175,24 +155,13 @@ service microg_service /system/bin/sh /system/bin/npem
                 # Logger.info(f"{src_file_path} -> {dst_file_path}")
                 shutil.copy2(src_file_path, dst_file_path)
                 if os.path.splitext(dst_file_path)[1].lower() == ".apk":
-                    lib_dest_dir = os.path.dirname(dst_file_path)
-                    with zipfile.ZipFile(dst_file_path, "r") as apk:
-                        for file_info in apk.infolist():
-                            file_name = file_info.filename
-                            file_path = os.path.join(lib_dest_dir, file_name)
-                            if file_info.filename.startswith(f"lib/{self.arch[0]}/") and file_name.endswith(".so"):
-                                os.makedirs(os.path.dirname(
-                                    file_path), exist_ok=True)
-                                with apk.open(file_info.filename) as src_file, open(file_path, "wb") as dest_file:
-                                    # Logger.info(f"{src_file} -> {dest_file}")
-                                    shutil.copyfileobj(src_file, dest_file)
+                    self.extract_app_lib(dst_file_path)
 
         rc_dir = os.path.join(dst_dir, "etc/init/microg.rc")
         if not os.path.exists(os.path.dirname(rc_dir)):
             os.makedirs(os.path.dirname(rc_dir))
         with open(rc_dir, "w") as f:
             f.write(self.rc_content)
-        self.set_permissions(rc_dir)
 
     def extra2(self):
         system_dir = os.path.join(self.copy_dir, self.partition)

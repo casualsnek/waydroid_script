@@ -48,9 +48,6 @@ class Ndk(General):
 
 
     def copy(self):
-        run(["chmod", "+x", self.extract_to, "-R"])
         Logger.info("Copying libndk library files ...")
         shutil.copytree(os.path.join(self.extract_to, "vendor_google_proprietary_ndk_translation-prebuilt-181d9290a69309511185c4417ba3d890b3caaaa8", "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
-        init_path = os.path.join(self.copy_dir, self.partition, "etc", "init", "ndk_translation.rc")
-        os.chmod(init_path, 0o644)
         
