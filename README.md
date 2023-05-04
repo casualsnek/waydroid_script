@@ -2,22 +2,13 @@
 Script to add gapps and other stuff to waydroid !
 
 # Installation/Usage
-"lzip" is required for this script to work, install it using your distribution's package manager:
-## Arch, Manjaro and EndeavourOS based distributions:
-	sudo pacman -S lzip
-## Debian and Ubuntu based distributions:
-	sudo apt install lzip
-## RHEL, Fedora and Rocky based distributions:
-	sudo dnf install lzip
-## openSUSE based distributions:
-	sudo zypper install lzip
-
 
 ## Interactive terminal interface
 
 ```
-git clone https://github.com/casualsnek/waydroid_script
+git clone https://github.com/ayasa520/waydroid_script
 cd waydroid_script
+sudo python3 -m pip install -r 
 sudo python main.py
 ```
 
@@ -31,15 +22,29 @@ sudo python main.py
 
 ## Command Line
 
-    git clone https://github.com/casualsnek/waydroid_script
+    git clone https://github.com/ayasa520/waydroid_script
     cd waydroid_script
     sudo python3 -m pip install -r requirements.txt
     # install something
     sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
     # uninstall something
     sudo python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+    # get Android device ID
+    sudo python main.py certified
     # some hacks
     sudo python3 hack {nodataperm, hidestatusbar}
+
+## Dependencies
+
+"lzip" is required for this script to work, install it using your distribution's package manager:
+### Arch, Manjaro and EndeavourOS based distributions:
+	sudo pacman -S lzip
+### Debian and Ubuntu based distributions:
+	sudo apt install lzip
+### RHEL, Fedora and Rocky based distributions:
+	sudo dnf install lzip
+### openSUSE based distributions:
+	sudo zypper install lzip
 
 ## Install OpenGapps
 
@@ -125,7 +130,7 @@ Arknights, PUNISHING: GRAY RAVEN and other games won't freeze on the black scree
 Open terminal and switch to directory where "main.py" is located then run:
 
 ```
-sudo python3 main.py install nodataperm
+sudo python3 main.py hack nodataperm
 ```
 **WARNING**: Tested on `lineage-18.1-20230128-VANILLA-waydroid_x86_64.img`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo python3 main.py uninstall nodataperm` to remove it.
 
@@ -160,7 +165,7 @@ After
 ![After](assets/9.png)
 
 ```
-sudo python3 main.py install hidestatusbar
+sudo python3 main.py hack hidestatusbar
 ```
 
 

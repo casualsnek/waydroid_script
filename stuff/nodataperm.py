@@ -1,7 +1,7 @@
 import gzip
 import os
 import shutil
-from stuffs.general import General
+from stuff.general import General
 from tools.logger import Logger
 from tools import container
 

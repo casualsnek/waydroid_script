@@ -2,7 +2,7 @@ import gzip
 import os
 import shutil
 import re
-from stuffs.general import General
+from stuff.general import General
 from tools.helper import download_file, get_data_dir, host
 from tools.logger import Logger
 from tools import container

@@ -5,17 +5,17 @@ from InquirerPy.separator import Separator
 import argparse
 import os
 from typing import List
-from stuffs.android_id import AndroidId
-from stuffs.gapps import Gapps
-from stuffs.general import General
-from stuffs.hidestatusbar import HideStatusBar
-from stuffs.houdini import Houdini
-from stuffs.magisk import Magisk
-from stuffs.microg import MicroG
-from stuffs.ndk import Ndk
-from stuffs.nodataperm import Nodataperm
-from stuffs.smartdock import Smartdock
-from stuffs.widevine import Widevine
+from stuff.android_id import AndroidId
+from stuff.gapps import Gapps
+from stuff.general import General
+from stuff.hidestatusbar import HideStatusBar
+from stuff.houdini import Houdini
+from stuff.magisk import Magisk
+from stuff.microg import MicroG
+from stuff.ndk import Ndk
+from stuff.nodataperm import Nodataperm
+from stuff.smartdock import Smartdock
+from stuff.widevine import Widevine
 import tools.helper as helper
 from tools import container
 from tools import images
@@ -211,7 +211,9 @@ def interact():
             "Install",
             "Remove",
             "Hack",
+            "Get Google Device ID to Get Certified"
         ],
+        instruction="([↑↓]: Select Item)",
         default=None,
     ).execute()
     if not action:
@@ -222,7 +224,7 @@ def interact():
     if action == "Install":
         apps = inquirer.checkbox(
             message="Select apps",
-            instruction="([\u2191\u2193]: Select Item. [Space]: toggle choice), [Enter]: Confirm",
+            instruction="([\u2191\u2193]: Select Item. [Space]: Toggle Choice), [Enter]: Confirm",
             validate=lambda result: len(result) >= 1,
             invalid_message="should be at least 1 selection",
             choices=install_choices
@@ -241,7 +243,7 @@ def interact():
     elif action == "Remove":
         apps = inquirer.checkbox(
             message="Select apps",
-            instruction="([\u2191\u2193]: Select Item. [Space]: toggle choice), [Enter]: Confirm",
+            instruction="([\u2191\u2193]: Select Item. [Space]: Toggle Choice), [Enter]: Confirm",
             validate=lambda result: len(result) >= 1,
             invalid_message="should be at least 1 selection",
             choices=[*install_choices, *hack_choices]
@@ -252,13 +254,15 @@ def interact():
     elif action == "Hack":
         apps = inquirer.checkbox(
             message="Select hack options",
-            instruction="([\u2191\u2193]: Select Item. [Space]: toggle choice), [Enter]: Confirm",
+            instruction="([\u2191\u2193]: Select Item. [Space]: Toggle Choice), [Enter]: Confirm",
             validate=lambda result: len(result) >= 1,
             invalid_message="should be at least 1 selection",
             choices=hack_choices
         ).execute()
         args.option_name = apps
         hack_option(args)
+    elif action == "Get Google Device ID to Get Certified":
+        AndroidId().get_id()
 
 
 def main():
