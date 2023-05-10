@@ -9,7 +9,7 @@ Script to add gapps and other stuff to waydroid !
 ## Arch, Manjaro and EndeavourOS based distributions:
 	sudo pacman -S lzip sqlite
 ## Debian and Ubuntu based distributions:
-	sudo apt install lzip sqlite  
+	sudo apt install git lzip sqlite3 python3-tqdm  
 ## RHEL, Fedora and Rocky based distributions:
 	sudo dnf install lzip sqlite
 ## openSUSE based distributions:
