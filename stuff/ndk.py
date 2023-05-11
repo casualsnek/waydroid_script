@@ -6,10 +6,10 @@ from tools.logger import Logger
 class Ndk(General):
     id = "libndk"
     partition = "system"
-    dl_link = "https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/181d9290a69309511185c4417ba3d890b3caaaa8.zip"
+    dl_link = "https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/9324a8914b649b885dad6f2bfd14a67e5d1520bf.zip"
     dl_file_name = "libndktranslation.zip"
     extract_to = "/tmp/libndkunpack"
-    act_md5 = "0beff55f312492f24d539569d84f5bfb"
+    act_md5 = "c9572672d1045594448068079b34c350"
     apply_props = {
         "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi,arm64-v8a",
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
