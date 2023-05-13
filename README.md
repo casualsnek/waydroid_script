@@ -9,7 +9,7 @@ Script to add gapps and other stuff to waydroid !
 ## Arch, Manjaro and EndeavourOS based distributions:
 	sudo pacman -S lzip sqlite
 ## Debian and Ubuntu based distributions:
-	sudo apt install lzip sqlite  
+	sudo apt install git lzip sqlite3 python3-tqdm  
 ## RHEL, Fedora and Rocky based distributions:
 	sudo dnf install lzip sqlite
 ## openSUSE based distributions:
@@ -18,7 +18,7 @@ Then run:
 	
     git clone https://github.com/casualsnek/waydroid_script
     cd waydroid_script
-    sudo python3 -m pip install -r requirements.txt
+    sudo python3 -m pip install -r requirements.txt #skip on Ubuntu 23.04
     sudo python3 main.py [-i/-g/-n/-h/-w]
 
 ## Install OpenGapps
