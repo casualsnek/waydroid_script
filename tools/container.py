@@ -1,4 +1,7 @@
-import dbus
+try:
+    import dbus
+except ModuleNotFoundError:
+    pass
 
 def DBusContainerService(object_path="/ContainerManager", intf="id.waydro.ContainerManager"):
     return dbus.Interface(dbus.SystemBus().get_object("id.waydro.Container", object_path), intf)
