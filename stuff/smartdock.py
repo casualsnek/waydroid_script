@@ -4,12 +4,35 @@ from stuff.general import General
 
 class Smartdock(General):
     id = "smartdock"
-    dl_link = "https://github.com/ayasa520/smartdock/releases/download/v1.9.7/smartdock.zip"
+    dl_link = "https://f-droid.org/repo/cu.axel.smartdock_198.apk"
     partition = "system"
-    extract_to = "/tmp/smartdockunpack"
-    dl_file_name = "smartdock.zip"
-    act_md5 = "912e00189c562505114cce62c7aa9478"
+    dl_file_name = "smartdock.apk"
+    act_md5 = "a8ce0bca5e1772796404602e0fa250a4"
     apply_props = { "qemu.hw.mainkeys" : "1" }
+    skip_extract = True
+    permissions = """<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+    <privapp-permissions package="cu.axel.smartdock">
+	    <permission name="android.permission.SYSTEM_ALERT_WINDOW" />
+	    <permission name="android.permission.GET_TASKS"/>
+	    <permission name="android.permission.REORDER_TASKS"/>
+        <permission name="android.permission.REMOVE_TASKS" />
+        <permission name="android.permission.ACCESS_WIFI_STATE"/>
+	    <permission name="android.permission.CHANGE_WIFI_STATE"/>
+        <permission name="android.permission.ACCESS_NETWORK_STATE"/>
+        <permission name="android.permission.ACCESS_FINE_LOCATION"/>
+        <permission name="android.permission.READ_EXTERNAL_STORAGE"/>
+        <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.BLUETOOTH_ADMIN"/>
+        <permission name="android.permission.BLUETOOTH_CONNECT"/>
+        <permission name="android.permission.BLUETOOTH"/>
+	    <permission name="android.permission.REQUEST_DELETE_PACKAGES"/>
+        <permission name="android.permission.ACCESS_SUPERUSER"/>
+        <permission name="android.permission.PACKAGE_USAGE_STATS" />
+        <permission name="android.permission.QUERY_ALL_PACKAGES" />
+    </privapp-permissions>
+</permissions>
+    """
     files = [
             "etc/permissions/permissions_cu.axel.smartdock.xml",
             "priv-app/SmartDock",
@@ -30,10 +53,11 @@ service set_home_activity /system/bin/sh -c "cmd package set-home-activity cu.ax
             os.makedirs(os.path.join(self.copy_dir, self.partition, "priv-app", "SmartDock"))
         if not os.path.exists(os.path.join(self.copy_dir, self.partition, "etc", "permissions")):
             os.makedirs(os.path.join(self.copy_dir, self.partition, "etc", "permissions"))
-        shutil.copyfile(os.path.join(self.extract_to, "app-release.apk"),
+        shutil.copyfile(os.path.join(self.download_loc),
                         os.path.join(self.copy_dir, self.partition, "priv-app/SmartDock/smartdock.apk"))
-        shutil.copyfile(os.path.join(self.extract_to, "permissions_cu.axel.smartdock.xml"),
-                        os.path.join(self.copy_dir, self.partition, "etc", "permissions", "permissions_cu.axel.smartdock.xml"))
+        
+        with open(os.path.join(self.copy_dir, self.partition, "etc", "permissions", "permissions_cu.axel.smartdock.xml"), "w") as f:
+            f.write(self.permissions)
 
         rc_dir = os.path.join(self.copy_dir, self.partition, "etc/init/smartdock.rc")
         if not os.path.exists(os.path.dirname(rc_dir)):

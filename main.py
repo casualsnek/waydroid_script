@@ -218,9 +218,13 @@ def interact():
     ).execute()
     if not action:
         exit()
-    install_choices = ["gapps", "microg", "libndk",
-                       "libhoudini", "magisk", "smartdock", "widevine"]
-    hack_choices = ["nodataperm", "hidestatusbar"]
+
+    install_choices = ["gapps", "microg", "libndk", "magisk", "smartdock",]
+    hack_choices = []
+    if android_version=="11":
+        install_choices.extend(["libhoudini", "widevine"])
+        hack_choices.extend(["nodataperm", "hidestatusbar"])
+
     if action == "Install":
         apps = inquirer.checkbox(
             message="Select apps",
