@@ -119,7 +119,7 @@ def remove_app(args):
     if "gapps" in app:
         remove_list.append(Gapps(args.android_version))
     if "libndk" in app and "houdini" not in app:
-        remove_list.append(Ndk())
+        remove_list.append(Ndk(args.android_version))
     if "libhoudini" in app and "ndk" not in app:
         remove_list.append(Houdini(args.android_version))
     if "magisk" in app:

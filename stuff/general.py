@@ -121,7 +121,6 @@ class General:
 
         mode = os.stat(path).st_mode
 
-        print(path, mode)
         if os.path.isdir(path):
             mode |= perms[2]
         else:

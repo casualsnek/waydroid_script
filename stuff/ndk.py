@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 from stuff.general import General
 from tools.logger import Logger
@@ -6,10 +7,12 @@ from tools.logger import Logger
 class Ndk(General):
     id = "libndk"
     partition = "system"
-    dl_link = "https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/9324a8914b649b885dad6f2bfd14a67e5d1520bf.zip"
+    dl_links = {
+        "11": ["https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/9324a8914b649b885dad6f2bfd14a67e5d1520bf.zip", "c9572672d1045594448068079b34c350"],
+        "13": ["https://github.com/supremegamers/vendor_google_proprietary_ndk_translation-prebuilt/archive/a090003c60df53a9eadb2df09bd4fd2fa86ea629.zip", "e6f0d9fc28ebc427b59a3942a9a4ffc0"]
+    }
     dl_file_name = "libndktranslation.zip"
     extract_to = "/tmp/libndkunpack"
-    act_md5 = "c9572672d1045594448068079b34c350"
     apply_props = {
         "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi,arm64-v8a",
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
@@ -37,7 +40,13 @@ class Ndk(General):
             "lib64/libndk*"
         ]
 
+    def __init__(self, android_version="11") -> None:
+        super().__init__()
+        self.dl_link = self.dl_links[android_version][0]
+        self.act_md5 = self.dl_links[android_version][1]
+
     def copy(self):
         Logger.info("Copying libndk library files ...")
-        shutil.copytree(os.path.join(self.extract_to, "vendor_google_proprietary_ndk_translation-prebuilt-181d9290a69309511185c4417ba3d890b3caaaa8", "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
-        
+        name = re.findall("([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
+        shutil.copytree(os.path.join(self.extract_to, "vendor_google_proprietary_ndk_translation-prebuilt-" + name,
+                        "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
