@@ -66,7 +66,7 @@ def install_app(args):
     if "libndk" in app and "houdini" not in app:
         arch = helper.host()[0]
         if arch == "x86_64":
-            install_list.append(Ndk())
+            install_list.append(Ndk(args.android_version))
         else:
             Logger.warn("libndk is not supported on your CPU")
     if "libhoudini" in app and "ndk" not in app:
