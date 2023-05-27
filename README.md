@@ -6,7 +6,7 @@ Script to add gapps and other stuff to waydroid !
 ## Interactive terminal interface
 
 ```
-git clone https://github.com/ayasa520/waydroid_script
+git clone https://github.com/casualsnek/waydroid_script
 cd waydroid_script
 sudo python3 -m pip install -r 
 sudo python main.py
@@ -186,7 +186,6 @@ Check [waydroid-magisk](https://github.com/nitanmarcel/waydroid-magisk)
 
 ## Credits
 - [WayDroid](https://github.com/waydroid/waydroid)
-- [waydroid_script](https://github.com/ayasa520/waydroid_script)
 - [Magisk Delta](https://huskydg.github.io/magisk-files/)
 - [microG Project](https://microg.org)
 - [Open GApps](https://opengapps.org)
