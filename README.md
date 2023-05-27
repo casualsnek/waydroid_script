@@ -22,7 +22,7 @@ sudo python main.py
 
 ## Command Line
 
-    git clone https://github.com/ayasa520/waydroid_script
+    git clone https://github.com/casualsnek/waydroid_script
     cd waydroid_script
     sudo python3 -m pip install -r requirements.txt
     # install something
