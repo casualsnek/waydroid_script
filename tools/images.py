@@ -24,14 +24,8 @@ def umount(mount_point, exists=True):
             mount_point))
 
 def resize(img_file, size):
-    try:
-        run(["e2fsck", "-y", "-f", img_file])
-    except subprocess.CalledProcessError:
-        pass
-    try:
-        run(["resize2fs", img_file, size])
-    except subprocess.CalledProcessError:
-        pass
+    run(["sudo", "e2fsck", "-y", "-f", img_file], ignore="^e2fsck \d+\.\d+\.\d (.+)\n$")
+    run(["sudo", "resize2fs", img_file, size], ignore="^resize2fs \d+\.\d+\.\d (.+)\n$")
 
 def get_image_dir():
     # Read waydroid config to get image location
@@ -42,6 +36,6 @@ def get_image_dir():
         sys.exit(1)
     cfg.read(cfg_file)
     if "waydroid" not in cfg:
-        Logger.error("ERROR: Required entry in config was not found, Cannot continue!") #magisk
+        Logger.error("Required entry in config was not found, Cannot continue!") #magisk
         sys.exit(1)
     return cfg["waydroid"]["images_path"]
