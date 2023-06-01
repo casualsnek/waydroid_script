@@ -235,7 +235,7 @@ def interact():
         ).execute()
         microg_variants = ["Standard", "NoGoolag",
                            "UNLP", "Minimal", "MinimalIAP"]
-        if "MicroG" in apps:
+        if "microg" in apps:
             microg_variant = inquirer.select(
                 message="Select MicroG variant",
                 choices=microg_variants,
