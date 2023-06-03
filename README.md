@@ -8,7 +8,7 @@ Script to add gapps and other stuff to waydroid !
 ```
 git clone https://github.com/casualsnek/waydroid_script
 cd waydroid_script
-sudo python3 -m pip install -r 
+sudo python3 -m pip install -r requirements.txt
 sudo python main.py
 ```
 
