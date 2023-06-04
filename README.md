@@ -12,6 +12,16 @@ sudo python3 -m pip install -r requirements.txt
 sudo python main.py
 ```
 
+or use a Python virtual environment:
+
+```
+git clone https://github.com/casualsnek/waydroid_script
+cd waydroid_script
+python3 -m venv --upgrade-deps .venv
+.venv/bin/pip install -r requirements.txt
+sudo .venv/bin/python main.py
+```
+
 ![image-20230430013103883](assets/img/README/image-20230430013103883.png)
 
 ![image-20230430013119763](assets/img/README/image-20230430013119763.png)
