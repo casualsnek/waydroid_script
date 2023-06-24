@@ -82,7 +82,7 @@ def install_app(args):
     if "smartdock" in app:
         install_list.append(Smartdock())
     if "microg" in app:
-        install_list.append(MicroG(args.android_version))
+        install_list.append(MicroG(args.android_version, args.microg_variant))
 
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
