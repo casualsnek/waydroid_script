@@ -5,8 +5,8 @@ from stuff.general import General
 
 class HideStatusBar(General):
     id = "hide status bar"
-    dl_links = {"11": ["https://github.com/ayasa520/hide-status-bar/releases/download/v0.0.1/app-release.apk",
-                       "ae6c4cc567d6f3de77068e54e43818e2"]}
+    dl_links = {"11": ["https://github.com/ayasa520/hide-status-bar/releases/download/v0.0.2/app-release.apk",
+                       "ff2fe63ddfb4b035e6720a1b195b2355"]}
     partition = "system"
     dl_file_name = "hidestatusbar.apk"
     dl_link = ...
