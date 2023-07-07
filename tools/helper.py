@@ -54,7 +54,7 @@ def run(args: list, env: Optional[str] = None, ignore: Optional[str] = None):
 # execute on waydroid shell
 def shell(arg: str, env: Optional[str] = None):
     a = subprocess.Popen(
-        args=["sudo", "waydroid", "shell"],
+        args=["waydroid", "shell"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
