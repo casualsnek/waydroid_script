@@ -10,7 +10,7 @@ class Nodataperm(General):
     id = "nodataperm"
     dl_links = {
         "11": ["https://github.com/ayasa520/hack_full_data_permission/archive/refs/heads/main.zip",
-               "eafd7b0986f3edaebaf1dd89f19d49bf"],
+               "8f067ef796c3f6849f9767a85496156f"],
         "13": ["", ""]
     }
     dl_file_name = "nodataperm.zip"
