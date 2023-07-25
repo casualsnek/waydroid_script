@@ -1,5 +1,5 @@
 # Waydroid Extras Script
-Script to add gapps and other stuff to waydroid !
+Script to add gapps and other stuff to waydroid!
 
 # Installation/Usage
 
@@ -8,8 +8,8 @@ Script to add gapps and other stuff to waydroid !
 ```
 git clone https://github.com/casualsnek/waydroid_script
 cd waydroid_script
-sudo python3 -m pip install -r 
-sudo python main.py
+sudo python3 -m pip install -r requirements.txt
+sudo python3 main.py
 ```
 
 ![image-20230430013103883](assets/img/README/image-20230430013103883.png)
@@ -30,9 +30,9 @@ sudo python main.py
     # uninstall something
     sudo python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
     # get Android device ID
-    sudo python main.py certified
+    sudo python3 main.py certified
     # some hacks
-    sudo python3 hack {nodataperm, hidestatusbar}
+    sudo python3 main.py hack {nodataperm, hidestatusbar}
 
 ## Dependencies
 
