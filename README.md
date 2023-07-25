@@ -174,7 +174,7 @@ sudo python3 main.py hack hidestatusbar
 You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for google apps:
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py google
+    sudo python3 main.py certified
 
 Star this repository if you find this useful, if you encounter problem create a issue on github !
 
