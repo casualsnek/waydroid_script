@@ -8,8 +8,18 @@ Script to add gapps and other stuff to waydroid !
 ```
 git clone https://github.com/casualsnek/waydroid_script
 cd waydroid_script
-sudo python3 -m pip install -r 
+sudo python3 -m pip install -r requirements.txt
 sudo python main.py
+```
+
+or use a Python virtual environment:
+
+```
+git clone https://github.com/casualsnek/waydroid_script
+cd waydroid_script
+python3 -m venv --upgrade-deps .venv
+.venv/bin/pip install -r requirements.txt
+sudo .venv/bin/python main.py
 ```
 
 ![image-20230430013103883](assets/img/README/image-20230430013103883.png)
@@ -171,7 +181,7 @@ sudo python3 main.py hack hidestatusbar
 
 ## Get Android ID for device registration
 
-You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for google apps:
+You need to register your device with its ID before being able to use gapps, this will print out your Android ID which you can use for device registration required for google apps:
 Open terminal and switch to directory where "main.py" is located then run:
 
     sudo python3 main.py google
