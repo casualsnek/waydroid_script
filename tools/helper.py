@@ -4,10 +4,7 @@ import platform
 import re
 import subprocess
 import sys
-import requests as req
-from requests_file import FileAdapter
-requests = req.Session()
-requests.mount('file://', FileAdapter())
+import requests
 from tools.logger import Logger
 from tqdm import tqdm
 import hashlib
