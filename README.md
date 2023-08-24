@@ -8,8 +8,9 @@ Script to add gapps and other stuff to waydroid!
 ```
 git clone https://github.com/casualsnek/waydroid_script
 cd waydroid_script
-sudo python3 -m pip install -r requirements.txt
-sudo python3 main.py
+python3 -m venv venv
+venv/bin/pip install -r requirements.txt
+sudo venv/bin/python3 main.py
 ```
 
 ![image-20230430013103883](assets/img/README/image-20230430013103883.png)
@@ -24,15 +25,16 @@ sudo python3 main.py
 
     git clone https://github.com/casualsnek/waydroid_script
     cd waydroid_script
-    sudo python3 -m pip install -r requirements.txt
+    python3 -m venv venv
+    venv/bin/pip install -r requirements.txt
     # install something
-    sudo python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+    sudo venv/bin/python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
     # uninstall something
-    sudo python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+    sudo venv/bin/python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
     # get Android device ID
-    sudo python3 main.py certified
+    sudo venv/bin/python3 main.py certified
     # some hacks
-    sudo python3 main.py hack {nodataperm, hidestatusbar}
+    sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
 
 ## Dependencies
 
@@ -52,7 +54,7 @@ sudo python3 main.py
 
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py install gapps
+    sudo venv/bin/python3 main.py install gapps
 
 Then launch waydroid with:
 
@@ -60,7 +62,7 @@ Then launch waydroid with:
 
 After waydroid has finished booting open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py google
+    sudo venv/bin/python3 main.py certified
 Copy the returned numeric ID open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1) enter the id and register it, you may need to wait upto 10-20 minutes for device to get registered, then clear Google Play Service's cache and try logging in !
 
 ## Install Magisk
@@ -69,7 +71,7 @@ Copy the returned numeric ID open ["https://google.com/android/uncertified/?pli=
 
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py install magisk
+    sudo venv/bin/python3 main.py install magisk
 
 Magisk will be installed on next boot ! 
 
@@ -87,7 +89,7 @@ libndk seems to have better performance than libhoudini on AMD.
 
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py install libndk
+    sudo venv/bin/python3 main.py install libndk
 
 ## Install libhoudini arm translation
 
@@ -99,7 +101,7 @@ houdini64 version: 11.0.1b_z.38765.m
 
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py install libhoudini
+    sudo venv/bin/python3 main.py install libhoudini
 
 ## Integrate Widevine DRM (L3)
 
@@ -107,7 +109,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py install widevine
+    sudo venv/bin/python3 main.py install widevine
 
 ## Install Smart Dock
 
@@ -116,7 +118,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py install smartdock
+    sudo venv/bin/python3 main.py install smartdock
 
 ## Granting full permission for apps data (HACK)
 
@@ -130,9 +132,9 @@ Arknights, PUNISHING: GRAY RAVEN and other games won't freeze on the black scree
 Open terminal and switch to directory where "main.py" is located then run:
 
 ```
-sudo python3 main.py hack nodataperm
+sudo venv/bin/python3 main.py hack nodataperm
 ```
-**WARNING**: Tested on `lineage-18.1-20230128-VANILLA-waydroid_x86_64.img`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo python3 main.py uninstall nodataperm` to remove it.
+**WARNING**: Tested on `lineage-18.1-20230128-VANILLA-waydroid_x86_64.img`. This script will replace `/system/framework/service.jar`, which may prevent WayDroid from booting. If so, run `sudo venv/bin/python3 main.py uninstall nodataperm` to remove it.
 
 
 Or you can run the following commands directly in `sudo waydroid shell`. In this way, every time a new game is installed, you need to run it again, but it's much less risky.
@@ -165,7 +167,7 @@ After
 ![After](assets/9.png)
 
 ```
-sudo python3 main.py hack hidestatusbar
+sudo venv/bin/python3 main.py hack hidestatusbar
 ```
 
 
@@ -174,7 +176,7 @@ sudo python3 main.py hack hidestatusbar
 You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for google apps:
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py certified
+    sudo venv/bin/python3 main.py certified
 
 Star this repository if you find this useful, if you encounter problem create a issue on github !
 
