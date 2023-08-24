@@ -14,7 +14,7 @@ class AndroidId:
             except:
                 return
         else:
-            Logger.error("WayDroid isn't running !")
+            Logger.error("Please make sure Waydroid is running and Gapps has been installed!")
             return
         print(queryout.replace("android_id|", "").strip())
         print("   ^----- Open https://google.com/android/uncertified/?pli=1")
