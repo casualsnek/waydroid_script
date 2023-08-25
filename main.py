@@ -82,7 +82,7 @@ def install_app(args):
     if "smartdock" in app:
         install_list.append(Smartdock())
     if "microg" in app:
-        install_list.append(MicroG(args.android_version))
+        install_list.append(MicroG(args.android_version, args.microg_variant))
 
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
@@ -235,7 +235,7 @@ def interact():
         ).execute()
         microg_variants = ["Standard", "NoGoolag",
                            "UNLP", "Minimal", "MinimalIAP"]
-        if "MicroG" in apps:
+        if "microg" in apps:
             microg_variant = inquirer.select(
                 message="Select MicroG variant",
                 choices=microg_variants,
