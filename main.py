@@ -12,6 +12,7 @@ from stuff.hidestatusbar import HideStatusBar
 from stuff.houdini import Houdini
 from stuff.magisk import Magisk
 from stuff.microg import MicroG
+from stuff.mitm import Mitm
 from stuff.ndk import Ndk
 from stuff.nodataperm import Nodataperm
 from stuff.smartdock import Smartdock
@@ -83,6 +84,8 @@ def install_app(args):
         install_list.append(Smartdock())
     if "microg" in app:
         install_list.append(MicroG(args.android_version, args.microg_variant))
+    if "mitm" in app:
+        install_list.append(Mitm(args.ca_cert_file))
 
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
@@ -130,6 +133,8 @@ def remove_app(args):
         remove_list.append(Smartdock())
     if "microg" in app:
         remove_list.append(MicroG(args.android_version, args.microg_variant))
+    if "mitm" in app:
+        remove_list.append(Mitm())
     if "nodataperm" in app:
         remove_list.append(Nodataperm(args.android_version))
     if "hidestatusbar" in app:
@@ -286,8 +291,8 @@ def main():
         'certified', help='Get device ID to obtain Play Store certification')
     certified.set_defaults(func=get_certified)
 
-    install_choices = ["gapps", "microg", "libndk",
-                       "libhoudini", "magisk", "smartdock", "widevine"]
+    install_choices = ["gapps", "microg", "libndk", "libhoudini",
+                       "magisk", "mitm", "smartdock", "widevine"]
     hack_choices = ["nodataperm", "hidestatusbar"]
     micrg_variants = ["Standard", "NoGoolag", "UNLP", "Minimal", "MinimalIAP"]
     remove_choices = install_choices
@@ -305,6 +310,7 @@ microg: Add microG, Aurora Store and Aurora Droid to WayDriod
 libndk: Add libndk arm translation, better for AMD CPUs
 libhoudini: Add libhoudini arm translation, better for Intel CPUs
 magisk: Install Magisk Delta to WayDroid
+mitm -c CA_CERT_FILE: Install root CA cert into system trust store
 smartdock: A desktop mode launcher for Android
 widevine: Add support for widevine DRM L3
     """
@@ -313,6 +319,10 @@ widevine: Add support for widevine DRM L3
         'install', formatter_class=argparse.RawTextHelpFormatter, help='Install an app')
     install_parser.add_argument(
         **arg_template, choices=install_choices, help=install_help)
+    install_parser.add_argument('-c', '--ca-cert',
+                                dest='ca_cert_file',
+                                help='[for mitm only] The CA certificate file (*.pem) to install',
+                                default=None)
     install_parser.set_defaults(func=install_app)
 
     # remove and its aliases
