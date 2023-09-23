@@ -23,18 +23,20 @@ sudo venv/bin/python3 main.py
 
 ## Command Line
 
-    git clone https://github.com/casualsnek/waydroid_script
-    cd waydroid_script
-    python3 -m venv venv
-    venv/bin/pip install -r requirements.txt
-    # install something
-    sudo venv/bin/python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
-    # uninstall something
-    sudo venv/bin/python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
-    # get Android device ID
-    sudo venv/bin/python3 main.py certified
-    # some hacks
-    sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
+```bash
+git clone https://github.com/casualsnek/waydroid_script
+cd waydroid_script
+python3 -m venv venv
+venv/bin/pip install -r requirements.txt
+# install something
+sudo venv/bin/python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+# uninstall something
+sudo venv/bin/python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+# get Android device ID
+sudo venv/bin/python3 main.py certified
+# some hacks
+sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
+```
 
 ## Dependencies
 
