@@ -29,7 +29,7 @@ cd waydroid_script
 python3 -m venv venv
 venv/bin/pip install -r requirements.txt
 # install something
-sudo venv/bin/python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
+sudo venv/bin/python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg, mitm}
 # uninstall something
 sudo venv/bin/python3 main.py uninstall {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg}
 # get Android device ID
@@ -121,6 +121,12 @@ Open terminal and switch to directory where "main.py" is located then run:
 Open terminal and switch to directory where "main.py" is located then run:
 
     sudo venv/bin/python3 main.py install smartdock
+
+## Install a self-signed CA certificate
+
+Open terminal and switch to directory where "main.py" is located then run:
+
+    sudo venv/bin/python3 main.py install mitm --ca-cert mycert.pem
 
 ## Granting full permission for apps data (HACK)
 
