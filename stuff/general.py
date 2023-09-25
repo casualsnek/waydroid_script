@@ -73,8 +73,8 @@ class General:
         if not os.path.isfile(os.path.join(bin_dir, "resetprop")):
             if not os.path.exists(bin_dir):
                 os.makedirs(bin_dir)
-            shutil.copy(os.path.join(
-                "./bin", self.arch[0], "resetprop"), bin_dir)
+            shutil.copy(os.path.join(os.path.join(os.path.dirname(__file__), "..", "bin",
+                        self.arch[0], "resetprop")), bin_dir)
             os.chmod(os.path.join(bin_dir, "resetprop"), 0o755)
         if not os.path.isfile(os.path.join(bin_dir, "resetprop.sh")):
             with open(os.path.join(bin_dir, "resetprop.sh"), "w") as f:
