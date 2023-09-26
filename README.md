@@ -1,5 +1,6 @@
 # Waydroid Extras Script
-Script to add gapps and other stuff to waydroid!
+
+Script to add GApps and other stuff to Waydroid!
 
 # Installation/Usage
 
@@ -54,7 +55,7 @@ sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
 
 ![](assets/1.png)
 
-Open terminal and switch to directory where "main.py" is located then run:
+Open terminal and switch to the directory where "main.py" is located then run:
 
     sudo venv/bin/python3 main.py install gapps
 
@@ -62,10 +63,11 @@ Then launch waydroid with:
 
     waydroid show-full-ui
 
-After waydroid has finished booting open terminal and switch to directory where "main.py" is located then run:
+After waydroid has finished booting, open terminal and switch to directory where "main.py" is located then run:
 
-    sudo venv/bin/python3 main.py certified
-Copy the returned numeric ID open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1) enter the id and register it, you may need to wait upto 10-20 minutes for device to get registered, then clear Google Play Service's cache and try logging in !
+    sudo python3 main.py google
+Copy the returned numeric ID, then open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1). Enter the ID and register it. Wait 10-20 minutes for device to get registered. Then clear Google Play Service's cache and try logging in!
+
 
 ## Install Magisk
 
@@ -75,7 +77,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 
     sudo venv/bin/python3 main.py install magisk
 
-Magisk will be installed on next boot ! 
+Magisk will be installed on next boot! 
 
 Zygisk and modules like LSPosed should work now.
 
@@ -181,12 +183,12 @@ sudo venv/bin/python3 main.py hack hidestatusbar
 
 ## Get Android ID for device registration
 
-You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for google apps:
+You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for Google apps:
 Open terminal and switch to directory where "main.py" is located then run:
 
     sudo venv/bin/python3 main.py certified
 
-Star this repository if you find this useful, if you encounter problem create a issue on github !
+Star this repository if you find this useful, if you encounter problem create an issue on GitHub!
 
 ## Error handling  
 
