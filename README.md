@@ -196,6 +196,18 @@ Star this repository if you find this useful, if you encounter problem create an
 
 Check [waydroid-magisk](https://github.com/nitanmarcel/waydroid-magisk)
 
+- Python module not found
+
+"ModuleNotFoundError" may be reported when installing something.
+
+Try to install corresponding packages using system packagemanager (pacman, apt, dnf, zypper) or use yay, opi (openSUSE) because "sudo pip install" may broke the system.
+
+e.g. Arch, Manjaro and EndeavourOS based systems:
+
+ModuleNotFoundError: No module named 'InquirerPy'
+
+can be solved by using "yay InquirerPy" to install module "InquirerPy" from AUR.
+
 ## Credits
 - [WayDroid](https://github.com/waydroid/waydroid)
 - [Magisk Delta](https://huskydg.github.io/magisk-files/)
