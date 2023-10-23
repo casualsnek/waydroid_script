@@ -18,7 +18,7 @@ class Houdini(General):
     extract_to = "/tmp/houdiniunpack"
     init_rc_component = """
 on early-init
-    mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+    mount binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
 
 on property:ro.enable.native.bridge.exec=1
     exec -- /system/bin/sh -c "echo ':arm_exe:M::\\\\x7f\\\\x45\\\\x4c\\\\x46\\\\x01\\\\x01\\\\x01\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x00\\\\x02\\\\x00\\\\x28::/system/bin/houdini:P' > /proc/sys/fs/binfmt_misc/register"
