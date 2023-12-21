@@ -15,10 +15,10 @@ class Gapps(General):
             "armeabi-v7a": ["https://sourceforge.net/projects/opengapps/files/arm/20220215/open_gapps-arm-11.0-pico-20220215.zip", "8719519fa32ae83a62621c6056d32814"]
         },
         "13": {
-            "x86_64": ["https://github.com/Howard20181/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86_64-20230323.zip", "63ccebbf93d45c384f58d7c40049d398"],
-            "x86": ["https://github.com/Howard20181/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86-20230323.zip", "f12b6a8ed14eedbb4b5b3c932a865956"],
-            "arm64-v8a": ["https://github.com/Howard20181/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm64-20230323.zip", "11180da0a5d9f2ed2863882c30a8d556"],
-            "armeabi-v7a": ["https://github.com/Howard20181/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm-20230323.zip", "d525c980bac427844aa4cb01628f8a8f"]
+            "x86_64": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86_64-20230323.zip", "63ccebbf93d45c384f58d7c40049d398"],
+            "x86": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86-20230323.zip", "f12b6a8ed14eedbb4b5b3c932a865956"],
+            "arm64-v8a": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm64-20230323.zip", "11180da0a5d9f2ed2863882c30a8d556"],
+            "armeabi-v7a": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm-20230323.zip", "d525c980bac427844aa4cb01628f8a8f"]
         }
     }
     android_version = ...
