@@ -17,6 +17,7 @@ from stuff.ndk import Ndk
 from stuff.nodataperm import Nodataperm
 from stuff.smartdock import Smartdock
 from stuff.widevine import Widevine
+from stuff.fdroidpriv import FDroidPriv
 import tools.helper as helper
 from tools import container
 from tools import images
@@ -86,6 +87,8 @@ def install_app(args):
         install_list.append(MicroG(args.android_version, args.microg_variant))
     if "mitm" in app:
         install_list.append(Mitm(args.ca_cert_file))
+    if "fdroidpriv" in app:
+        install_list.append(FDroidPriv(args.android_version))
 
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
@@ -135,6 +138,8 @@ def remove_app(args):
         remove_list.append(MicroG(args.android_version, args.microg_variant))
     if "mitm" in app:
         remove_list.append(Mitm())
+    if "fdroidpriv" in app:
+        remove_list.append(FDroidPriv(args.android_version))
     if "nodataperm" in app:
         remove_list.append(Nodataperm(args.android_version))
     if "hidestatusbar" in app:
@@ -224,7 +229,7 @@ def interact():
     if not action:
         exit()
 
-    install_choices = ["gapps", "microg", "libndk", "magisk", "smartdock",]
+    install_choices = ["gapps", "microg", "libndk", "magisk", "smartdock", "fdroidpriv",]
     hack_choices = []
     if android_version=="11":
         install_choices.extend(["libhoudini", "widevine"])
