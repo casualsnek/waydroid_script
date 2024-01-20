@@ -10,7 +10,7 @@ from tools import container
 class Magisk(General):
     id = "magisk delta"
     partition = "system"
-    dl_link = "https://github.com/casualsnek/miscpackages/raw/main/Magisk_Delta_25210_canary_fdac22ba.apk"
+    dl_link = "https://github.com/mistrmochov/magiskdeltaorig/raw/main/app-release.apk"
     dl_file_name = "magisk.apk"
     extract_to = "/tmp/magisk_unpack"
     magisk_dir = os.path.join(partition, "etc", "init", "magisk")
@@ -29,30 +29,28 @@ service bootanim /system/bin/bootanimation
     bootanim_component = f"""
 on post-fs-data
     start logd
-    exec u:r:su:s0 root root -- /system/etc/init/magisk/magisk{host()[1]} --auto-selinux --setup-sbin /system/etc/init/magisk
-    exec u:r:su:s0 root root -- /system/etc/init/magisk/magiskpolicy --live --magisk "allow * magisk_file lnk_file *"
-    mkdir /sbin/.magisk 700
-    mkdir /sbin/.magisk/mirror 700
-    mkdir /sbin/.magisk/block 700
-    copy /system/etc/init/magisk/config /sbin/.magisk/config
-    rm /dev/.magisk_unblock
-    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --post-fs-data
-    wait /dev/.magisk_unblock 40
-    rm /dev/.magisk_unblock
+    exec u:r:su:s0 root root -- /system/etc/init/magisk/magiskpolicy --live --magisk
+    exec u:r:magisk:s0 root root -- /system/etc/init/magisk/magiskpolicy --live --magisk
+    exec u:r:update_engine:s0 root root -- /system/etc/init/magisk/magiskpolicy --live --magisk
+    mkdir /dev/magisk_iqeoVo2mDrO 700
+    exec u:r:su:s0 root root -- /system/etc/init/magisk/magisk64 --auto-selinux --setup-sbin /system/etc/init/magisk /dev/magisk_iqeoVo2mDrO
+    exec u:r:su:s0 root root -- /dev/magisk_iqeoVo2mDrO/magisk --auto-selinux --post-fs-data
 
-on zygote-start
-    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --service
+on nonencrypted
+    exec u:r:su:s0 root root -- /dev/magisk_iqeoVo2mDrO/magisk --auto-selinux --service
+
+on property:vold.decrypt=trigger_restart_framework
+    exec u:r:su:s0 root root -- /dev/magisk_iqeoVo2mDrO/magisk --auto-selinux --service
 
 on property:sys.boot_completed=1
     mkdir /data/adb/magisk 755
-    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --boot-complete
-    exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /system/etc/init/magisk/magisk.apk ; fi"
+    exec u:r:su:s0 root root -- /dev/magisk_iqeoVo2mDrO/magisk --auto-selinux --boot-complete
    
 on property:init.svc.zygote=restarting
-    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --zygote-restart
+    exec u:r:su:s0 root root -- /dev/magisk_iqeoVo2mDrO/magisk --auto-selinux --zygote-restart
    
 on property:init.svc.zygote=stopped
-    exec u:r:su:s0 root root -- /sbin/magisk --auto-selinux --zygote-restart
+    exec u:r:su:s0 root root -- /dev/magisk_iqeoVo2mDrO/magisk --auto-selinux --zygote-restart
     """
 
     def download(self):
