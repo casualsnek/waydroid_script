@@ -105,4 +105,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# nix
+result*
+
 test.py
