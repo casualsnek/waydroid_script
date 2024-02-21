@@ -59,13 +59,15 @@ Open terminal and switch to the directory where "main.py" is located then run:
 
     sudo venv/bin/python3 main.py install gapps
 
+Waydroid should open automatically, if not, run:
+
 Then launch waydroid with:
 
     waydroid show-full-ui
 
 After waydroid has finished booting, open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py google
+    sudo venv/bin/python3 main.py certified
 Copy the returned numeric ID, then open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1). Enter the ID and register it. Wait 10-20 minutes for device to get registered. Then clear Google Play Service's cache and try logging in!
 
 
