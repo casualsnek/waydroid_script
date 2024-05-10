@@ -16,12 +16,10 @@ class Smartdock(General):
 	    <permission name="android.permission.SYSTEM_ALERT_WINDOW" />
 	    <permission name="android.permission.GET_TASKS"/>
 	    <permission name="android.permission.REORDER_TASKS"/>
-        <permission name="android.permission.REMOVE_TASKS" />
         <permission name="android.permission.ACCESS_WIFI_STATE"/>
 	    <permission name="android.permission.CHANGE_WIFI_STATE"/>
         <permission name="android.permission.ACCESS_NETWORK_STATE"/>
-        <permission name="android.permission.ACCESS_FINE_LOCATION"/>
-        <permission name="android.permission.READ_EXTERNAL_STORAGE"/>
+	 <permission name="android.permission.READ_EXTERNAL_STORAGE"/>
         <permission name="android.permission.MANAGE_USERS"/>
         <permission name="android.permission.BLUETOOTH_ADMIN"/>
         <permission name="android.permission.BLUETOOTH_CONNECT"/>
@@ -30,6 +28,8 @@ class Smartdock(General):
         <permission name="android.permission.ACCESS_SUPERUSER"/>
         <permission name="android.permission.PACKAGE_USAGE_STATS" />
         <permission name="android.permission.QUERY_ALL_PACKAGES" />
+        <permission name="android.permission.WRITE_SECURE_SETTINGS" />
+        <permission name="android.permission.WRITE_SETTINGS" />
     </privapp-permissions>
 </permissions>
     """
