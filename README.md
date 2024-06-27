@@ -197,7 +197,7 @@ sudo venv/bin/python3 main.py hack hidestatusbar
 
 ## Get Android ID for device registration
 
-You need to register your device with its ID before being able to use gapps, this will print out your Android ID, which
+You need to register your device with its ID before being able to use GApps, this will print out your Android ID, which
 you can use for device registration required for Google apps:
 Open the terminal and switch to the directory where "main.py" is located, then run:
 
