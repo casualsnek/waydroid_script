@@ -1,5 +1,6 @@
 import os
 import shutil
+
 from stuff.general import General
 from tools.logger import Logger
 
@@ -15,7 +16,7 @@ class MicroG(General):
         "org.microg.nlp.backend.ichnaea_20036.apk": "0b3cb65f8458d1a5802737c7392df903",
         "org.microg.nlp.backend.nominatim_20042.apk": "88e7397cbb9e5c71c8687d3681a23383",
     }
-    microg_apks= {
+    microg_apks = {
         "com.google.android.gms-223616054.apk": "a945481ca5d33a03bc0f9418263c3228",
         "com.google.android.gsf-8.apk": "b2b4ea3642df6158e14689a4b2a246d4",
         "com.android.vending-22.apk": "6815d191433ffcd8fa65923d5b0b0573",
@@ -107,7 +108,7 @@ service microg_service /system/bin/sh /system/bin/npem
         super().__init__()
         self.dl_link = self.dl_links[variant][0]
         self.act_md5 = self.dl_links[variant][1]
-        self.id = self.id+f"-{variant}"
+        self.id = self.id + f"-{variant}"
         self.dl_file_name = f'MinMicroG-{variant}.zip'
         if android_version == "11":
             self.sdk = 30
@@ -123,7 +124,7 @@ service microg_service /system/bin/sh /system/bin/npem
         else:
             sub_arch = "x86"
         if 64 == self.arch[1]:
-            arch = f"{sub_arch}{'' if sub_arch=='arm' else '_'}64"
+            arch = f"{sub_arch}{'' if sub_arch == 'arm' else '_'}64"
         for root, dirs, files in os.walk(src_dir):
             flag = False
             dir_name = os.path.basename(root)
@@ -135,7 +136,8 @@ service microg_service /system/bin/sh /system/bin/npem
                         sdks.append(i)
                     elif i:
                         archs.append(i)
-                if len(archs) != 0 and arch not in archs and sub_arch not in archs or len(sdks) != 0 and str(self.sdk) not in sdks:
+                if len(archs) != 0 and arch not in archs and sub_arch not in archs or len(sdks) != 0 and str(
+                        self.sdk) not in sdks:
                     continue
                 else:
                     flag = True

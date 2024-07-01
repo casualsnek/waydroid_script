@@ -146,7 +146,7 @@ This is a temporary hack to combat against the apps permission issue on Android 
 always enable a property (persist.sys.nodataperm) to make it execute a script to grant the data full permissions (777).
 The **correct** way is to use `sdcardfs` or `esdfs`, both need to recompile the kernel or WayDroid image.
 
-Arknights, PUNISHING: GRAY RAVEN and other games won't freeze on the black screen.
+Arknights, PUNISHING: GRAY RAVEN, and other games won't freeze on the black screen.
 
 ![](assets/6.png)
 

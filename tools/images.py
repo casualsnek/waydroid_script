@@ -1,15 +1,17 @@
 import configparser
 import os
-import subprocess
 import sys
+
 from tools.helper import run
 from tools.logger import Logger
+
 
 def mount(image, mount_point):
     umount(mount_point, False)
     if not os.path.exists(mount_point):
         os.makedirs(mount_point)
     run(["mount", "-o", "rw", image, mount_point])
+
 
 def umount(mount_point, exists=True):
     if not os.path.exists(mount_point):
@@ -23,9 +25,11 @@ def umount(mount_point, exists=True):
         Logger.warning("{} is not a mount point".format(
             mount_point))
 
+
 def resize(img_file, size):
     run(["sudo", "e2fsck", "-y", "-f", img_file], ignore="^e2fsck \d+\.\d+\.\d (.+)\n$")
     run(["sudo", "resize2fs", img_file, size], ignore="^resize2fs \d+\.\d+\.\d (.+)\n$")
+
 
 def get_image_dir():
     # Read waydroid config to get image location
@@ -36,6 +40,6 @@ def get_image_dir():
         sys.exit(1)
     cfg.read(cfg_file)
     if "waydroid" not in cfg:
-        Logger.error("Required entry in config was not found, Cannot continue!") #magisk
+        Logger.error("Required entry in config was not found, Cannot continue!")  # magisk
         sys.exit(1)
     return cfg["waydroid"]["images_path"]
