@@ -1,6 +1,8 @@
 import os
 import shutil
+
 from stuff.general import General
+
 
 class Smartdock(General):
     id = "smartdock"
@@ -8,7 +10,7 @@ class Smartdock(General):
     partition = "system"
     dl_file_name = "smartdock.apk"
     act_md5 = "f4087d34218eac902a5cca98ee03d215"
-    apply_props = { "qemu.hw.mainkeys" : "1" }
+    apply_props = {"qemu.hw.mainkeys": "1"}
     skip_extract = True
     permissions = """<?xml version="1.0" encoding="utf-8"?>
 <permissions>
@@ -34,10 +36,10 @@ class Smartdock(General):
 </permissions>
     """
     files = [
-            "etc/permissions/permissions_cu.axel.smartdock.xml",
-            "priv-app/SmartDock",
-            "etc/init/smartdock.rc"
-        ]
+        "etc/permissions/permissions_cu.axel.smartdock.xml",
+        "priv-app/SmartDock",
+        "etc/init/smartdock.rc"
+    ]
     rc_content = '''
 on property:sys.boot_completed=1
     start set_home_activity
@@ -55,8 +57,10 @@ service set_home_activity /system/bin/sh -c "cmd package set-home-activity cu.ax
             os.makedirs(os.path.join(self.copy_dir, self.partition, "etc", "permissions"))
         shutil.copyfile(os.path.join(self.download_loc),
                         os.path.join(self.copy_dir, self.partition, "priv-app/SmartDock/smartdock.apk"))
-        
-        with open(os.path.join(self.copy_dir, self.partition, "etc", "permissions", "permissions_cu.axel.smartdock.xml"), "w") as f:
+
+        with open(
+                os.path.join(self.copy_dir, self.partition, "etc", "permissions", "permissions_cu.axel.smartdock.xml"),
+                "w") as f:
             f.write(self.permissions)
 
         rc_dir = os.path.join(self.copy_dir, self.partition, "etc/init/smartdock.rc")

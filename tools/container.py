@@ -1,9 +1,11 @@
 import configparser
 import os
 import sys
+
 # import dbus
 from tools.helper import run
 from tools.logger import Logger
+
 
 # def DBusContainerService(object_path="/ContainerManager", intf="id.waydro.ContainerManager"):
 #     return dbus.Interface(dbus.SystemBus().get_object("id.waydro.Container", object_path), intf)
@@ -29,7 +31,7 @@ def use_overlayfs():
         Logger.error("Required entry in config was not found, Cannot continue!")
     if "mount_overlays" not in cfg["waydroid"]:
         return False
-    if cfg["waydroid"]["mount_overlays"]=="True":
+    if cfg["waydroid"]["mount_overlays"] == "True":
         return True
     return False
 
@@ -43,11 +45,12 @@ def stop():
     #     if session:
     #         DBusContainerService().Stop(False)
     # else:
-        run(["waydroid", "container", "stop"])
+    run(["waydroid", "container", "stop"])
 
 
 def is_running():
-        return "Session:\tRUNNING" in run(["waydroid", "status"]).stdout.decode()
+    return "Session:\tRUNNING" in run(["waydroid", "status"]).stdout.decode()
+
 
 def upgrade():
     run(["waydroid", "upgrade", "-o"], ignore=r"\[.*\] Stopping container\n\[.*\] Starting container")

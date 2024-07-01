@@ -1,5 +1,6 @@
 import os
 import shutil
+
 from stuff.general import General
 
 
@@ -12,8 +13,9 @@ class HideStatusBar(General):
     dl_link = ...
     act_md5 = ...
     files = [
-        "product/overlay/"+dl_file_name
+        "product/overlay/" + dl_file_name
     ]
+
     def __init__(self, android_version="11") -> None:
         super().__init__()
         self.dl_link = self.dl_links[android_version][0]

@@ -1,15 +1,16 @@
 import gzip
+import hashlib
 import os
-import re
 import platform
 import re
 import subprocess
 import sys
-import requests
-from tools.logger import Logger
-from tqdm import tqdm
-import hashlib
 from typing import Optional
+
+import requests
+from tqdm import tqdm
+
+from tools.logger import Logger
 
 
 def get_download_dir():
@@ -17,7 +18,7 @@ def get_download_dir():
     if os.environ.get("XDG_CACHE_HOME", None) is None:
         download_loc = os.path.join('/', "home", os.environ.get(
             "SUDO_USER", os.environ["USER"]), ".cache", "waydroid-script", "downloads"
-        )
+                                    )
     else:
         download_loc = os.path.join(
             os.environ["XDG_CACHE_HOME"], "waydroid-script", "downloads"
@@ -26,16 +27,19 @@ def get_download_dir():
         os.makedirs(download_loc)
     return download_loc
 
+
 # not good
 def get_data_dir():
-    return os.path.join('/', "home", os.environ.get("SUDO_USER", os.environ["USER"]), ".local", "share", "waydroid", "data")
+    return os.path.join('/', "home", os.environ.get("SUDO_USER", os.environ["USER"]), ".local", "share", "waydroid",
+                        "data")
+
 
 # execute on host
 def run(args: list, env: Optional[str] = None, ignore: Optional[str] = None):
     result = subprocess.run(
-        args=args, 
-        env=env, 
-        stdout=subprocess.PIPE, 
+        args=args,
+        env=env,
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
 
@@ -52,6 +56,7 @@ def run(args: list, env: Optional[str] = None, ignore: Optional[str] = None):
         )
     return result
 
+
 # execute on waydroid shell
 def shell(arg: str, env: Optional[str] = None):
     a = subprocess.Popen(
@@ -61,7 +66,8 @@ def shell(arg: str, env: Optional[str] = None):
         stderr=subprocess.PIPE
     )
     subprocess.Popen(
-        args=["echo", "export BOOTCLASSPATH=/apex/com.android.art/javalib/core-oj.jar:/apex/com.android.art/javalib/core-libart.jar:/apex/com.android.art/javalib/core-icu4j.jar:/apex/com.android.art/javalib/okhttp.jar:/apex/com.android.art/javalib/bouncycastle.jar:/apex/com.android.art/javalib/apache-xml.jar:/system/framework/framework.jar:/system/framework/ext.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/system/framework/framework-atb-backward-compatibility.jar:/apex/com.android.conscrypt/javalib/conscrypt.jar:/apex/com.android.media/javalib/updatable-media.jar:/apex/com.android.mediaprovider/javalib/framework-mediaprovider.jar:/apex/com.android.os.statsd/javalib/framework-statsd.jar:/apex/com.android.permission/javalib/framework-permission.jar:/apex/com.android.sdkext/javalib/framework-sdkextensions.jar:/apex/com.android.wifi/javalib/framework-wifi.jar:/apex/com.android.tethering/javalib/framework-tethering.jar"],
+        args=["echo",
+              "export BOOTCLASSPATH=/apex/com.android.art/javalib/core-oj.jar:/apex/com.android.art/javalib/core-libart.jar:/apex/com.android.art/javalib/core-icu4j.jar:/apex/com.android.art/javalib/okhttp.jar:/apex/com.android.art/javalib/bouncycastle.jar:/apex/com.android.art/javalib/apache-xml.jar:/system/framework/framework.jar:/system/framework/ext.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/system/framework/framework-atb-backward-compatibility.jar:/apex/com.android.conscrypt/javalib/conscrypt.jar:/apex/com.android.media/javalib/updatable-media.jar:/apex/com.android.mediaprovider/javalib/framework-mediaprovider.jar:/apex/com.android.os.statsd/javalib/framework-statsd.jar:/apex/com.android.permission/javalib/framework-permission.jar:/apex/com.android.sdkext/javalib/framework-sdkextensions.jar:/apex/com.android.wifi/javalib/framework-wifi.jar:/apex/com.android.tethering/javalib/framework-tethering.jar"],
         stdout=a.stdin,
         stdin=subprocess.PIPE
     ).communicate()
@@ -89,6 +95,7 @@ def shell(arg: str, env: Optional[str] = None):
         )
     return a.stdout.read().decode("utf-8")
 
+
 def download_file(url, f_name):
     md5 = ""
     response = requests.get(url, stream=True)
@@ -106,6 +113,7 @@ def download_file(url, f_name):
     if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
         raise ValueError("Something went wrong while downloading")
     return md5
+
 
 def host():
     machine = platform.machine()
@@ -125,7 +133,7 @@ def host():
                     return ("x86", 32)
         return mapping[machine]
     raise ValueError("platform.machine '" + machine + "'"
-                     " architecture is not supported")
+                                                      " architecture is not supported")
 
 
 def check_root():
@@ -133,14 +141,16 @@ def check_root():
         Logger.error("This script must be run as root. Aborting.")
         sys.exit(1)
 
+
 def backup(path):
-    gz_filename = path+".gz"
+    gz_filename = path + ".gz"
     with gzip.open(gz_filename, 'wb') as f_gz:
         with open(path, "rb") as f:
             f_gz.write(f.read())
 
+
 def restore(path):
-    gz_filename = path+".gz"
+    gz_filename = path + ".gz"
     with gzip.GzipFile(gz_filename) as f_gz:
         with open(path, "wb") as f:
             f.writelines(f_gz)

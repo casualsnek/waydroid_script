@@ -1,14 +1,16 @@
 import os
 import shutil
+
 from stuff.general import General
 from tools.helper import run
 from tools.logger import Logger
+
 
 class Mitm(General):
     id = "mitm"
     partition = "system"
 
-    def __init__(self, ca_cert_file: str=None) -> None:
+    def __init__(self, ca_cert_file: str = None) -> None:
         super().__init__()
         self.ca_cert_file = ca_cert_file
 

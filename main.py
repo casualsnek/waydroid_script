@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
-from InquirerPy.separator import Separator
 import argparse
 import os
 from typing import List
+
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+
+import tools.helper as helper
 from stuff.android_id import AndroidId
+from stuff.fdroidpriv import FDroidPriv
 from stuff.gapps import Gapps
 from stuff.general import General
 from stuff.hidestatusbar import HideStatusBar
@@ -17,13 +20,8 @@ from stuff.ndk import Ndk
 from stuff.nodataperm import Nodataperm
 from stuff.smartdock import Smartdock
 from stuff.widevine import Widevine
-from stuff.fdroidpriv import FDroidPriv
-import tools.helper as helper
 from tools import container
 from tools import images
-
-import argparse
-
 from tools.logger import Logger
 
 
@@ -32,7 +30,7 @@ def get_certified(args):
 
 
 def mount(partition, copy_dir):
-    img = os.path.join(images.get_image_dir(), partition+".img")
+    img = os.path.join(images.get_image_dir(), partition + ".img")
     mount_point = ""
     if partition == "system":
         mount_point = os.path.join(copy_dir)
@@ -43,9 +41,9 @@ def mount(partition, copy_dir):
 
 
 def resize(partition):
-    img = os.path.join(images.get_image_dir(), partition+".img")
-    img_size = int(os.path.getsize(img)/(1024*1024))
-    new_size = "{}M".format(img_size+500)
+    img = os.path.join(images.get_image_dir(), partition + ".img")
+    img_size = int(os.path.getsize(img) / (1024 * 1024))
+    new_size = "{}M".format(img_size + 500)
     Logger.info("Resizing {} to {}".format(img, new_size))
     images.resize(img, new_size)
 
@@ -229,9 +227,9 @@ def interact():
     if not action:
         exit()
 
-    install_choices = ["gapps", "microg", "libndk", "magisk", "smartdock", "fdroidpriv",]
+    install_choices = ["gapps", "microg", "libndk", "magisk", "smartdock", "fdroidpriv", ]
     hack_choices = []
-    if android_version=="11":
+    if android_version == "11":
         install_choices.extend(["libhoudini", "widevine"])
         hack_choices.extend(["nodataperm", "hidestatusbar"])
 
@@ -263,7 +261,7 @@ def interact():
             choices=[*install_choices, *hack_choices]
         ).execute()
         args.app = apps
-        args.microg_variant="Standard"
+        args.microg_variant = "Standard"
         remove_app(args)
     elif action == "Hack":
         apps = inquirer.checkbox(
@@ -280,9 +278,8 @@ def interact():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='''
-    Does stuff like installing Gapps, installing Magisk, installing NDK Translation and getting Android ID for device registration.
-    Use -h  flag for help!''')
+    parser = argparse.ArgumentParser(description='''Does stuff like installing Aapps, installing Magisk, installing 
+    NDK Translation, and getting Android ID for device registration. Use -h flag for help!''')
 
     subparsers = parser.add_subparsers(title="coomand", dest='command')
     parser.add_argument('-a', '--android-version',
@@ -311,10 +308,10 @@ def main():
 
     install_help = """
 gapps: Install Open GApps (Android 11) or MindTheGapps (Android 13)
-microg: Add microG, Aurora Store and Aurora Droid to WayDriod
-libndk: Add libndk arm translation, better for AMD CPUs
-libhoudini: Add libhoudini arm translation, better for Intel CPUs
-magisk: Install Magisk Delta to WayDroid
+microg: Add microG, Aurora Store, and Aurora Droid to WayDroid
+libndk: Add libndk ARM translation, better for AMD CPUs
+libhoudini: Add libhoudini ARM translation, better for Intel CPUs
+magisk: Install Magisk Delta to Waydroid
 mitm -c CA_CERT_FILE: Install root CA cert into system trust store
 smartdock: A desktop mode launcher for Android
 widevine: Add support for widevine DRM L3
@@ -334,7 +331,7 @@ widevine: Add support for widevine DRM L3
     remove_parser = subparsers.add_parser(
         'remove', aliases=["uninstall"], help='Remove an app')
     remove_parser.add_argument(
-        **arg_template, choices=[*remove_choices, * hack_choices], help='Name of app to remove')
+        **arg_template, choices=[*remove_choices, *hack_choices], help='Name of app to remove')
     remove_parser.set_defaults(func=remove_app)
 
     # hack and its aliases
