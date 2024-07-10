@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
-from InquirerPy.separator import Separator
+try:
+    from InquirerPy import inquirer
+    from InquirerPy.base.control import Choice
+    from InquirerPy.separator import Separator
+except ModuleNotFoundError:
+    inquirer = None
 import argparse
 import os
 from typing import List
@@ -200,6 +203,9 @@ def hack_option(args):
 
 
 def interact():
+    if inquirer is None:
+        print('Please, install InquirerPy module first')
+        return
     os.system("clear")
     args = argparse.Namespace()
     android_version = inquirer.select(
