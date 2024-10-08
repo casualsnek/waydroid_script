@@ -7,7 +7,7 @@ Script to add GApps and other stuff to Waydroid!
 ## Interactive terminal interface
 
 ```
-git clone https://github.com/casualsnek/waydroid_script
+git clone --depth 1 --single-branch https://github.com/huakim/waydroid_script
 cd waydroid_script
 python3 -m venv venv
 venv/bin/pip install -r requirements.txt
@@ -25,7 +25,7 @@ sudo venv/bin/python3 main.py
 ## Command Line
 
 ```bash
-git clone https://github.com/casualsnek/waydroid_script
+git clone --depth 1 --single-branch https://github.com/huakim/waydroid_script
 cd waydroid_script
 python3 -m venv venv
 venv/bin/pip install -r requirements.txt
