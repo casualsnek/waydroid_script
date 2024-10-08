@@ -1,0 +1,3 @@
+[submodule "waydroid_script_assets"]
+	path = waydroid_script_assets
+	url = https://github.com/huakim/waydroid_script_assets.git
