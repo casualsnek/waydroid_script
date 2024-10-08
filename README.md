@@ -81,7 +81,7 @@ Magisk will be installed on next boot!
 
 Zygisk and modules like LSPosed should work now.
 
-If you want to update Magisk, Please use `Direct Install into system partition` or run this sript again.
+If you want to update Magisk, Please use `Direct Install into system partition` or run this script again.
 
 This script only focuses on Magisk installation, if you need more management, please check https://github.com/nitanmarcel/waydroid-magisk
 
