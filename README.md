@@ -14,11 +14,11 @@ venv/bin/pip install -r requirements.txt
 sudo venv/bin/python3 main.py
 ```
 
-![image-20230430013103883](assets/img/README/image-20230430013103883.png)
+![image-20230430013103883](https://github.com/huakim/waydroid_script/blob/main/assets/img/README/image-20230430013103883.png)
 
-![image-20230430013119763](assets/img/README/image-20230430013119763.png)
+![image-20230430013119763](https://github.com/huakim/waydroid_script/blob/main/assets/img/README/image-20230430013119763.png)
 
-![image-20230430013148814](assets/img/README/image-20230430013148814.png)
+![image-20230430013148814](https://github.com/huakim/waydroid_script/blob/main/assets/img/README/image-20230430013148814.png)
 
 
 
@@ -53,7 +53,7 @@ sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
 
 ## Install OpenGapps
 
-![](assets/1.png)
+![](https://github.com/huakim/waydroid_script/blob/main/assets/1.png)
 
 Open terminal and switch to the directory where "main.py" is located then run:
 
@@ -71,7 +71,7 @@ Copy the returned numeric ID, then open ["https://google.com/android/uncertified
 
 ## Install Magisk
 
-![](assets/2.png)
+![](https://github.com/huakim/waydroid_script/blob/main/assets/2.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -109,7 +109,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 
 ## Integrate Widevine DRM (L3)
 
-![](assets/3.png)
+![](https://github.com/huakim/waydroid_script/blob/main/assets/3.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -117,8 +117,8 @@ Open terminal and switch to directory where "main.py" is located then run:
 
 ## Install Smart Dock
 
-![](assets/4.png)
-![](assets/5.png)
+![](https://github.com/huakim/waydroid_script/blob/main/assets/4.png)
+![](https://github.com/huakim/waydroid_script/blob/main/assets/5.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -137,7 +137,7 @@ This is a temporary hack to combat against the apps permission issue on Android 
 
 Arknights, PUNISHING: GRAY RAVEN and other games won't freeze on the black screen.
 
-![](assets/6.png)
+![](https://github.com/huakim/waydroid_script/blob/main/assets/6.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -163,7 +163,7 @@ chmod 777 -R /mnt/*/*/*/*/Android/obb
 
 ## Install microG, Aurora Store and Aurora Droid
 
-![](assets/7.png)
+![](https://github.com/huakim/waydroid_script/blob/main/assets/7.png)
 
 ```
 sudo python main.py install microg
@@ -171,10 +171,10 @@ sudo python main.py install microg
 
 ## Hide Status Bar
 Before
-![Before](assets/8.png)
+![Before](https://github.com/huakim/waydroid_script/blob/main/assets/8.png)
 
 After
-![After](assets/9.png)
+![After](https://github.com/huakim/waydroid_script/blob/main/assets/9.png)
 
 ```
 sudo venv/bin/python3 main.py hack hidestatusbar
