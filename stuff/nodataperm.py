@@ -40,7 +40,7 @@ class Nodataperm(General):
         self.act_md5 = self.dl_links[android_version][arch][1]
 
     def copy(self):
-        name = re.findall("([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
+        name = re.findall("([a-zA-Z0-9]+)\\.zip", self.dl_link)[0]
         extract_path = os.path.join(
             self.extract_to, f"hack_full_data_permission-{name}")
         if not container.use_overlayfs():
