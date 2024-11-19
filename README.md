@@ -42,14 +42,14 @@ sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
 ## Dependencies
 
 "lzip" is required for this script to work, install it using your distribution's package manager:
+### openSUSE, Gecko based distributions:
+	sudo zypper install lzip
+### RHEL, Fedora and Rocky based distributions:
+	sudo dnf install lzip
 ### Arch, Manjaro and EndeavourOS based distributions:
 	sudo pacman -S lzip
 ### Debian and Ubuntu based distributions:
 	sudo apt install lzip
-### RHEL, Fedora and Rocky based distributions:
-	sudo dnf install lzip
-### openSUSE based distributions:
-	sudo zypper install lzip
 
 ## Install OpenGapps
 
