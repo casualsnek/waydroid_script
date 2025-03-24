@@ -10,7 +10,7 @@ class Houdini(General):
     partition = "system"
     dl_links = {
         "11": ["https://github.com/supremegamers/vendor_intel_proprietary_houdini/archive/81f2a51ef539a35aead396ab7fce2adf89f46e88.zip", "fbff756612b4144797fbc99eadcb6653"],
-        # "13": ["https://github.com/supremegamers/vendor_intel_proprietary_houdini/archive/978d8cba061a08837b7e520cd03b635af643ba08.zip", "1e139054c05034648fae58a1810573b4"]
+        "13": ["https://github.com/supremegamers/vendor_intel_proprietary_houdini/archive/5643480a2c504bd0ee4739a6354fefc70d032ad4.zip", "9085a6ec5d0ec5b7b715981676ffee18"]
     }
     act_md5 = ...
     dl_link = ...
