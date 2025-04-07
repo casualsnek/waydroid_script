@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
-from InquirerPy.separator import Separator
+try:
+    from InquirerPy import inquirer
+    from InquirerPy.base.control import Choice
+    from InquirerPy.separator import Separator
+except ModuleNotFoundError:
+    inquirer = None
 import argparse
 import os
 from typing import List
@@ -21,44 +24,28 @@ from stuff.fdroidpriv import FDroidPriv
 import tools.helper as helper
 from tools import container
 from tools import images
-
-import argparse
-
 from tools.logger import Logger
 
-
-def get_certified(args):
+def get_certified():
     AndroidId().get_id()
 
-
 def mount(partition, copy_dir):
-    img = os.path.join(images.get_image_dir(), partition+".img")
-    mount_point = ""
-    if partition == "system":
-        mount_point = os.path.join(copy_dir)
-    else:
-        mount_point = os.path.join(copy_dir, partition)
-    Logger.info("Mounting {} to {}".format(img, mount_point))
+    img = os.path.join(images.get_image_dir(), f"{partition}.img")
+    mount_point = os.path.join(copy_dir) if partition == "system" else os.path.join(copy_dir, partition)
+    Logger.info(f"Mounting {img} to {mount_point}")
     images.mount(img, mount_point)
 
-
 def resize(partition):
-    img = os.path.join(images.get_image_dir(), partition+".img")
-    img_size = int(os.path.getsize(img)/(1024*1024))
-    new_size = "{}M".format(img_size+500)
-    Logger.info("Resizing {} to {}".format(img, new_size))
+    img = os.path.join(images.get_image_dir(), f"{partition}.img")
+    img_size = int(os.path.getsize(img) / (1024 * 1024))
+    new_size = f"{img_size + 500}M"
+    Logger.info(f"Resizing {img} to {new_size}")
     images.resize(img, new_size)
 
-
 def umount(partition, copy_dir):
-    mount_point = ""
-    if partition == "system":
-        mount_point = os.path.join(copy_dir)
-    else:
-        mount_point = os.path.join(copy_dir, partition)
-    Logger.info("Umounting {}".format(mount_point))
+    mount_point = os.path.join(copy_dir) if partition == "system" else os.path.join(copy_dir, partition)
+    Logger.info(f"Unmounting {mount_point}")
     images.umount(mount_point)
-
 
 def install_app(args):
     install_list: List[General] = []
@@ -118,7 +105,6 @@ def install_app(args):
 
     container.upgrade()
 
-
 def remove_app(args):
     remove_list: List[General] = []
     app = args.app
@@ -158,10 +144,8 @@ def remove_app(args):
 
     container.upgrade()
 
-
 def hack_option(args):
-    Logger.warning(
-        "If these hacks cause any problems, run `sudo python main.py remove <hack_option>` to remove")
+    Logger.warning("If these hacks cause any problems, run `sudo python main.py remove <hack_option>` to remove")
 
     hack_list: List[General] = []
     options = args.option_name
@@ -198,10 +182,11 @@ def hack_option(args):
 
     container.upgrade()
 
-
 def interact():
+    if inquirer is None:
+        print('Please, install InquirerPy module first')
+        return
     os.system("clear")
-    args = argparse.Namespace()
     android_version = inquirer.select(
         message="Select Android version",
         instruction="(\u2191\u2193 Select Item)",
@@ -214,15 +199,12 @@ def interact():
     ).execute()
     if not android_version:
         exit()
-    args.android_version = android_version
+
+    args = argparse.Namespace(android_version=android_version, microg_variant="Standard")
+
     action = inquirer.select(
         message="Please select an action",
-        choices=[
-            "Install",
-            "Remove",
-            "Hack",
-            "Get Google Device ID to Get Certified"
-        ],
+        choices=["Install", "Remove", "Hack", "Get Google Device ID to Get Certified"],
         instruction="([↑↓]: Select Item)",
         default=None,
     ).execute()
@@ -231,7 +213,7 @@ def interact():
 
     install_choices = ["gapps", "microg", "libndk", "magisk", "smartdock", "fdroidpriv",]
     hack_choices = []
-    if android_version=="11":
+    if android_version == "11":
         install_choices.extend(["libhoudini", "widevine"])
         hack_choices.extend(["nodataperm", "hidestatusbar"])
 
@@ -243,8 +225,7 @@ def interact():
             invalid_message="should be at least 1 selection",
             choices=install_choices
         ).execute()
-        microg_variants = ["Standard", "NoGoolag",
-                           "UNLP", "Minimal", "MinimalIAP"]
+        microg_variants = ["Standard", "NoGoolag", "UNLP", "Minimal", "MinimalIAP"]
         if "microg" in apps:
             microg_variant = inquirer.select(
                 message="Select MicroG variant",
@@ -263,7 +244,7 @@ def interact():
             choices=[*install_choices, *hack_choices]
         ).execute()
         args.app = apps
-        args.microg_variant="Standard"
+        args.microg_variant = "Standard"
         remove_app(args)
     elif action == "Hack":
         apps = inquirer.checkbox(
@@ -276,15 +257,14 @@ def interact():
         args.option_name = apps
         hack_option(args)
     elif action == "Get Google Device ID to Get Certified":
-        AndroidId().get_id()
-
+        get_certified()
 
 def main():
     parser = argparse.ArgumentParser(description='''
     Does stuff like installing Gapps, installing Magisk, installing NDK Translation and getting Android ID for device registration.
     Use -h  flag for help!''')
 
-    subparsers = parser.add_subparsers(title="coomand", dest='command')
+    subparsers = parser.add_subparsers(title="command", dest='command')
     parser.add_argument('-a', '--android-version',
                         dest='android_version',
                         help='Specify the Android version',
@@ -296,8 +276,7 @@ def main():
         'certified', help='Get device ID to obtain Play Store certification')
     certified.set_defaults(func=get_certified)
 
-    install_choices = ["gapps", "microg", "libndk", "libhoudini",
-                       "magisk", "mitm", "smartdock", "widevine"]
+    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "mitm", "smartdock", "widevine"]
     hack_choices = ["nodataperm", "hidestatusbar"]
     micrg_variants = ["Standard", "NoGoolag", "UNLP", "Minimal", "MinimalIAP"]
     remove_choices = install_choices
@@ -306,7 +285,6 @@ def main():
         "dest": "app",
         "type": str,
         "nargs": '+',
-        # "metavar":"",
     }
 
     install_help = """
@@ -344,15 +322,12 @@ widevine: Add support for widevine DRM L3
     hack_parser.set_defaults(func=hack_option)
 
     args = parser.parse_args()
-    args.microg_variant = "Standard"
     if hasattr(args, 'func'):
-        args_dict = vars(args)
         helper.check_root()
         args.func(args)
     else:
         helper.check_root()
         interact()
-
 
 if __name__ == "__main__":
     main()
