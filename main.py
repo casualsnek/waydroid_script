@@ -229,10 +229,10 @@ def interact():
     if not action:
         exit()
 
-    install_choices = ["gapps", "microg", "libndk", "magisk", "smartdock", "fdroidpriv",]
+    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv",]
     hack_choices = []
     if android_version=="11":
-        install_choices.extend(["libhoudini", "widevine"])
+        install_choices.extend(["widevine"])
         hack_choices.extend(["nodataperm", "hidestatusbar"])
 
     if action == "Install":
