@@ -2,13 +2,14 @@ import os
 import shutil
 from stuff.general import General
 
+
 class Smartdock(General):
     id = "smartdock"
-    dl_link = "https://f-droid.org/repo/cu.axel.smartdock_1100.apk"
+    dl_link = "https://f-droid.org/repo/cu.axel.smartdock_1121.apk"
     partition = "system"
     dl_file_name = "smartdock.apk"
-    act_md5 = "f4087d34218eac902a5cca98ee03d215"
-    apply_props = { "qemu.hw.mainkeys" : "1" }
+    act_md5 = "dde94e2babc5f78bf7279e60a98eef05"
+    apply_props = {"qemu.hw.mainkeys": "1"}
     skip_extract = True
     permissions = """<?xml version="1.0" encoding="utf-8"?>
 <permissions>
@@ -34,11 +35,11 @@ class Smartdock(General):
 </permissions>
     """
     files = [
-            "etc/permissions/permissions_cu.axel.smartdock.xml",
-            "priv-app/SmartDock",
-            "etc/init/smartdock.rc"
-        ]
-    rc_content = '''
+        "etc/permissions/permissions_cu.axel.smartdock.xml",
+        "priv-app/SmartDock",
+        "etc/init/smartdock.rc",
+    ]
+    rc_content = """
 on property:sys.boot_completed=1
     start set_home_activity
 
@@ -46,22 +47,47 @@ service set_home_activity /system/bin/sh -c "cmd package set-home-activity cu.ax
     user root
     group root
     oneshot
-    '''
+    """
 
     def copy(self):
-        if not os.path.exists(os.path.join(self.copy_dir, self.partition, "priv-app", "SmartDock")):
-            os.makedirs(os.path.join(self.copy_dir, self.partition, "priv-app", "SmartDock"))
-        if not os.path.exists(os.path.join(self.copy_dir, self.partition, "etc", "permissions")):
-            os.makedirs(os.path.join(self.copy_dir, self.partition, "etc", "permissions"))
-        shutil.copyfile(os.path.join(self.download_loc),
-                        os.path.join(self.copy_dir, self.partition, "priv-app/SmartDock/smartdock.apk"))
-        
-        with open(os.path.join(self.copy_dir, self.partition, "etc", "permissions", "permissions_cu.axel.smartdock.xml"), "w") as f:
+        if not os.path.exists(
+            os.path.join(self.copy_dir, self.partition, "priv-app", "SmartDock")
+        ):
+            os.makedirs(
+                os.path.join(self.copy_dir, self.partition, "priv-app", "SmartDock")
+            )
+        if not os.path.exists(
+            os.path.join(self.copy_dir, self.partition, "etc", "permissions")
+        ):
+            os.makedirs(
+                os.path.join(self.copy_dir, self.partition, "etc", "permissions")
+            )
+        shutil.copyfile(
+            os.path.join(self.download_loc),
+            os.path.join(
+                self.copy_dir, self.partition, "priv-app/SmartDock/smartdock.apk"
+            ),
+        )
+
+        with open(
+            os.path.join(
+                self.copy_dir,
+                self.partition,
+                "etc",
+                "permissions",
+                "permissions_cu.axel.smartdock.xml",
+            ),
+            "w",
+        ) as f:
             f.write(self.permissions)
 
         rc_dir = os.path.join(self.copy_dir, self.partition, "etc/init/smartdock.rc")
         if not os.path.exists(os.path.dirname(rc_dir)):
             os.makedirs(os.path.dirname(rc_dir))
-        self.extract_app_lib(os.path.join(self.copy_dir, self.partition, "priv-app/SmartDock/smartdock.apk"))
+        self.extract_app_lib(
+            os.path.join(
+                self.copy_dir, self.partition, "priv-app/SmartDock/smartdock.apk"
+            )
+        )
         with open(rc_dir, "w") as f:
             f.write(self.rc_content)
