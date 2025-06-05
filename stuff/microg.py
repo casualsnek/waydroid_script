@@ -36,11 +36,11 @@ class MicroG(General):
             "6136b383153c2a6797d14fb4d7ca3f97"
         ],
         "Minimal": [
-            "https://github.com/ayasa520/MinMicroG/releases/download/latest/MinMicroG-Minimal-2.11.1-20230429100521.zip"
+            "https://github.com/ayasa520/MinMicroG/releases/download/latest/MinMicroG-Minimal-2.11.1-20230429100521.zip",
             "afb87eb64e7749cfd72c4760d85849da"
         ],
         "MinimalIAP": [
-            "https://github.com/ayasa520/MinMicroG/releases/download/latest/MinMicroG-MinimalIAP-2.11.1-20230429100556.zip"
+            "https://github.com/ayasa520/MinMicroG/releases/download/latest/MinMicroG-MinimalIAP-2.11.1-20230429100556.zip",
             "cc071f4f776cbc16c4c1f707aff1f7fa"
         ]
     }
