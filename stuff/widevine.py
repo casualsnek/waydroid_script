@@ -40,7 +40,7 @@ class Widevine(General):
         self.act_md5 = self.dl_links[self.arch[0]][android_version][1]
 
     def copy(self):
-        name = re.findall("([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
+        name = re.findall("([a-zA-Z0-9]+)\\.zip", self.dl_link)[0]
         Logger.info("Copying widevine library files ...")
         shutil.copytree(os.path.join(self.extract_to, "vendor_google_proprietary_widevine-prebuilt-"+name,
                         "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)

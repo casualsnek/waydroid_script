@@ -7,25 +7,25 @@ Script to add GApps and other stuff to Waydroid!
 ## Interactive terminal interface
 
 ```
-git clone https://github.com/casualsnek/waydroid_script
+git clone --depth 1 --single-branch https://github.com/huakim/waydroid_script
 cd waydroid_script
 python3 -m venv venv
 venv/bin/pip install -r requirements.txt
 sudo venv/bin/python3 main.py
 ```
 
-![image-20230430013103883](assets/img/README/image-20230430013103883.png)
+![image-20230430013103883](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/img/README/image-20230430013103883.png)
 
-![image-20230430013119763](assets/img/README/image-20230430013119763.png)
+![image-20230430013119763](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/img/README/image-20230430013119763.png)
 
-![image-20230430013148814](assets/img/README/image-20230430013148814.png)
+![image-20230430013148814](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main//assets/img/README/image-20230430013148814.png)
 
 
 
 ## Command Line
 
 ```bash
-git clone https://github.com/casualsnek/waydroid_script
+git clone --depth 1 --single-branch https://github.com/huakim/waydroid_script
 cd waydroid_script
 python3 -m venv venv
 venv/bin/pip install -r requirements.txt
@@ -42,18 +42,18 @@ sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
 ## Dependencies
 
 "lzip" is required for this script to work, install it using your distribution's package manager:
+### openSUSE, Gecko based distributions:
+	sudo zypper install lzip
+### RHEL, Fedora and Rocky based distributions:
+	sudo dnf install lzip
 ### Arch, Manjaro and EndeavourOS based distributions:
 	sudo pacman -S lzip
 ### Debian and Ubuntu based distributions:
 	sudo apt install lzip
-### RHEL, Fedora and Rocky based distributions:
-	sudo dnf install lzip
-### openSUSE based distributions:
-	sudo zypper install lzip
 
 ## Install OpenGapps
 
-![](assets/1.png)
+![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/1.png)
 
 Open terminal and switch to the directory where "main.py" is located then run:
 
@@ -65,13 +65,13 @@ Then launch waydroid with:
 
 After waydroid has finished booting, open terminal and switch to directory where "main.py" is located then run:
 
-    sudo python3 main.py google
+    sudo venv/bin/python3 main.py certified
 Copy the returned numeric ID, then open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1). Enter the ID and register it. Wait 10-20 minutes for device to get registered. Then clear Google Play Service's cache and try logging in!
 
 
 ## Install Magisk
 
-![](assets/2.png)
+![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/2.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -81,7 +81,7 @@ Magisk will be installed on next boot!
 
 Zygisk and modules like LSPosed should work now.
 
-If you want to update Magisk, Please use `Direct Install into system partition` or run this sript again.
+If you want to update Magisk, Please use `Direct Install into system partition` or run this script again.
 
 This script only focuses on Magisk installation, if you need more management, please check https://github.com/nitanmarcel/waydroid-magisk
 
@@ -109,7 +109,7 @@ Open terminal and switch to directory where "main.py" is located then run:
 
 ## Integrate Widevine DRM (L3)
 
-![](assets/3.png)
+![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/3.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -117,8 +117,8 @@ Open terminal and switch to directory where "main.py" is located then run:
 
 ## Install Smart Dock
 
-![](assets/4.png)
-![](assets/5.png)
+![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/4.png)
+![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/5.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -137,7 +137,7 @@ This is a temporary hack to combat against the apps permission issue on Android 
 
 Arknights, PUNISHING: GRAY RAVEN and other games won't freeze on the black screen.
 
-![](assets/6.png)
+![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/6.png)
 
 Open terminal and switch to directory where "main.py" is located then run:
 
@@ -163,7 +163,7 @@ chmod 777 -R /mnt/*/*/*/*/Android/obb
 
 ## Install microG, Aurora Store and Aurora Droid
 
-![](assets/7.png)
+![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/7.png)
 
 ```
 sudo venv/bin/python3 main.py install microg
@@ -171,10 +171,10 @@ sudo venv/bin/python3 main.py install microg
 
 ## Hide Status Bar
 Before
-![Before](assets/8.png)
+![Before](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/8.png)
 
 After
-![After](assets/9.png)
+![After](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/9.png)
 
 ```
 sudo venv/bin/python3 main.py hack hidestatusbar
