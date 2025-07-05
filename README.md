@@ -166,7 +166,7 @@ chmod 777 -R /mnt/*/*/*/*/Android/obb
 ![](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/7.png)
 
 ```
-sudo python main.py install microg
+sudo venv/bin/python3 main.py install microg
 ```
 
 ## Hide Status Bar
