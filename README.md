@@ -17,9 +17,13 @@ sudo venv/bin/python3 main.py
 ![image-20230430013103883](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/img/README/image-20230430013103883.png)
 
 ![image-20230430013119763](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/img/README/image-20230430013119763.png)
+<<<<<<< HEAD
+=======
 
 ![image-20230430013148814](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main//assets/img/README/image-20230430013148814.png)
+>>>>>>> 4d96768 (Update README.md)
 
+![image-20230430013148814](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main//assets/img/README/image-20230430013148814.png)
 
 
 ## Command Line
@@ -186,7 +190,7 @@ sudo venv/bin/python3 main.py hack hidestatusbar
 You need to register you device with its it before being able to use gapps, this will print out your Android ID which you can use for device registration required for Google apps:
 Open terminal and switch to directory where "main.py" is located then run:
 
-    sudo venv/bin/python3 main.py certified
+    sudo python3 main.py certified
 
 Star this repository if you find this useful, if you encounter problem create an issue on GitHub!
 
