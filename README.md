@@ -17,11 +17,6 @@ sudo venv/bin/python3 main.py
 ![image-20230430013103883](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/img/README/image-20230430013103883.png)
 
 ![image-20230430013119763](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main/assets/img/README/image-20230430013119763.png)
-<<<<<<< HEAD
-=======
-
-![image-20230430013148814](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main//assets/img/README/image-20230430013148814.png)
->>>>>>> 4d96768 (Update README.md)
 
 ![image-20230430013148814](https://raw.githubusercontent.com/huakim/waydroid_script_assets/main//assets/img/README/image-20230430013148814.png)
 
