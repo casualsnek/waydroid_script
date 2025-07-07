@@ -4,32 +4,34 @@ from stuff.general import General
 
 class Smartdock(General):
     id = "smartdock"
-    dl_link = "https://f-droid.org/repo/cu.axel.smartdock_1100.apk"
+    dl_link = "https://f-droid.org/repo/cu.axel.smartdock_1130.apk"
     partition = "system"
     dl_file_name = "smartdock.apk"
-    act_md5 = "f4087d34218eac902a5cca98ee03d215"
+    act_md5 = "6bfedb959ef5855c3782e8001cb67f86"
     apply_props = { "qemu.hw.mainkeys" : "1" }
     skip_extract = True
     permissions = """<?xml version="1.0" encoding="utf-8"?>
 <permissions>
     <privapp-permissions package="cu.axel.smartdock">
-	    <permission name="android.permission.SYSTEM_ALERT_WINDOW" />
-	    <permission name="android.permission.GET_TASKS"/>
-	    <permission name="android.permission.REORDER_TASKS"/>
+        <permission name="android.permission.SYSTEM_ALERT_WINDOW" />
+        <permission name="android.permission.GET_TASKS" />
+        <permission name="android.permission.REORDER_TASKS" />
         <permission name="android.permission.REMOVE_TASKS" />
-        <permission name="android.permission.ACCESS_WIFI_STATE"/>
-	    <permission name="android.permission.CHANGE_WIFI_STATE"/>
-        <permission name="android.permission.ACCESS_NETWORK_STATE"/>
-        <permission name="android.permission.ACCESS_FINE_LOCATION"/>
-        <permission name="android.permission.READ_EXTERNAL_STORAGE"/>
-        <permission name="android.permission.MANAGE_USERS"/>
-        <permission name="android.permission.BLUETOOTH_ADMIN"/>
-        <permission name="android.permission.BLUETOOTH_CONNECT"/>
-        <permission name="android.permission.BLUETOOTH"/>
-	    <permission name="android.permission.REQUEST_DELETE_PACKAGES"/>
+        <permission name="android.permission.ACCESS_WIFI_STATE" />
+        <permission name="android.permission.CHANGE_WIFI_STATE" />
+        <permission name="android.permission.ACCESS_NETWORK_STATE" />
+        <permission name="android.permission.ACCESS_FINE_LOCATION" />
+        <permission name="android.permission.READ_EXTERNAL_STORAGE" />
+        <permission name="android.permission.MANAGE_USERS" />
+        <permission name="android.permission.BLUETOOTH_ADMIN" />
+        <permission name="android.permission.BLUETOOTH_CONNECT" />
+        <permission name="android.permission.BLUETOOTH" />
+        <permission name="android.permission.REQUEST_DELETE_PACKAGES" />
         <permission name="android.permission.ACCESS_SUPERUSER"/>
         <permission name="android.permission.PACKAGE_USAGE_STATS" />
         <permission name="android.permission.QUERY_ALL_PACKAGES" />
+        <permission name="android.permission.WRITE_SECURE_SETTINGS" />
+        <permission name="android.permission.WRITE_SETTINGS" />
     </privapp-permissions>
 </permissions>
     """
