@@ -290,7 +290,7 @@ def interact():
             message="Select hack options",
             instruction="([\u2191\u2193]: Select Item. [Space]: Toggle Choice), [Enter]: Confirm",
             validate=lambda result: len(result) >= 1,
-            invalid_message="should be at leinstall_appast 1 selection",
+            invalid_message="should be at least 1 selection",
             choices=hack_choices
         ).execute()
         args.option_name = apps
