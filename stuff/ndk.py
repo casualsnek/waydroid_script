@@ -14,7 +14,7 @@ class Ndk(General):
     dl_file_name = "libndktranslation.zip"
     extract_to = "/tmp/libndkunpack"
     apply_props = {
-        "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi,arm64-v8a",
+        "ro.product.cpu.abilist": "x86_64,x86,arm64-v8a,armeabi-v7a,armeabi",
         "ro.product.cpu.abilist32": "x86,armeabi-v7a,armeabi",
         "ro.product.cpu.abilist64": "x86_64,arm64-v8a",
         "ro.dalvik.vm.native.bridge": "libndk_translation.so",
