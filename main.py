@@ -21,6 +21,7 @@ from stuff.nodataperm import Nodataperm
 from stuff.smartdock import Smartdock
 from stuff.widevine import Widevine
 from stuff.fdroidpriv import FDroidPriv
+from stuff.gps import GPS
 import tools.helper as helper
 from tools import container
 from tools import images
@@ -76,7 +77,8 @@ def install_app(args):
         install_list.append(Mitm(args.ca_cert_file))
     if "fdroidpriv" in app:
         install_list.append(FDroidPriv(args.android_version))
-
+    if "gps" in app:
+        install_list.append(GPS(args.android_version, args.gps_host, args.baud_rate))
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
         container.stop()
@@ -102,7 +104,6 @@ def install_app(args):
     if not container.use_overlayfs():
         umount("vendor", copy_dir)
         umount("system", copy_dir)
-
     container.upgrade()
 
 def remove_app(args):
@@ -130,7 +131,8 @@ def remove_app(args):
         remove_list.append(Nodataperm(args.android_version))
     if "hidestatusbar" in app:
         remove_list.append(HideStatusBar())
-
+    if "gps" in app:
+        remove_list.append(GPS())
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
         container.stop()
@@ -153,7 +155,6 @@ def hack_option(args):
         hack_list.append(Nodataperm())
     if "hidestatusbar" in options:
         hack_list.append(HideStatusBar())
-
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
         container.stop()
@@ -211,7 +212,8 @@ def interact():
     if not action:
         exit()
 
-    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv",]
+    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv","gps"]
+    baud_rate_choices = ["9600", "19200", "38400", "57600", "115200"]
     hack_choices = []
     if android_version == "11":
         install_choices.extend(["widevine"])
@@ -233,6 +235,19 @@ def interact():
                 default="Standard",
             ).execute()
             args.microg_variant = microg_variant
+        if "gps" in apps:
+            gps_host = inquirer.text(
+                message="Enter GPS host (default: /dev/ttyGPSD)",
+                default="/dev/ttyGPSD",
+            ).execute()
+            args.gps_host = gps_host
+            baud_rate = inquirer.select(
+                message="Enter baud rate (default: 9600)",
+                instruction="([\u2191\u2193]: [Enter]: Confirm",
+                default="9600",
+                choices=baud_rate_choices
+            ).execute()
+            args.baud_rate = baud_rate
         args.app = apps
         install_app(args)
     elif action == "Remove":
@@ -276,7 +291,7 @@ def main():
         'certified', help='Get device ID to obtain Play Store certification')
     certified.set_defaults(func=get_certified)
 
-    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "mitm", "smartdock", "widevine"]
+    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "mitm", "smartdock", "widevine", "gps"]
     hack_choices = ["nodataperm", "hidestatusbar"]
     micrg_variants = ["Standard", "NoGoolag", "UNLP", "Minimal", "MinimalIAP"]
     remove_choices = install_choices
@@ -284,7 +299,7 @@ def main():
     arg_template = {
         "dest": "app",
         "type": str,
-        "nargs": '+',
+        "nargs": '+'
     }
 
     install_help = """
@@ -322,6 +337,9 @@ widevine: Add support for widevine DRM L3
     hack_parser.set_defaults(func=hack_option)
 
     args = parser.parse_args()
+    args.microg_variant = os.environ.get("MICROG_VARIANT", "Standard")
+    args.gps_host = os.environ.get("GPS_HOST", "/dev/ttyGPSD")
+    args.baud_rate = os.environ.get("BAUD_RATE", "9600")
     if hasattr(args, 'func'):
         helper.check_root()
         args.func(args)

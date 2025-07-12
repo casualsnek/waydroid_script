@@ -26,7 +26,7 @@ sudo venv/bin/python3 main.py
 ```bash
 git clone --depth 1 --single-branch https://github.com/huakim/waydroid_script
 cd waydroid_script
-python3 -m venv venv
+venv/bin/python3 -m venv venv
 venv/bin/pip install -r requirements.txt
 # install something
 sudo venv/bin/python3 main.py install {gapps, magisk, libndk, libhoudini, nodataperm, smartdock, microg, mitm}
