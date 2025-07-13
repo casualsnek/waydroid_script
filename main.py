@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 try:
-    from InquirerPy import inquirer
-    from InquirerPy.base.control import Choice
-    from InquirerPy.separator import Separator
+    from InquirerLib.InquirerPy import inquirer
+    from InquirerLib.InquirerPy.base.control import Choice
+    from InquirerLib.InquirerPy.separator import Separator
 except ModuleNotFoundError:
     inquirer = None
 import argparse
@@ -185,7 +185,7 @@ def hack_option(args):
 
 def interact():
     if inquirer is None:
-        print('Please, install InquirerPy module first')
+        print('Please, install InquirerLib module first')
         return
     os.system("clear")
     android_version = inquirer.select(
@@ -217,7 +217,7 @@ def interact():
     hack_choices = []
     if android_version == "11":
         install_choices.extend(["widevine"])
-        hack_choices.extend(["nodataperm", "hidestatusbar"])
+    hack_choices.extend(["nodataperm", "hidestatusbar"])
 
     if action == "Install":
         apps = inquirer.checkbox(
