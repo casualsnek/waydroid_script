@@ -1,10 +1,10 @@
-with (import <nixpkgs> {});
+{ lib, stdenv, python3 }:
 
 stdenv.mkDerivation {
   name = "waydroid_script";
 
   buildInputs = [
-    (python3.withPackages(ps: with ps; [ tqdm requests inquirerpy ]))
+    (python3.withPackages (ps: with ps; [ tqdm requests inquirerpy ]))
   ];
 
   src = ./.;
