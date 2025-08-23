@@ -196,7 +196,7 @@ def interact():
             Choice(name="Android 13", value="13"),
             Choice(name="Exit", value=None)
         ],
-        default="11",
+        default="13",
     ).execute()
     if not android_version:
         exit()
@@ -283,7 +283,7 @@ def main():
     parser.add_argument('-a', '--android-version',
                         dest='android_version',
                         help='Specify the Android version',
-                        default="11",
+                        default="13",
                         choices=["11", "13"])
 
     # android command
