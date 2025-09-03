@@ -34,7 +34,7 @@ class GPS(General):
         self.gps_host = gps_host
         self.baud_rate = baud_rate
         self.android_version = android_version
-        self.usb_name = self.gps_host.split("/")[-1]
+        self.usb_name = self.gps_host.replace("/dev/", "")
         self.files_vendor = [
             "bin/hw/android.hardware.gnss@1.0-service",
         ]
