@@ -234,8 +234,10 @@ def interact():
     if not action:
         exit()
 
+
     install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv", "widevine", "gps",]
     baud_rate_choices = ["9600", "19200", "38400", "57600", "115200"]
+
     hack_choices = []
     if android_version=="11":
         hack_choices.extend(["nodataperm", "hidestatusbar"])

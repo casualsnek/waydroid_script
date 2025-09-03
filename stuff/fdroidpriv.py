@@ -6,6 +6,8 @@ from stuff.general import General
 class FDroidPriv(General):
     id = "fdroid priv"
     dl_links = {"11": ["https://f-droid.org/repo/org.fdroid.fdroid.privileged.ota_2130.zip",
+                       "6242cab56d197d80c598593a46da62e4"],
+               "13": ["https://f-droid.org/repo/org.fdroid.fdroid.privileged.ota_2130.zip",
                        "6242cab56d197d80c598593a46da62e4"]}
     partition = "system"
     dl_file_name = "org.fdroid.fdroid.privileged.ota_2130.zip"
