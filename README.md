@@ -69,6 +69,13 @@ After waydroid has finished booting, open terminal and switch to directory where
 Copy the returned numeric ID, then open ["https://google.com/android/uncertified/?pli=1"](https://google.com/android/uncertified/?pli=1). Enter the ID and register it. Wait 10-20 minutes for device to get registered. Then clear Google Play Service's cache and try logging in!
 
 
+<details>
+  <summary>If you get the error: `ERROR: Cannot access gservices.db, make sure gapps is installed and waydroid was started at least once after installation and make sure waydroid is running !`</summary>
+
+  1. run `sudo waydroid shell`
+  2. inside the waydroid shell run ```ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"``` to get the numeric ID as explained here: https://github.com/casualsnek/waydroid_script/issues/72
+</details>
+
 ## Install Magisk
 
 ![](assets/2.png)
