@@ -1,22 +1,23 @@
 import os
 import re
 import shutil
+
 from stuff.general import General
+from tools import container
 from tools.helper import backup, restore
 from tools.logger import Logger
-from tools import container
 
 
 class Nodataperm(General):
     id = "nodataperm"
     dl_links = {
         "11":
-        {
-            "x86_64": [
-                "https://github.com/ayasa520/hack_full_data_permission/archive/d4beab7780eb792059d33e77d865579c9ee41546.zip",
-                "b0e3908ffcf5df8ea62f4929aa680f1a"
-            ],
-        },
+            {
+                "x86_64": [
+                    "https://github.com/ayasa520/hack_full_data_permission/archive/d4beab7780eb792059d33e77d865579c9ee41546.zip",
+                    "b0e3908ffcf5df8ea62f4929aa680f1a"
+                ],
+            },
         "13": {}
     }
     dl_file_name = "nodataperm.zip"

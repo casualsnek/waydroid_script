@@ -1,5 +1,6 @@
 import os
 import shutil
+
 from stuff.general import General
 
 
@@ -22,10 +23,11 @@ class FDroidPriv(General):
         "priv-app/F-DroidPrivilegedExtension/F-DroidPrivilegedExtension.apk"
     ]
     file_map = {
-      "permissions_org.fdroid.fdroid.privileged.xml": "etc/permissions/permissions_org.fdroid.fdroid.privileged.xml",
-      "F-Droid.apk": "app/F-Droid/F-Droid.apk",
-      "F-DroidPrivilegedExtension.apk": "priv-app/F-DroidPrivilegedExtension/F-DroidPrivilegedExtension.apk",
+        "permissions_org.fdroid.fdroid.privileged.xml": "etc/permissions/permissions_org.fdroid.fdroid.privileged.xml",
+        "F-Droid.apk": "app/F-Droid/F-Droid.apk",
+        "F-DroidPrivilegedExtension.apk": "priv-app/F-DroidPrivilegedExtension/F-DroidPrivilegedExtension.apk",
     }
+
     def __init__(self, android_version="11") -> None:
         super().__init__()
         self.dl_link = self.dl_links[android_version][0]
@@ -39,4 +41,3 @@ class FDroidPriv(General):
             if not os.path.exists(rro_dir):
                 os.makedirs(rro_dir)
             shutil.copyfile(os.path.join(self.extract_to, f), rro_file)
-

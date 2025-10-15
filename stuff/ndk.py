@@ -1,8 +1,10 @@
 import os
 import re
 import shutil
+
 from stuff.general import General
 from tools.logger import Logger
+
 
 class Ndk(General):
     id = "libndk"
@@ -26,19 +28,19 @@ class Ndk(General):
         "ro.dalvik.vm.isa.arm64": "x86_64"
     }
     files = [
-            "bin/arm",
-            "bin/arm64",
-            "bin/ndk_translation_program_runner_binfmt_misc",
-            "bin/ndk_translation_program_runner_binfmt_misc_arm64",
-            "etc/binfmt_misc",
-            "etc/ld.config.arm.txt",
-            "etc/ld.config.arm64.txt",
-            "etc/init/ndk_translation.rc",
-            "lib/arm",
-            "lib64/arm64",
-            "lib/libndk*",
-            "lib64/libndk*"
-        ]
+        "bin/arm",
+        "bin/arm64",
+        "bin/ndk_translation_program_runner_binfmt_misc",
+        "bin/ndk_translation_program_runner_binfmt_misc_arm64",
+        "etc/binfmt_misc",
+        "etc/ld.config.arm.txt",
+        "etc/ld.config.arm64.txt",
+        "etc/init/ndk_translation.rc",
+        "lib/arm",
+        "lib64/arm64",
+        "lib/libndk*",
+        "lib64/libndk*"
+    ]
 
     def __init__(self, android_version="11") -> None:
         super().__init__()

@@ -1,5 +1,6 @@
 import os
 import shutil
+
 from stuff.general import General
 from tools.helper import run
 
@@ -9,16 +10,32 @@ class Gapps(General):
     partition = "system"
     dl_links = {
         "11": {
-            "x86_64": ["https://sourceforge.net/projects/opengapps/files/x86_64/20220503/open_gapps-x86_64-11.0-pico-20220503.zip", "5a6d242be34ad1acf92899c7732afa1b"],
-            "x86": ["https://sourceforge.net/projects/opengapps/files/x86/20220503/open_gapps-x86-11.0-pico-20220503.zip", "efda4943076016d00b40e0874b12ddd3"],
-            "arm64-v8a": ["https://sourceforge.net/projects/opengapps/files/arm64/20220503/open_gapps-arm64-11.0-pico-20220503.zip", "7790055d34bbfc6fe610b0cd263a7add"],
-            "armeabi-v7a": ["https://sourceforge.net/projects/opengapps/files/arm/20220215/open_gapps-arm-11.0-pico-20220215.zip", "8719519fa32ae83a62621c6056d32814"]
+            "x86_64": [
+                "https://sourceforge.net/projects/opengapps/files/x86_64/20220503/open_gapps-x86_64-11.0-pico-20220503.zip",
+                "5a6d242be34ad1acf92899c7732afa1b"],
+            "x86": [
+                "https://sourceforge.net/projects/opengapps/files/x86/20220503/open_gapps-x86-11.0-pico-20220503.zip",
+                "efda4943076016d00b40e0874b12ddd3"],
+            "arm64-v8a": [
+                "https://sourceforge.net/projects/opengapps/files/arm64/20220503/open_gapps-arm64-11.0-pico-20220503.zip",
+                "7790055d34bbfc6fe610b0cd263a7add"],
+            "armeabi-v7a": [
+                "https://sourceforge.net/projects/opengapps/files/arm/20220215/open_gapps-arm-11.0-pico-20220215.zip",
+                "8719519fa32ae83a62621c6056d32814"]
         },
         "13": {
-            "x86_64": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86_64-20231028.zip", "63ccebbf93d45c384f58d7c40049d398"],
-            "x86": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86-20231028.zip", "f12b6a8ed14eedbb4b5b3c932a865956"],
-            "arm64-v8a": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm64-20231028.zip", "11180da0a5d9f2ed2863882c30a8d556"],
-            "armeabi-v7a": ["https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm-20231028.zip", "d525c980bac427844aa4cb01628f8a8f"]
+            "x86_64": [
+                "https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86_64-20231028.zip",
+                "63ccebbf93d45c384f58d7c40049d398"],
+            "x86": [
+                "https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-x86-20231028.zip",
+                "f12b6a8ed14eedbb4b5b3c932a865956"],
+            "arm64-v8a": [
+                "https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm64-20231028.zip",
+                "11180da0a5d9f2ed2863882c30a8d556"],
+            "armeabi-v7a": [
+                "https://github.com/s1204IT/MindTheGappsBuilder/releases/download/20231028/MindTheGapps-13.0.0-arm-20231028.zip",
+                "d525c980bac427844aa4cb01628f8a8f"]
         }
     }
     android_version = ...
@@ -124,7 +141,8 @@ class Gapps(General):
                     print("    Processing app package : " +
                           os.path.join(self.extract_to, "Core", lz_file))
                     run(["tar", "--lzip", "-xvf", os.path.join(self.extract_to, "Core",
-                        lz_file), "-C", os.path.join(self.extract_to, "appunpack")])
+                                                               lz_file), "-C",
+                         os.path.join(self.extract_to, "appunpack")])
                     app_name = os.listdir(os.path.join(
                         self.extract_to, "appunpack"))[0]
                     xx_dpi = os.listdir(os.path.join(
@@ -145,14 +163,16 @@ class Gapps(General):
                     print("    Processing extra package : " +
                           os.path.join(self.extract_to, "Core", lz_file))
                     run(["tar", "--lzip", "-xvf", os.path.join(self.extract_to, "Core",
-                        lz_file), "-C", os.path.join(self.extract_to, "appunpack")])
+                                                               lz_file), "-C",
+                         os.path.join(self.extract_to, "appunpack")])
                     app_name = os.listdir(os.path.join(
                         self.extract_to, "appunpack"))[0]
                     common_content_dirs = os.listdir(os.path.join(
                         self.extract_to, "appunpack", app_name, "common"))
                     for ccdir in common_content_dirs:
-                        shutil.copytree(os.path.join(self.extract_to, "appunpack", app_name, "common", ccdir), os.path.join(
-                            self.copy_dir, self.partition, ccdir), dirs_exist_ok=True)
+                        shutil.copytree(os.path.join(self.extract_to, "appunpack", app_name, "common", ccdir),
+                                        os.path.join(
+                                            self.copy_dir, self.partition, ccdir), dirs_exist_ok=True)
 
     def copy_13(self):
         src_dir = os.path.join(self.extract_to, "system")
@@ -163,7 +183,7 @@ class Gapps(General):
             for file in files:
                 src_file_path = os.path.join(root, file)
                 dst_file_path = os.path.join(dst_dir, os.path.relpath(
-                        src_file_path, src_dir))
+                    src_file_path, src_dir))
                 if not os.path.exists(os.path.dirname(dst_file_path)):
                     os.makedirs(os.path.dirname(dst_file_path))
                 # Logger.info(f"{src_file_path} -> {dst_file_path}")

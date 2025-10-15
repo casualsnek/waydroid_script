@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+
 from stuff.general import General
 from tools.logger import Logger
 
@@ -18,8 +19,9 @@ class Widevine(General):
         },
         # "armeabi-v7a": ["https://github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/archive/a1a19361d36311bee042da8cf4ced798d2c76d98.zip", "fed6898b5cfd2a908cb134df97802554"],
         "arm64-v8a": {
-            "11": ["https://github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/archive/a1a19361d36311bee042da8cf4ced798d2c76d98.zip",
-                   "fed6898b5cfd2a908cb134df97802554"]
+            "11": [
+                "https://github.com/supremegamers/vendor_google_proprietary_widevine-prebuilt/archive/a1a19361d36311bee042da8cf4ced798d2c76d98.zip",
+                "fed6898b5cfd2a908cb134df97802554"]
         }
     }
     dl_file_name = "widevine.zip"

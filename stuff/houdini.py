@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+
 from stuff.general import General
 from tools.logger import Logger
 
@@ -57,7 +58,7 @@ on property:ro.enable.native.bridge.exec=1
         Logger.info("Copying libhoudini library files ...")
         name = re.findall("([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
         shutil.copytree(os.path.join(self.extract_to, "vendor_intel_proprietary_houdini-" + name,
-                        "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
+                                     "prebuilts"), os.path.join(self.copy_dir, self.partition), dirs_exist_ok=True)
         init_path = os.path.join(
             self.copy_dir, self.partition, "etc", "init", "houdini.rc")
         if not os.path.isfile(init_path):
