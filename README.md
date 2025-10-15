@@ -180,7 +180,7 @@ chmod 777 -R /mnt/*/*/*/*/Android/obb
 ![](assets/7.png)
 
 ```
-sudo python main.py install microg
+sudo venv/bin/python3 main.py install microg
 ```
 
 ## Hide status bar
