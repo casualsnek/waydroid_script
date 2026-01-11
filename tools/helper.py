@@ -40,7 +40,7 @@ def run(args: list, env: Optional[str] = None, ignore: Optional[str] = None):
     )
 
     # print(result.stdout.decode())
-    if result.stderr:
+    if result.returncode != 0 and result.stderr:
         error = result.stderr.decode("utf-8")
         if ignore and re.match(ignore, error):
             return result
