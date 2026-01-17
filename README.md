@@ -4,6 +4,20 @@ Script to add GApps and other stuff to Waydroid!
 
 # Installation/Usage
 
+## Dependencies
+
+"lzip" is required for this script to work, install it using your distribution's package manager:
+### Arch, Manjaro and EndeavourOS based distributions:
+	sudo pacman -S lzip
+### Debian and Ubuntu based distributions:
+	sudo apt install lzip
+### RHEL, Fedora and Rocky based distributions:
+	sudo dnf install lzip
+### openSUSE based distributions:
+	sudo zypper install lzip
+
+
+
 ## Interactive terminal interface
 
 ```
@@ -38,18 +52,6 @@ sudo venv/bin/python3 main.py certified
 # some hacks
 sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
 ```
-
-## Dependencies
-
-"lzip" is required for this script to work, install it using your distribution's package manager:
-### Arch, Manjaro and EndeavourOS based distributions:
-	sudo pacman -S lzip
-### Debian and Ubuntu based distributions:
-	sudo apt install lzip
-### RHEL, Fedora and Rocky based distributions:
-	sudo dnf install lzip
-### openSUSE based distributions:
-	sudo zypper install lzip
 
 ## Install OpenGapps
 
