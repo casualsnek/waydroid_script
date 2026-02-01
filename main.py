@@ -210,7 +210,7 @@ def interact():
             Choice(name="Android 13", value="13"),
             Choice(name="Exit", value=None)
         ],
-        default="11",
+        default="13",
     ).execute()
     if not android_version:
         exit()
@@ -229,10 +229,9 @@ def interact():
     if not action:
         exit()
 
-    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv",]
+    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv", "widevine",]
     hack_choices = []
     if android_version=="11":
-        install_choices.extend(["widevine"])
         hack_choices.extend(["nodataperm", "hidestatusbar"])
 
     if action == "Install":
@@ -288,7 +287,7 @@ def main():
     parser.add_argument('-a', '--android-version',
                         dest='android_version',
                         help='Specify the Android version',
-                        default="11",
+                        default="13",
                         choices=["11", "13"])
 
     # android command

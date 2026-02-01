@@ -10,19 +10,23 @@ from tools import container
 class Nodataperm(General):
     id = "nodataperm"
     dl_links = {
-        "11":
-        {
+        "11": {
             "x86_64": [
                 "https://github.com/ayasa520/hack_full_data_permission/archive/d4beab7780eb792059d33e77d865579c9ee41546.zip",
                 "b0e3908ffcf5df8ea62f4929aa680f1a"
             ],
         },
-        "13": {}
+        "13": {
+            "x86_64": [
+                "https://github.com/ayasa520/hack_full_data_permission/archive/d4beab7780eb792059d33e77d865579c9ee41546.zip",
+                "b0e3908ffcf5df8ea62f4929aa680f1a"
+            ],
+        },
     }
     dl_file_name = "nodataperm.zip"
     extract_to = "/tmp/nodataperm"
-    dl_link = ...
-    act_md5 = ...
+    dl_link = None
+    act_md5 = None
     partition = "system"
     files = [
         "etc/nodataperm.sh",
@@ -36,11 +40,15 @@ class Nodataperm(General):
         super().__init__()
         print("ok")
         arch = self.arch[0]
+        if android_version not in self.dl_links:
+            raise KeyError(f"No download links for Android version '{android_version}'")
+        if arch not in self.dl_links[android_version]:
+            raise KeyError(f"No download links for architecture '{arch}' in Android version '{android_version}'")
         self.dl_link = self.dl_links[android_version][arch][0]
         self.act_md5 = self.dl_links[android_version][arch][1]
 
     def copy(self):
-        name = re.findall("([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
+        name = re.findall(r"([a-zA-Z0-9]+)\.zip", self.dl_link)[0]
         extract_path = os.path.join(
             self.extract_to, f"hack_full_data_permission-{name}")
         if not container.use_overlayfs():
