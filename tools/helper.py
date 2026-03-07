@@ -33,16 +33,16 @@ def get_data_dir():
 # execute on host
 def run(args: list, env: Optional[str] = None, ignore: Optional[str] = None):
     result = subprocess.run(
-        args=args, 
-        env=env, 
-        stdout=subprocess.PIPE, 
+        args=args,
+        env=env,
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
 
     # print(result.stdout.decode())
-    if result.stderr:
+    if result.returncode != 0 and result.stderr:
         error = result.stderr.decode("utf-8")
-        if ignore and re.match(ignore, error):
+        if ignore and re.search(ignore, error):
             return result
         Logger.error(error)
         raise subprocess.CalledProcessError(
