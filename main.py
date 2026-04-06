@@ -3,6 +3,9 @@
 # dependencies = [
 #   "tqdm",
 #   "requests",
+#   "dbus-python",
+#   "gbinder",
+#   "PyGObject",
 #   "InquirerPy"
 # ]
 # ///
