@@ -64,7 +64,28 @@ on property:init.svc.zygote=stopped
         Logger.info("Additional setup")
         magisk_absolute_dir = os.path.join(self.copy_dir, self.magisk_dir)
         data_dir = get_data_dir()
-        shutil.copytree(magisk_absolute_dir, os.path.join(data_dir, "adb", "magisk"), dirs_exist_ok=True)
+        data_magisk_dir = os.path.join(data_dir, "adb", "magisk")
+        shutil.copytree(magisk_absolute_dir, data_magisk_dir, dirs_exist_ok=True)
+
+        # General.install() calls set_perm() only over self.files, which are paths
+        # under copy_dir (the overlay). This /data/adb copy is made here, before
+        # that runs, so it keeps the 0644 the binaries inherited from the apk
+        # extraction. A non-executable /data/adb/magisk/magisk64 makes magisk_env()
+        # abort at post-fs-data: root still works from the overlay copy, but Zygisk
+        # silently never initialises (Magisk reports "Zygisk: No" no matter what
+        # the zygisk setting says). Apply the same perms set_path_perm() gives
+        # magisk paths, to this copy too.
+        self.set_data_magisk_perm(data_magisk_dir)
+
+    def set_data_magisk_perm(self, data_magisk_dir):
+        if not os.path.isdir(data_magisk_dir):
+            return
+        os.chmod(data_magisk_dir, 0o755)
+        for root, dirnames, filenames in os.walk(data_magisk_dir):
+            for dirname in dirnames:
+                os.chmod(os.path.join(root, dirname), 0o755)
+            for filename in filenames:
+                os.chmod(os.path.join(root, filename), 0o755)
 
     def copy(self):
         magisk_absolute_dir = os.path.join(self.copy_dir, self.magisk_dir)
