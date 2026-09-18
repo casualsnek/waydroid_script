@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#   "tqdm",
+#   "requests",
+#   "dbus-python",
+#   "gbinder",
+#   "PyGObject",
+#   "InquirerPy"
+# ]
+# ///
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
 from InquirerPy.separator import Separator
