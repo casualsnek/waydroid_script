@@ -18,6 +18,7 @@ from stuff.nodataperm import Nodataperm
 from stuff.smartdock import Smartdock
 from stuff.widevine import Widevine
 from stuff.fdroidpriv import FDroidPriv
+from stuff.tflitefix import TfliteFix
 import tools.helper as helper
 from tools import container
 from tools import images
@@ -144,6 +145,8 @@ def remove_app(args):
         remove_list.append(Nodataperm(args.android_version))
     if "hidestatusbar" in app:
         remove_list.append(HideStatusBar())
+    if "tflitefix" in app:
+        remove_list.append(TfliteFix())
 
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
@@ -169,6 +172,8 @@ def hack_option(args):
         hack_list.append(Nodataperm())
     if "hidestatusbar" in options:
         hack_list.append(HideStatusBar())
+    if "tflitefix" in options:
+        hack_list.append(TfliteFix())
 
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
@@ -204,7 +209,7 @@ def interact():
     args = argparse.Namespace()
     android_version = inquirer.select(
         message="Select Android version",
-        instruction="(\u2191\u2193 Select Item)",
+        instruction="(↑↓ Select Item)",
         choices=[
             Choice(name="Android 11", value="11"),
             Choice(name="Android 13", value="13"),
@@ -230,7 +235,7 @@ def interact():
         exit()
 
     install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv", "widevine",]
-    hack_choices = []
+    hack_choices = ["tflitefix"]
     if android_version=="11":
         hack_choices.extend(["nodataperm", "hidestatusbar"])
 
@@ -297,7 +302,7 @@ def main():
 
     install_choices = ["gapps", "microg", "libndk", "libhoudini",
                        "magisk", "mitm", "smartdock", "widevine"]
-    hack_choices = ["nodataperm", "hidestatusbar"]
+    hack_choices = ["nodataperm", "hidestatusbar", "tflitefix"]
     micrg_variants = ["Standard", "NoGoolag", "UNLP", "Minimal", "MinimalIAP"]
     remove_choices = install_choices
 
