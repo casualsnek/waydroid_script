@@ -1,3 +1,13 @@
+# What's the difference from this fork ?
+
+I added some small code lines to enable this script for beeing used with "MULTIPLE ANDROID USERS IN WAYDROID"
+
+--> It won't work with only a single user created (maybe fixing that in the future..)
+--> You need to create at least "two users" in Waydroid to be able to get the IDs for Android verifications
+
+
+
+
 # Waydroid Extras Script
 
 Script to add GApps and other stuff to Waydroid!
