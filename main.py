@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-from InquirerPy import inquirer
-from InquirerPy.base.control import Choice
-from InquirerPy.separator import Separator
+try:
+    from InquirerPy import inquirer
+    from InquirerPy.base.control import Choice
+    from InquirerPy.separator import Separator
+    HAS_INQUIRER = True
+except Exception:
+    HAS_INQUIRER = False
 import argparse
 import os
 from typing import List
@@ -201,7 +205,7 @@ def hack_option(args):
     container.upgrade()
 
 
-def interact():
+def interact_fancy():
     os.system("clear")
     args = argparse.Namespace()
     android_version = inquirer.select(
@@ -280,6 +284,91 @@ def interact():
         hack_option(args)
     elif action == "Get Google Device ID to Get Certified":
         AndroidId().get_id()
+
+
+def _choose_one(prompt, choices):
+    print(prompt)
+    for i, c in enumerate(choices, 1):
+        print("  {}. {}".format(i, c))
+    while True:
+        sel = input("> ").strip()
+        if sel.isdigit() and 1 <= int(sel) <= len(choices):
+            return choices[int(sel) - 1]
+        print("Invalid selection, try again.")
+
+
+def _choose_many(prompt, choices):
+    print(prompt)
+    for i, c in enumerate(choices, 1):
+        print("  {}. {}".format(i, c))
+    print("Enter numbers separated by spaces or commas")
+    while True:
+        raw = input("> ").strip()
+        nums = [x for x in raw.replace(",", " ").split() if x.isdigit()]
+        sel = [choices[int(n) - 1] for n in nums if 1 <= int(n) <= len(choices)]
+        if sel:
+            # preserve order, drop duplicates
+            out = []
+            for item in sel:
+                if item not in out:
+                    out.append(item)
+            return out
+        print("Invalid selection, try again.")
+
+
+def interact_basic():
+    os.system("clear")
+    args = argparse.Namespace()
+    android_version = _choose_one("Select Android version", ["11", "13"])
+    if not android_version:
+        return
+    args.android_version = android_version
+
+    action = _choose_one("Please select an action", [
+        "Install",
+        "Remove",
+        "Hack",
+        "Get Google Device ID to Get Certified"
+    ])
+    if not action:
+        return
+
+    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "mitm",
+                       "smartdock", "fdroidpriv", "widevine"]
+    hack_choices = []
+    if android_version == "11":
+        hack_choices.extend(["nodataperm", "hidestatusbar"])
+    elif android_version == "13":
+        hack_choices.extend(["nodataperm"])
+
+    if action == "Install":
+        apps = _choose_many("Select apps", install_choices)
+        microg_variants = ["Standard", "NoGoolag", "UNLP", "Minimal", "MinimalIAP"]
+        if "microg" in apps:
+            microg_variant = _choose_one("Select MicroG variant", microg_variants)
+            args.microg_variant = microg_variant
+        else:
+            args.microg_variant = "Standard"
+        args.app = apps
+        install_app(args)
+    elif action == "Remove":
+        apps = _choose_many("Select apps", [*install_choices, *hack_choices])
+        args.app = apps
+        args.microg_variant = "Standard"
+        remove_app(args)
+    elif action == "Hack":
+        apps = _choose_many("Select hack options", hack_choices)
+        args.option_name = apps
+        hack_option(args)
+    elif action == "Get Google Device ID to Get Certified":
+        AndroidId().get_id()
+
+
+def interact():
+    if HAS_INQUIRER:
+        interact_fancy()
+    else:
+        interact_basic()
 
 
 def main():
