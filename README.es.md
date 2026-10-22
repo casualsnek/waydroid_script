@@ -91,6 +91,16 @@ DISPLAY=:1 <aplicacion>
 - **Xubuntu 26.04 (beta)**: el soporte Wayland en XFCE es experimental; si la sesión no está disponible, instala `weston` y/o `cage` y ejecuta Waydroid a través de ellos.
 - **Fedora / openSUSE / Arch / Void / NixOS**: usa la sesión Wayland proporcionada por tu escritorio/compositor; los paquetes de Waydroid están disponibles en los repositorios respectivos.
 
+## Instalar Waydroid (ayudante opcional)
+
+Este repositorio también incluye `install_waydroid.sh`, un ayudante para instalar Waydroid en distribuciones comunes:
+
+```bash
+sudo ./install_waydroid.sh            # vanilla
+sudo ./install_waydroid.sh --gapps    # con Google Apps
+sudo ./install_waydroid.sh --nested   # también instala weston/cage para sesiones X11
+```
+
 ## Instalación
 
 ```bash
