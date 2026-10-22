@@ -31,6 +31,42 @@ En Debian / Ubuntu:
 sudo apt install lzip python3 python3-pip
 ```
 
+## Requisito de Wayland (importante)
+
+Waydroid **solo funciona en una sesión Wayland**. Antes de ejecutar este script, asegúrate de que tu escritorio está en Wayland:
+
+```bash
+echo $XDG_SESSION_TYPE
+```
+
+Debe mostrar `wayland`. Si muestra `x11`, tienes dos opciones:
+
+1. **Cambiar a una sesión Wayland** (recomendado):
+   - Cierra sesión, abre el menú de sesión del gestor de pantalla (GDM/SDDM/LightDM) y elige una sesión Wayland como *Ubuntu on Wayland*, *GNOME on Wayland* o *KDE Plasma (Wayland)*.
+   - En Ubuntu/GNOME, Wayland es el predeterminado desde 22.04. Si estaba deshabilitado, reactívalo en `/etc/gdm3/custom.conf` (`WaylandEnable=true`) y reinicia GDM.
+   - En Xubuntu/XFCE 26.04 (beta, soporte experimental de Wayland), prueba `startxfce4 --wayland` o la sesión *Xfce (Wayland)*. Si no está disponible, usa un compositor anidado (ver abajo).
+   - En Fedora, Wayland es el predeterminado para GNOME/KDE.
+   - En Arch/Manjaro, instala un compositor/escritorio Wayland (GNOME, KDE Plasma, Sway, Hyprland) o usa `cage`/`weston`.
+2. **Usar un compositor Wayland anidado en un escritorio X11**:
+   ```bash
+   sudo apt install cage weston
+   weston --xwayland
+   # o
+   cage -- waydroid show-full-ui
+   ```
+
+Al ejecutar Waydroid o este script con `sudo`, conserva las variables de entorno de Wayland para que el socket de sesión siga siendo visible:
+
+```bash
+sudo -E python3 main.py
+```
+
+### Notas por distribución
+
+- **Ubuntu / Debian y derivadas**: se requiere sesión Wayland (Ubuntu 22.04+). Instala Waydroid desde el repositorio oficial o el repositorio de Waydroid según su documentación.
+- **Xubuntu 26.04 (beta)**: el soporte Wayland en XFCE es experimental; si la sesión no está disponible, instala `weston` y/o `cage` y ejecuta Waydroid a través de ellos.
+- **Fedora / openSUSE / Arch / Void / NixOS**: usa la sesión Wayland proporcionada por tu escritorio/compositor; los paquetes de Waydroid están disponibles en los repositorios respectivos.
+
 ## Instalación
 
 ```bash

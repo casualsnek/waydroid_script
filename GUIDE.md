@@ -2,6 +2,10 @@
 
 This guide explains the internal workflow of `main.py` and its helper modules.
 
+## Prerequisite: Wayland
+
+Waydroid only runs on a Wayland session. Check with `echo $XDG_SESSION_TYPE`. If it prints `x11`, switch to a Wayland session or use a nested compositor (`weston`/`cage`). When using `sudo`, preserve the environment with `sudo -E`.
+
 ## Overview
 
 `main.py` is a Python script that modifies Waydroid images (mainly `system.img` and `vendor.img`) to add extras such as Google Apps, microG, Magisk, ARM translation, Widevine, and more.

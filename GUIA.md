@@ -2,6 +2,10 @@
 
 Esta guía explica cómo funciona internamente el script `main.py` y sus módulos auxiliares.
 
+## Requisito previo: Wayland
+
+Waydroid solo funciona en una sesión Wayland. Verifica con `echo $XDG_SESSION_TYPE`. Si muestra `x11`, cambia a una sesión Wayland o usa un compositor anidado (`weston`/`cage`). Al usar `sudo`, conserva el entorno con `sudo -E`.
+
 ## Visión general
 
 `main.py` es un script Python que modifica las imágenes de Waydroid (principalmente `system.img` y `vendor.img`) para añadir extras como Google Apps, microG, Magisk, traducción ARM, Widevine, etc.
