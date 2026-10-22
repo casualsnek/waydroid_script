@@ -7,7 +7,9 @@ try:
 except Exception:
     HAS_INQUIRER = False
 import argparse
+import json
 import os
+import shutil
 from typing import List
 from stuff.android_id import AndroidId
 from stuff.gapps import Gapps
@@ -31,8 +33,86 @@ import argparse
 from tools.logger import Logger
 
 
+STATE_FILE = "/var/lib/waydroid/waydroid_script_state.json"
+
+
+def load_state():
+    try:
+        with open(STATE_FILE, "r") as f:
+            return json.load(f)
+    except Exception:
+        return {"installed": [], "hacks": []}
+
+
+def save_state(state):
+    try:
+        os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+        with open(STATE_FILE, "w") as f:
+            json.dump(state, f, indent=2)
+    except Exception as e:
+        Logger.warning("Could not save state: {}".format(e))
+
+
 def get_certified(args):
     AndroidId().get_id()
+
+
+def status_app(args):
+    state = load_state()
+    print("Waydroid script state")
+    print("  Installed extras: {}".format(", ".join(state.get("installed", [])) or "none"))
+    print("  Hacks: {}".format(", ".join(state.get("hacks", [])) or "none"))
+    print("  XDG_SESSION_TYPE: {}".format(os.environ.get("XDG_SESSION_TYPE", "unknown")))
+    try:
+        import configparser
+        cfg = configparser.ConfigParser()
+        cfg.read("/var/lib/waydroid/waydroid.cfg")
+        print("  Android images path: {}".format(cfg.get("waydroid", "images_path", fallback="unknown")))
+        print("  Overlayfs: {}".format(cfg.get("waydroid", "mount_overlays", fallback="unknown")))
+    except Exception:
+        pass
+
+
+def backup_images(args):
+    import datetime
+    try:
+        img_dir = images.get_image_dir()
+    except Exception as e:
+        Logger.error(str(e))
+        return
+    backup_dir = os.path.join("/var/cache/waydroid-script", "backups",
+                              datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    os.makedirs(backup_dir, exist_ok=True)
+    for name in ("system.img", "vendor.img"):
+        src = os.path.join(img_dir, name)
+        if os.path.isfile(src):
+            Logger.info("Backing up {} to {}".format(src, backup_dir))
+            shutil.copy2(src, os.path.join(backup_dir, name))
+    Logger.info("Backup finished: {}".format(backup_dir))
+
+
+def restore_images(args):
+    backup_root = "/var/cache/waydroid-script/backups"
+    if not os.path.isdir(backup_root):
+        Logger.error("No backups found")
+        return
+    backups = sorted(os.listdir(backup_root))
+    if not backups:
+        Logger.error("No backups found")
+        return
+    latest = os.path.join(backup_root, backups[-1])
+    try:
+        img_dir = images.get_image_dir()
+    except Exception as e:
+        Logger.error(str(e))
+        return
+    for name in ("system.img", "vendor.img"):
+        src = os.path.join(latest, name)
+        dst = os.path.join(img_dir, name)
+        if os.path.isfile(src):
+            Logger.info("Restoring {} to {}".format(src, dst))
+            shutil.copy2(src, dst)
+    Logger.info("Restore finished from {}".format(latest))
 
 
 def mount(partition, copy_dir):
@@ -122,6 +202,12 @@ def install_app(args):
 
     container.upgrade()
 
+    state = load_state()
+    for app in getattr(args, "app", []):
+        if app not in state.get("installed", []):
+            state.setdefault("installed", []).append(app)
+    save_state(state)
+
 
 def remove_app(args):
     remove_list: List[General] = []
@@ -164,6 +250,14 @@ def remove_app(args):
 
     container.upgrade()
 
+    state = load_state()
+    for app in getattr(args, "app", []):
+        if app in state.get("installed", []):
+            state["installed"].remove(app)
+        if app in state.get("hacks", []):
+            state["hacks"].remove(app)
+    save_state(state)
+
 
 def hack_option(args):
     Logger.warning(
@@ -203,6 +297,12 @@ def hack_option(args):
         umount("system", copy_dir)
 
     container.upgrade()
+
+    state = load_state()
+    for opt in getattr(args, "option_name", []):
+        if opt not in state.get("hacks", []):
+            state.setdefault("hacks", []).append(opt)
+    save_state(state)
 
 
 def interact_fancy():
@@ -387,6 +487,18 @@ def main():
     certified = subparsers.add_parser(
         'certified', help='Get device ID to obtain Play Store certification')
     certified.set_defaults(func=get_certified)
+
+    status_parser = subparsers.add_parser(
+        'status', help='Show installed extras and hacks')
+    status_parser.set_defaults(func=status_app)
+
+    backup_parser = subparsers.add_parser(
+        'backup', help='Backup Waydroid images')
+    backup_parser.set_defaults(func=backup_images)
+
+    restore_parser = subparsers.add_parser(
+        'restore', help='Restore the latest Waydroid image backup')
+    restore_parser.set_defaults(func=restore_images)
 
     install_choices = ["gapps", "microg", "libndk", "libhoudini",
                        "magisk", "mitm", "smartdock", "widevine", "fdroidpriv"]
