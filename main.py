@@ -115,6 +115,45 @@ def restore_images(args):
     Logger.info("Restore finished from {}".format(latest))
 
 
+TEMP_DIRS = [
+    "/tmp/waydroid",
+    "/tmp/gapps",
+    "/tmp/microg",
+    "/tmp/libndkunpack",
+    "/tmp/houdiniunpack",
+    "/tmp/magisk_unpack",
+    "/tmp/widevineunpack",
+    "/tmp/fdroid_ota_2130",
+    "/tmp/nodataperm",
+]
+
+
+def clean_temp(args):
+    # Try to unmount /tmp/waydroid first
+    try:
+        images.umount("/tmp/waydroid", exists=False)
+    except Exception:
+        pass
+
+    for d in TEMP_DIRS:
+        if os.path.exists(d):
+            Logger.info("Removing {}".format(d))
+            shutil.rmtree(d, ignore_errors=True)
+
+    if getattr(args, "all", False):
+        download_dir = None
+        try:
+            download_dir = helper.get_download_dir()
+        except Exception:
+            pass
+        if download_dir and os.path.isdir(download_dir):
+            Logger.info("Removing download cache {}".format(download_dir))
+            shutil.rmtree(download_dir, ignore_errors=True)
+            os.makedirs(download_dir, exist_ok=True)
+
+    Logger.info("Temporary files cleaned.")
+
+
 def mount(partition, copy_dir):
     img = os.path.join(images.get_image_dir(), partition+".img")
     mount_point = ""
@@ -482,6 +521,8 @@ def main():
                         help='Specify the Android version',
                         default="13",
                         choices=["11", "13"])
+    parser.add_argument('--log-file', dest='log_file',
+                        help='Write log output to a file')
 
     # android command
     certified = subparsers.add_parser(
@@ -499,6 +540,12 @@ def main():
     restore_parser = subparsers.add_parser(
         'restore', help='Restore the latest Waydroid image backup')
     restore_parser.set_defaults(func=restore_images)
+
+    clean_parser = subparsers.add_parser(
+        'clean', help='Remove temporary files created by the script')
+    clean_parser.add_argument('--all', action='store_true',
+                              help='Also remove the download cache')
+    clean_parser.set_defaults(func=clean_temp)
 
     install_choices = ["gapps", "microg", "libndk", "libhoudini",
                        "magisk", "mitm", "smartdock", "widevine", "fdroidpriv"]
@@ -549,6 +596,8 @@ widevine: Add support for widevine DRM L3
 
     args = parser.parse_args()
     args.microg_variant = "Standard"
+    if getattr(args, "log_file", None):
+        Logger.set_log_file(args.log_file)
     if hasattr(args, 'func'):
         args_dict = vars(args)
         helper.check_root()
