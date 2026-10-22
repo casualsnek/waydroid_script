@@ -61,6 +61,30 @@ When running Waydroid or this script with `sudo`, preserve the Wayland environme
 sudo -E python3 main.py
 ```
 
+### XWayland note
+
+XWayland allows running **X11 applications** inside a Wayland session. It is **not** a replacement for a Wayland compositor and by itself does not allow running Waydroid. Waydroid still needs a Wayland compositor (GNOME/KDE/Sway/Hyprland, or `weston`/`cage`).
+
+If you need XWayland (for example for older X11-only apps), install it:
+
+- Debian/Ubuntu: `sudo apt install xwayland`
+- Fedora: `sudo dnf install xorg-x11-server-Xwayland`
+- Arch/Manjaro: `sudo pacman -S xorg-xwayland`
+
+In a normal Wayland session XWayland starts automatically when an X11 app is launched. You can verify it with:
+
+```bash
+echo $DISPLAY
+xlsclients
+```
+
+If you want to start it manually:
+
+```bash
+Xwayland :1 &
+DISPLAY=:1 <application>
+```
+
 ### Distribution notes
 
 - **Ubuntu / Debian and derivatives**: Wayland session required (Ubuntu 22.04+). Install Waydroid from the official repo or the Waydroid repo as documented by Waydroid.
