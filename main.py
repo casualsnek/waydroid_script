@@ -148,6 +148,8 @@ def remove_app(args):
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
         container.stop()
+        mount("system", copy_dir)
+        mount("vendor", copy_dir)
 
     for item in remove_list:
         item.uninstall()
@@ -166,9 +168,9 @@ def hack_option(args):
     hack_list: List[General] = []
     options = args.option_name
     if "nodataperm" in options:
-        hack_list.append(Nodataperm())
+        hack_list.append(Nodataperm(args.android_version))
     if "hidestatusbar" in options:
-        hack_list.append(HideStatusBar())
+        hack_list.append(HideStatusBar(args.android_version))
 
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
@@ -229,10 +231,12 @@ def interact():
     if not action:
         exit()
 
-    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "smartdock", "fdroidpriv", "widevine",]
+    install_choices = ["gapps", "microg", "libndk", "libhoudini", "magisk", "mitm", "smartdock", "fdroidpriv", "widevine",]
     hack_choices = []
-    if android_version=="11":
+    if android_version == "11":
         hack_choices.extend(["nodataperm", "hidestatusbar"])
+    elif android_version == "13":
+        hack_choices.extend(["nodataperm"])
 
     if action == "Install":
         apps = inquirer.checkbox(
@@ -296,7 +300,7 @@ def main():
     certified.set_defaults(func=get_certified)
 
     install_choices = ["gapps", "microg", "libndk", "libhoudini",
-                       "magisk", "mitm", "smartdock", "widevine"]
+                       "magisk", "mitm", "smartdock", "widevine", "fdroidpriv"]
     hack_choices = ["nodataperm", "hidestatusbar"]
     micrg_variants = ["Standard", "NoGoolag", "UNLP", "Minimal", "MinimalIAP"]
     remove_choices = install_choices

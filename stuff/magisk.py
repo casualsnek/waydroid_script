@@ -80,7 +80,7 @@ on property:init.svc.zygote=stopped
         for parent, dirnames, filenames in os.walk(lib_dir):
             for filename in filenames:
                 o_path = os.path.join(lib_dir, filename)  
-                filename = re.search('lib(.*)\.so', filename)
+                filename = re.search(r'lib(.*)\.so', filename)
                 n_path = os.path.join(magisk_absolute_dir, filename.group(1))
                 shutil.copyfile(o_path, n_path)
         shutil.copyfile(self.download_loc, os.path.join(magisk_absolute_dir,"magisk.apk") )

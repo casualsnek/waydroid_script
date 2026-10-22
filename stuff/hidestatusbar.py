@@ -16,6 +16,8 @@ class HideStatusBar(General):
     ]
     def __init__(self, android_version="11") -> None:
         super().__init__()
+        if android_version not in self.dl_links:
+            android_version = "11"
         self.dl_link = self.dl_links[android_version][0]
         self.act_md5 = self.dl_links[android_version][1]
 
