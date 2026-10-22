@@ -38,7 +38,6 @@ class Nodataperm(General):
 
     def __init__(self, android_version="11") -> None:
         super().__init__()
-        print("ok")
         arch = self.arch[0]
         if android_version not in self.dl_links:
             raise KeyError(f"No download links for Android version '{android_version}'")

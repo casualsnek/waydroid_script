@@ -15,10 +15,10 @@ class FDroidPriv(General):
     act_md5 = ...
     extract_to = "/tmp/fdroid_ota_2130"
     files = [
-        "app/F-Droid.apk"
-        "app/F-Droid/F-Droid.apk"
-        "etc/permissions/permissions_org.fdroid.fdroid.privileged.xml"
-        "priv-app/F-DroidPrivilegedExtension.apk"
+        "app/F-Droid.apk",
+        "app/F-Droid/F-Droid.apk",
+        "etc/permissions/permissions_org.fdroid.fdroid.privileged.xml",
+        "priv-app/F-DroidPrivilegedExtension.apk",
         "priv-app/F-DroidPrivilegedExtension/F-DroidPrivilegedExtension.apk"
     ]
     file_map = {
