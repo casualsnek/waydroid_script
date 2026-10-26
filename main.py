@@ -90,6 +90,16 @@ def install_app(args):
     if "fdroidpriv" in app:
         install_list.append(FDroidPriv(args.android_version))
 
+    local_file = getattr(args, "local_file", None)
+    if local_file:
+        if len(install_list) != 1 or isinstance(install_list[0], Mitm):
+            Logger.error("--file can only be used when installing exactly one app (not mitm)")
+            exit(1)
+        if not os.path.isfile(local_file):
+            Logger.error("File not found: {}".format(local_file))
+            exit(1)
+        install_list[0].local_file = os.path.abspath(local_file)
+
     if not container.use_overlayfs():
         copy_dir = "/tmp/waydroid"
         container.stop()
@@ -326,6 +336,10 @@ widevine: Add support for widevine DRM L3
     install_parser.add_argument('-c', '--ca-cert',
                                 dest='ca_cert_file',
                                 help='[for mitm only] The CA certificate file (*.pem) to install',
+                                default=None)
+    install_parser.add_argument('-f', '--file',
+                                dest='local_file',
+                                help='Install from an already downloaded file instead of downloading it (one app at a time)',
                                 default=None)
     install_parser.set_defaults(func=install_app)
 

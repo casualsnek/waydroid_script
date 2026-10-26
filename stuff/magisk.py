@@ -54,6 +54,9 @@ on property:init.svc.zygote=stopped
     """
 
     def download(self):
+        if self.local_file:
+            self.use_local_file()
+            return
         if os.path.isfile(self.download_loc):
             os.remove(self.download_loc)
         Logger.info("Downloading latest Magisk-Delta to {} now ...".format(self.download_loc))

@@ -39,6 +39,16 @@ sudo venv/bin/python3 main.py certified
 sudo venv/bin/python3 main.py hack {nodataperm, hidestatusbar}
 ```
 
+### Install from an already downloaded file
+
+Use `-f/--file` to install one app from a file you already have instead of downloading it:
+
+```bash
+sudo venv/bin/python3 main.py install gapps --file ~/Downloads/gapps.zip
+```
+
+The file must be the same kind of package the script would download (e.g. the zip linked in `stuff/gapps.py`). If its md5 differs from the expected one, a warning is printed and the install continues.
+
 ## Dependencies
 
 "lzip" is required for this script to work, install it using your distribution's package manager:
