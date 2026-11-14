@@ -11,6 +11,7 @@ from tools.logger import Logger
 
 class General:
     files = []
+    local_file = None
 
     @property
     def arch(self):
@@ -31,7 +32,22 @@ class General:
         else:
             return "/tmp/waydroid"
 
+    def use_local_file(self):
+        Logger.info("Using local file {} instead of downloading".format(self.local_file))
+        expected_md5 = getattr(self, "act_md5", None)
+        if expected_md5:
+            with open(self.local_file, "rb") as f:
+                loc_md5 = hashlib.md5(f.read()).hexdigest()
+            if loc_md5 != expected_md5:
+                Logger.warning("md5 of {} ({}) does not match the expected one ({}), installing anyway".format(
+                    self.local_file, loc_md5, expected_md5))
+        if not (os.path.exists(self.download_loc) and os.path.samefile(self.local_file, self.download_loc)):
+            shutil.copyfile(self.local_file, self.download_loc)
+
     def download(self):
+        if self.local_file:
+            self.use_local_file()
+            return
         Logger.info("Downloading {} now to {} .....".format(
             self.dl_file_name, self.download_loc))
         loc_md5 = ""
